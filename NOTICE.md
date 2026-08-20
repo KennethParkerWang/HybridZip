@@ -78,6 +78,13 @@ The imported closure and source hashes are in `third_party/kanzi/PROVENANCE.md`.
 - License: BSD Zero Clause License (0BSD)
 - Use: x86 BCJ transform in HZ02 X86BcjZstd blocks
 
+## C-Blosc2
+
+- Source: https://github.com/Blosc/c-blosc2
+- Revision used: `b17d0c3dae8d48800726a85455d9f1fdf0578b16`
+- License: BSD 3-Clause
+- Use: generic byte shuffle in HZ02 ShuffleZstd blocks
+
 ## FiniteStateEntropy
 
 - Project: FiniteStateEntropy

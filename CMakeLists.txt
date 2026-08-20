@@ -101,6 +101,10 @@ add_library(hz_xz_bcj_donor STATIC third_party/xz/bcj_x86.c)
 target_include_directories(hz_xz_bcj_donor PUBLIC third_party/xz)
 hz_enable_warnings(hz_xz_bcj_donor)
 
+add_library(hz_blosc_shuffle_donor STATIC third_party/blosc/shuffle_generic.c)
+target_include_directories(hz_blosc_shuffle_donor PUBLIC third_party/blosc)
+hz_enable_warnings(hz_blosc_shuffle_donor)
+
 add_library(hz_7zip_lzma STATIC
     third_party/7zip-lzma/C/Alloc.c
     third_party/7zip-lzma/C/CpuArch.c
@@ -205,12 +209,14 @@ add_library(hz_r2
     src/r2/representation/kanzi_mtf_transform.cpp
     src/r2/representation/kanzi_rlt_transform.cpp
     src/r2/representation/xz_x86_bcj_transform.cpp
+    src/r2/representation/blosc_shuffle_transform.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)
 target_link_libraries(hz_r2 PUBLIC hz_codec
                          PRIVATE hz_7zip_lzma hz_cmix_match hz_fse_donor
                                  hz_paq8px_match hz_libsais_donor hz_kanzi_mtf_donor libzstd_static)
 target_link_libraries(hz_r2 PRIVATE hz_xz_bcj_donor)
+target_link_libraries(hz_r2 PRIVATE hz_blosc_shuffle_donor)
 hz_enable_warnings(hz_r2)
 
 add_executable(hybridzip

@@ -13,6 +13,7 @@
 #include "r2/representation/kanzi_mtf_transform.h"
 #include "r2/representation/kanzi_rlt_transform.h"
 #include "r2/representation/xz_x86_bcj_transform.h"
+#include "r2/representation/blosc_shuffle_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -220,6 +221,32 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
         }
         consider(decision, BlockMode::X86BcjZstd, TransformKind::X86Bcj,
                  EntropyKind::ZstdFse, std::move(payload));
+    }
+
+    if (options_.policy == CandidatePolicy::ShuffleZstdOnly || options_.policy == CandidatePolicy::Auto) {
+        std::vector<std::uint8_t> best_payload;
+        std::uint8_t best_width = 0;
+        const BloscShuffleTransform shuffle;
+        for (const std::uint8_t width : {std::uint8_t{2}, std::uint8_t{4}, std::uint8_t{8}}) {
+            const TransformResult transformed = shuffle.forward(input, width);
+            std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(transformed.bytes));
+            if (best_width == 0 || payload.size() < best_payload.size()) {
+                best_payload = std::move(payload);
+                best_width = width;
+            }
+        }
+        decision.shuffle_zstd_candidate_bytes = best_payload.size() + 1;
+        std::vector<std::uint8_t> metadata{best_width};
+        if (options_.policy == CandidatePolicy::ShuffleZstdOnly) {
+            decision.mode = BlockMode::ShuffleZstd;
+            decision.transform = TransformKind::Shuffle;
+            decision.entropy = EntropyKind::ZstdFse;
+            decision.payload = std::move(best_payload);
+            decision.transform_metadata = std::move(metadata);
+            return decision;
+        }
+        consider(decision, BlockMode::ShuffleZstd, TransformKind::Shuffle, EntropyKind::ZstdFse,
+                 std::move(best_payload), std::move(metadata));
     }
 
     return decision;

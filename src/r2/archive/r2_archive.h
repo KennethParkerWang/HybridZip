@@ -17,6 +17,7 @@ constexpr std::uint32_t kR2BwtPrimaryIndexSize = 4;
 constexpr std::uint32_t kR2BwtMetadataSize =
     kR2BlockChecksumSize + kR2BwtPrimaryIndexSize;
 constexpr std::uint32_t kR2BwtRltMetadataSize = kR2BwtMetadataSize + 4;
+constexpr std::uint32_t kR2ShuffleMetadataSize = kR2BlockChecksumSize + 1;
 constexpr std::uint32_t kR2ProfileId = 2;
 constexpr std::uint32_t kR2DefaultBlockSize = 64U * 1024U;
 constexpr std::uint32_t kR2MaximumBlockSize = 16U * 1024U * 1024U;
@@ -31,7 +32,8 @@ enum class BlockMode : std::uint8_t {
     BwtZstd = 6,
     BwtMtfZstd = 7,
     BwtRltZstd = 8,
-    X86BcjZstd = 9
+    X86BcjZstd = 9,
+    ShuffleZstd = 10
 };
 
 enum class TransformKind : std::uint8_t {
@@ -39,7 +41,8 @@ enum class TransformKind : std::uint8_t {
     Bwt = 1,
     BwtMtf = 2,
     BwtRlt = 3,
-    X86Bcj = 4
+    X86Bcj = 4,
+    Shuffle = 5
 };
 
 struct ArchiveHeader {

@@ -1,0 +1,18 @@
+{
+  "scope": "minimal single-block round trip; not a numeric compression benchmark",
+  "date": "2026-08-20",
+  "input_bytes": 32768,
+  "archive_bytes": 17630,
+  "mode": "ShuffleZstd",
+  "mode_id": 10,
+  "transform": "Shuffle",
+  "transform_id": 5,
+  "entropy": "ZstdFse",
+  "metadata_bytes": 5,
+  "shuffle_width": 2,
+  "blocks_by_mode": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "D9B594DF066C2C7712DA62333204C9678434D094155695462C6ED1E2C6F7BCB9",
+  "round_trip_sha256_match": true
+}

@@ -93,6 +93,7 @@ Only these triples are valid in the current profile:
 | BwtMtfZstd | 7 | BwtMtf | 2 | ZstdFse | 2 |
 | BwtRltZstd | 8 | BwtRlt | 3 | ZstdFse | 2 |
 | X86BcjZstd | 9 | X86Bcj | 4 | ZstdFse | 2 |
+| ShuffleZstd | 10 | Shuffle | 5 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -163,6 +164,13 @@ This mode applies the XZ Utils 0BSD x86 BCJ transform with start offset zero,
 then stores one zstd frame. Its metadata is only the mandatory four-byte raw
 CRC32. The decoder obtains exactly `uncompressed_size` BCJ bytes from zstd,
 applies the decoder-direction BCJ transform, then validates the CRC32.
+
+### ShuffleZstd
+
+This mode applies C-Blosc2 generic byte shuffle with a selected element width
+of 2, 4, or 8 bytes before zstd. Metadata is five bytes: raw CRC32 followed by
+the one-byte selected width. The decoder rejects every other width, decodes
+exactly `uncompressed_size` bytes, unshuffles, and validates the final CRC32.
 
 ### Zstd
 
