@@ -183,6 +183,8 @@ add_library(hz_r2
     src/r2/entropy/predictive_v1_backend.cpp
     src/r2/entropy/stored_backend.cpp
     src/r2/entropy/zstd_backend.cpp
+    src/r2/lz/lzma_match_finder_service.cpp
+    src/r2/lz/zstd_sequence_service.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)
 target_link_libraries(hz_r2 PUBLIC hz_codec
@@ -325,4 +327,20 @@ if(HYBRIDZIP_BUILD_TESTS)
     hz_enable_portable_runtime(hz_donor_match_predictive_backend_tests)
     add_test(NAME hz_donor_match_predictive_backend_tests
              COMMAND hz_donor_match_predictive_backend_tests)
+
+    add_executable(hz_zstd_sequence_service_tests
+        tests/zstd_sequence_service_tests.cpp)
+    target_link_libraries(hz_zstd_sequence_service_tests PRIVATE hz_r2)
+    hz_enable_warnings(hz_zstd_sequence_service_tests)
+    hz_enable_portable_runtime(hz_zstd_sequence_service_tests)
+    add_test(NAME hz_zstd_sequence_service_tests
+             COMMAND hz_zstd_sequence_service_tests)
+
+    add_executable(hz_lzma_match_finder_service_tests
+        tests/lzma_match_finder_service_tests.cpp)
+    target_link_libraries(hz_lzma_match_finder_service_tests PRIVATE hz_r2)
+    hz_enable_warnings(hz_lzma_match_finder_service_tests)
+    hz_enable_portable_runtime(hz_lzma_match_finder_service_tests)
+    add_test(NAME hz_lzma_match_finder_service_tests
+             COMMAND hz_lzma_match_finder_service_tests)
 endif()

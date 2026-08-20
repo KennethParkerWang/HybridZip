@@ -70,7 +70,7 @@ every candidate module or override a file-level license boundary.
 | cmix | Adapted PPMD, Online LSTM, and Match implementations | `third_party/cmix`; source evidence and modified-file ledger in `third_party/cmix/MODIFICATIONS.md` |
 | zstd | Complete single-threaded codec branch under the selected BSD-3-Clause option | `third_party/zstd`; imported paths in `third_party/zstd/PROVENANCE.md` |
 | FiniteStateEntropy | Byte-identical `lib/` dependency closure for the direct FSE block backend | `third_party/fse`; integration record in `third_party/fse/README.hybridzip.md` |
-| 7-Zip | Public-domain single-threaded LZMA1 SDK subset: six C translation units and ten direct headers | `third_party/7zip-lzma`; paths and hashes in `third_party/7zip-lzma/PROVENANCE.md` |
+| 7-Zip | Public-domain single-threaded LZMA1 SDK subset, complete LZMA backend, and direct `LzFind` binary-tree greedy parse candidate | `third_party/7zip-lzma`; paths and hashes in `third_party/7zip-lzma/PROVENANCE.md`, adapter boundary in `third_party/7zip-lzma/MODIFICATIONS.md` |
 
 The six compiled 7-Zip donor files are `C/Alloc.c`, `C/CpuArch.c`,
 `C/LzFind.c`, `C/LzFindOpt.c`, `C/LzmaDec.c`, and `C/LzmaEnc.c`. Every one of

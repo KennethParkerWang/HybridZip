@@ -19,4 +19,12 @@ HybridZip adds a separate C++17 adapter in
 - rejects truncation, trailing bytes, malformed properties, size mismatches,
   streams without an end marker, and nonzero reserved fields.
 
+HybridZip also adds the separate project-owned C++17 adapter
+`src/r2/lz/lzma_match_finder_service.cpp`. It uses the same unmodified
+single-threaded `LzFind` donor API with a fixed binary-tree configuration,
+collects each donor match list, and applies a deterministic longest-match,
+lowest-distance greedy policy. It exposes a reconstructable parse candidate
+only; it neither changes the LZMA encoder nor claims to reproduce its optimal
+parser.
+
 No LGPL-default or unRAR-restricted 7-Zip source was copied or modified.
