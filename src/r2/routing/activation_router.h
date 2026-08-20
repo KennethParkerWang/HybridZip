@@ -15,6 +15,7 @@ struct RepresentationActivation {
     bool shuffle_zstd = false;
     bool bitshuffle_zstd = false;
     bool delta_zstd = false;
+    bool fastpfor = false;
 };
 
 // A deterministic preselection gate. It uses only block bytes and never

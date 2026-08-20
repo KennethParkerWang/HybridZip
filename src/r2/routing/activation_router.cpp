@@ -25,6 +25,7 @@ RepresentationActivation StructureActivationRouter::activate(
     activation.shuffle_zstd = numeric_correlation;
     activation.bitshuffle_zstd = numeric_correlation;
     activation.delta_zstd = numeric_correlation;
+    activation.fastpfor = numeric_correlation;
     return activation;
 }
 

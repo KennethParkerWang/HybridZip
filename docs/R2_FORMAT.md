@@ -96,6 +96,7 @@ Only these triples are valid in the current profile:
 | ShuffleZstd | 10 | Shuffle | 5 | ZstdFse | 2 |
 | BitshuffleZstd | 11 | Bitshuffle | 6 | ZstdFse | 2 |
 | DeltaZstd | 12 | Delta | 7 | ZstdFse | 2 |
+| FastPfor | 13 | FastPfor | 8 | FastPfor | 6 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -187,6 +188,17 @@ This mode applies the independent-block C-Blosc2 offset-zero XOR delta filter
 to 1, 2, 4, or 8-byte elements before zstd. Metadata is `CRC32 + width`; the
 decoder rejects all other widths, inverse-deltas in element order, and then
 checks CRC32 over the reconstructed raw bytes.
+
+### FastPfor
+
+This mode applies the Apache-2.0 FastPFOR `FastPFor<8>` donor to complete
+1,024-byte groups interpreted as unsigned little-endian uint32 values. The
+payload is the donor's resulting uint32 word stream, serialized little-endian.
+Metadata is the raw CRC32 followed by a uint16 little-endian tail size and the
+raw tail bytes. The tail is in `0..1023`; the remainder of the block must be a
+multiple of 1,024 bytes. The decoder validates metadata shape, payload word
+alignment, exact decoded uint32 count, and exact donor-word consumption before
+appending the stored tail and checking the outer CRC32.
 
 ### Zstd
 

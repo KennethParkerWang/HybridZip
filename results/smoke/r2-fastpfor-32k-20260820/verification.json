@@ -1,0 +1,16 @@
+{
+    "scope":  "minimal single-block FastPfor round trip; not an integer compression benchmark",
+    "date":  "2026-08-20",
+    "input_bytes":  32768,
+    "archive_bytes":  31886,
+    "mode":  "FastPfor",
+    "mode_id":  13,
+    "transform":  "FastPfor",
+    "transform_id":  8,
+    "entropy":  "FastPfor",
+    "metadata_bytes":  6,
+    "input_sha256":  "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+    "decoded_sha256":  "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+    "archive_sha256":  "7B0C5910E36BA6812F01874304E217C140F5835E6522303D799D333A1A6747A0",
+    "round_trip_sha256_match":  true
+}

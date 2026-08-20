@@ -15,6 +15,7 @@
 #include "r2/entropy/donor_match_predictive_backend.h"
 #include "r2/entropy/predictive_v1_backend.h"
 #include "r2/entropy/fse_backend.h"
+#include "r2/entropy/fastpfor_backend.h"
 #include "r2/entropy/lzma_backend.h"
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
@@ -148,6 +149,10 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::DeltaZstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::FastPfor:
+            decoded = FastPforBackend().decode(payload, transform_metadata,
+                                                header.uncompressed_size);
+            break;
     }
     if (header.transform == TransformKind::BwtMtf) {
         decoded = KanziMtfTransform().inverse(ByteView(decoded), ByteView{});
@@ -212,6 +217,13 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::DonorMatchPredictive) {
         return DonorMatchPredictiveBackend::maximum_payload_size(
             header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::FastPfor) {
+        if (header.uncompressed_size >
+            (std::numeric_limits<std::size_t>::max() - 4096U) / 8U) {
+            throw std::runtime_error("HZ02 FastPFOR payload bound overflow");
+        }
+        return static_cast<std::size_t>(header.uncompressed_size) * 8U + 4096U;
     }
     const std::size_t size = header.uncompressed_size;
     if (size > (std::numeric_limits<std::size_t>::max() - 64U) / 4U) {

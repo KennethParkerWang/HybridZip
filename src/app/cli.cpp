@@ -20,7 +20,7 @@ void print_usage(std::ostream& output) {
     output << "Usage:\n\n"
               "  hybridzip c <input> <archive>\n"
               "  hybridzip c --profile=r2 "
-              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd] "
+              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|fastpfor] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
@@ -84,6 +84,7 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     if (value == "shuffle-zstd") return r2::CandidatePolicy::ShuffleZstdOnly;
     if (value == "bitshuffle-zstd") return r2::CandidatePolicy::BitshuffleZstdOnly;
     if (value == "delta-zstd") return r2::CandidatePolicy::DeltaZstdOnly;
+    if (value == "fastpfor") return r2::CandidatePolicy::FastPforOnly;
     throw std::invalid_argument("Invalid --r2-mode");
 }
 
@@ -91,7 +92,7 @@ void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
-              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd)="
+              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'
@@ -104,7 +105,8 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << stats.blocks_by_mode[9] << '/'
               << stats.blocks_by_mode[10] << '/'
               << stats.blocks_by_mode[11] << '/'
-              << stats.blocks_by_mode[12] << '\n';
+              << stats.blocks_by_mode[12] << '/'
+              << stats.blocks_by_mode[13] << '\n';
 }
 
 }  // namespace

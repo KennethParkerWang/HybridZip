@@ -14,7 +14,8 @@ enum class EntropyKind : std::uint8_t {
     ZstdFse = 2,
     Rans = 3,
     Fse = 4,
-    Lzma = 5
+    Lzma = 5,
+    FastPfor = 6
 };
 
 class IBlockEntropyBackend {

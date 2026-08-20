@@ -105,6 +105,10 @@ add_library(hz_blosc_shuffle_donor STATIC third_party/blosc/shuffle_generic.c)
 target_include_directories(hz_blosc_shuffle_donor PUBLIC third_party/blosc)
 hz_enable_warnings(hz_blosc_shuffle_donor)
 
+add_library(hz_fastpfor_donor STATIC third_party/fastpfor/src/bitpacking.cpp)
+target_include_directories(hz_fastpfor_donor PUBLIC third_party/fastpfor/headers)
+hz_enable_warnings(hz_fastpfor_donor)
+
 add_library(hz_7zip_lzma STATIC
     third_party/7zip-lzma/C/Alloc.c
     third_party/7zip-lzma/C/CpuArch.c
@@ -198,6 +202,7 @@ add_library(hz_r2
     src/r2/codec/r2_codec.cpp
     src/r2/entropy/binary_arithmetic_codec.cpp
     src/r2/entropy/donor_match_predictive_backend.cpp
+    src/r2/entropy/fastpfor_backend.cpp
     src/r2/entropy/fse_backend.cpp
     src/r2/entropy/lzma_backend.cpp
     src/r2/entropy/predictive_v1_backend.cpp
@@ -221,6 +226,7 @@ target_link_libraries(hz_r2 PUBLIC hz_codec
                                  hz_paq8px_match hz_libsais_donor hz_kanzi_mtf_donor libzstd_static)
 target_link_libraries(hz_r2 PRIVATE hz_xz_bcj_donor)
 target_link_libraries(hz_r2 PRIVATE hz_blosc_shuffle_donor)
+target_link_libraries(hz_r2 PRIVATE hz_fastpfor_donor)
 hz_enable_warnings(hz_r2)
 
 add_executable(hybridzip

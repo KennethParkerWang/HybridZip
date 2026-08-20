@@ -102,7 +102,10 @@ void validate_block_header(const BlockHeader& header) {
         (header.transform == TransformKind::Bitshuffle &&
          header.metadata_size == kR2ShuffleMetadataSize) ||
         (header.transform == TransformKind::Delta &&
-         header.metadata_size == kR2ShuffleMetadataSize);
+         header.metadata_size == kR2ShuffleMetadataSize) ||
+        (header.transform == TransformKind::FastPfor &&
+         header.metadata_size >= kR2FastPforMetadataMinimumSize &&
+         header.metadata_size <= kR2FastPforMetadataMinimumSize + 1023U);
     if (!valid_transform_metadata || header.flags != kR2BlockFlagCrc32 ||
         header.uncompressed_size == 0 ||
         header.uncompressed_size > kR2MaximumBlockSize ||
@@ -150,7 +153,10 @@ void validate_block_header(const BlockHeader& header) {
          header.entropy == EntropyKind::ZstdFse) ||
         (header.mode == BlockMode::DeltaZstd &&
          header.transform == TransformKind::Delta &&
-         header.entropy == EntropyKind::ZstdFse);
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::FastPfor &&
+         header.transform == TransformKind::FastPfor &&
+         header.entropy == EntropyKind::FastPfor);
     if (!valid_pair) {
         throw std::runtime_error("HZ02 block mode and entropy backend disagree");
     }

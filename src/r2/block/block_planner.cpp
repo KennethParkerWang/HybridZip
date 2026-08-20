@@ -6,6 +6,7 @@
 #include "r2/entropy/donor_match_predictive_backend.h"
 #include "r2/entropy/predictive_v1_backend.h"
 #include "r2/entropy/fse_backend.h"
+#include "r2/entropy/fastpfor_backend.h"
 #include "r2/entropy/lzma_backend.h"
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
@@ -305,6 +306,32 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
         }
         consider(decision, BlockMode::DeltaZstd, TransformKind::Delta, EntropyKind::ZstdFse,
                  std::move(best_payload), std::move(metadata));
+    }
+
+    if (options_.policy == CandidatePolicy::FastPforOnly ||
+        (automatic && activation.fastpfor)) {
+        const FastPforBackend fastpfor;
+        if (!fastpfor.applicable(input)) {
+            if (options_.policy == CandidatePolicy::FastPforOnly) {
+                throw std::runtime_error(
+                    "FastPFOR requires at least one 1024-byte group");
+            }
+        } else {
+            FastPforEncodedBlock encoded = fastpfor.encode(input);
+            decision.fastpfor_candidate_bytes =
+                encoded.payload.size() + encoded.metadata.size();
+            if (options_.policy == CandidatePolicy::FastPforOnly) {
+                decision.mode = BlockMode::FastPfor;
+                decision.transform = TransformKind::FastPfor;
+                decision.entropy = EntropyKind::FastPfor;
+                decision.payload = std::move(encoded.payload);
+                decision.transform_metadata = std::move(encoded.metadata);
+                return decision;
+            }
+            consider(decision, BlockMode::FastPfor, TransformKind::FastPfor,
+                     EntropyKind::FastPfor, std::move(encoded.payload),
+                     std::move(encoded.metadata));
+        }
     }
 
     return decision;

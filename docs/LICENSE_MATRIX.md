@@ -20,6 +20,7 @@ an updated third-party provenance record.
 | kanzi-cpp | `Apache-2.0` | `compressors/meta/kanzi-cpp/LICENSE`<br>`4802925085B262835797A02BFC603B04F18188856DD4501A12D482383A09125F` | Compatible with GPL-3.0. Preserve the Apache license and notices, identify modified files, and carry any upstream NOTICE obligations. |
 | FiniteStateEntropy | `BSD-2-Clause` | `entropy/fse/LICENSE`<br>`C676DF0814357087A875943355095D0EAF24E28C4EF6C0523A2C2C1B23712F66` | The byte-identical `lib/` dependency closure is integrated. Retain the copyright, conditions, and disclaimer; compile-time symbol prefixing is recorded in `third_party/fse/README.hybridzip.md`. |
 | ryg_rans | `CC0-1.0` | `entropy/ryg-rans/LICENSE`<br>`518937FD5BBBDD56A3E56801CEF003997B247456BDB6E1726C8E4CB41CA41835` | Compatible. Preserve attribution and provenance even though CC0 waives copyright and related rights to the extent permitted by law. |
+| FastPFOR | `Apache-2.0` | `transforms/numeric/FastPFOR/LICENSE`<br>`DC1F5D2D43C5531DFE0ACAF4E950EA5DBE3E61E1850CF0E983BDA7EFC10D6693` | Compatible. The complete source/header closure is retained at `third_party/fastpfor`; the HZ02 adapter keeps word byte order, tail data, and donor framing decoder-visible. |
 
 Evidence paths are relative to `E:/MIXER/KU/hybridzip-r2`. The SHA-256 covers
 the exact evidence file at the recorded donor revision.
