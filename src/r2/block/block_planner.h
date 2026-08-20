@@ -22,7 +22,8 @@ enum class CandidatePolicy {
     BwtMtfZstdOnly,
     BwtRltZstdOnly,
     X86BcjZstdOnly,
-    ShuffleZstdOnly
+    ShuffleZstdOnly,
+    BitshuffleZstdOnly
 };
 
 struct BlockPlannerOptions {
@@ -50,6 +51,7 @@ struct BlockDecision {
     std::optional<std::size_t> bwt_rlt_zstd_candidate_bytes;
     std::optional<std::size_t> x86_bcj_zstd_candidate_bytes;
     std::optional<std::size_t> shuffle_zstd_candidate_bytes;
+    std::optional<std::size_t> bitshuffle_zstd_candidate_bytes;
 };
 
 class BlockPlanner {

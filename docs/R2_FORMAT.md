@@ -94,6 +94,7 @@ Only these triples are valid in the current profile:
 | BwtRltZstd | 8 | BwtRlt | 3 | ZstdFse | 2 |
 | X86BcjZstd | 9 | X86Bcj | 4 | ZstdFse | 2 |
 | ShuffleZstd | 10 | Shuffle | 5 | ZstdFse | 2 |
+| BitshuffleZstd | 11 | Bitshuffle | 6 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -171,6 +172,13 @@ This mode applies C-Blosc2 generic byte shuffle with a selected element width
 of 2, 4, or 8 bytes before zstd. Metadata is five bytes: raw CRC32 followed by
 the one-byte selected width. The decoder rejects every other width, decodes
 exactly `uncompressed_size` bytes, unshuffles, and validates the final CRC32.
+
+### BitshuffleZstd
+
+This mode applies C-Blosc2's scalar bitshuffle contract to 2, 4, or 8-byte
+elements in groups of eight, then zstd. Metadata is `CRC32 + width`; the
+decoder rejects unsupported widths or a block shape that cannot satisfy the
+same eight-element constraint before inverse bitshuffle and CRC validation.
 
 ### Zstd
 

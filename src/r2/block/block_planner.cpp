@@ -14,6 +14,7 @@
 #include "r2/representation/kanzi_rlt_transform.h"
 #include "r2/representation/xz_x86_bcj_transform.h"
 #include "r2/representation/blosc_shuffle_transform.h"
+#include "r2/representation/blosc_bitshuffle_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -247,6 +248,31 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
         }
         consider(decision, BlockMode::ShuffleZstd, TransformKind::Shuffle, EntropyKind::ZstdFse,
                  std::move(best_payload), std::move(metadata));
+    }
+
+    if (options_.policy == CandidatePolicy::BitshuffleZstdOnly || options_.policy == CandidatePolicy::Auto) {
+        std::vector<std::uint8_t> best_payload;
+        std::uint8_t best_width = 0;
+        const BloscBitshuffleTransform bitshuffle;
+        for (const std::uint8_t width : {std::uint8_t{2}, std::uint8_t{4}, std::uint8_t{8}}) {
+            if (!bitshuffle.applicable(input, width)) continue;
+            const TransformResult transformed = bitshuffle.forward(input, width);
+            std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(transformed.bytes));
+            if (best_width == 0 || payload.size() < best_payload.size()) { best_payload = std::move(payload); best_width = width; }
+        }
+        if (best_width == 0) {
+            if (options_.policy == CandidatePolicy::BitshuffleZstdOnly) throw std::runtime_error("C-Blosc2 bitshuffle is not applicable to this block");
+        } else {
+            decision.bitshuffle_zstd_candidate_bytes = best_payload.size() + 1;
+            std::vector<std::uint8_t> metadata{best_width};
+            if (options_.policy == CandidatePolicy::BitshuffleZstdOnly) {
+                decision.mode = BlockMode::BitshuffleZstd; decision.transform = TransformKind::Bitshuffle;
+                decision.entropy = EntropyKind::ZstdFse; decision.payload = std::move(best_payload);
+                decision.transform_metadata = std::move(metadata); return decision;
+            }
+            consider(decision, BlockMode::BitshuffleZstd, TransformKind::Bitshuffle, EntropyKind::ZstdFse,
+                     std::move(best_payload), std::move(metadata));
+        }
     }
 
     return decision;

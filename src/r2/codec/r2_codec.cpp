@@ -23,6 +23,7 @@
 #include "r2/representation/kanzi_rlt_transform.h"
 #include "r2/representation/xz_x86_bcj_transform.h"
 #include "r2/representation/blosc_shuffle_transform.h"
+#include "r2/representation/blosc_bitshuffle_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -140,6 +141,9 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::ShuffleZstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::BitshuffleZstd:
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
     }
     if (header.transform == TransformKind::BwtMtf) {
         decoded = KanziMtfTransform().inverse(ByteView(decoded), ByteView{});
@@ -159,6 +163,10 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
     if (header.transform == TransformKind::Shuffle) {
         if (transform_metadata.size() != 1) throw std::runtime_error("HZ02 shuffle metadata is malformed");
         decoded = BloscShuffleTransform().inverse(ByteView(decoded), transform_metadata[0]);
+    }
+    if (header.transform == TransformKind::Bitshuffle) {
+        if (transform_metadata.size() != 1) throw std::runtime_error("HZ02 bitshuffle metadata is malformed");
+        decoded = BloscBitshuffleTransform().inverse(ByteView(decoded), transform_metadata[0]);
     }
     return decoded;
 }
@@ -183,7 +191,7 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd ||
         header.mode == BlockMode::BwtMtfZstd ||
         header.mode == BlockMode::BwtRltZstd || header.mode == BlockMode::X86BcjZstd ||
-        header.mode == BlockMode::ShuffleZstd) {
+        header.mode == BlockMode::ShuffleZstd || header.mode == BlockMode::BitshuffleZstd) {
         return ZstdBackend::maximum_payload_size(header.uncompressed_size);
     }
     if (header.mode == BlockMode::Fse) {

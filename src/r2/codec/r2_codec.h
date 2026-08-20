@@ -21,7 +21,7 @@ struct CompressionStats {
     std::uint64_t input_bytes = 0;
     std::uint64_t archive_bytes = 0;
     std::uint64_t payload_bytes = 0;
-    std::array<std::uint32_t, 11> blocks_by_mode{};
+    std::array<std::uint32_t, 12> blocks_by_mode{};
 };
 
 CompressionStats compress_file(const std::filesystem::path& input,

@@ -10,3 +10,7 @@ Extracted from C-Blosc2 commit `b17d0c3dae8d48800726a85455d9f1fdf0578b16`.
 
 The vendored generic loops have project-specific symbol prefixes. The owned
 adapter is `src/r2/representation/blosc_shuffle_transform.cpp`.
+
+The owned `src/r2/representation/blosc_bitshuffle_transform.cpp` adapts the
+same donor's scalar element/bit transpose contract for 2/4/8-byte elements in
+groups of eight. It stores the selected width in HZ02 metadata.

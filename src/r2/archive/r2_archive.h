@@ -33,7 +33,8 @@ enum class BlockMode : std::uint8_t {
     BwtMtfZstd = 7,
     BwtRltZstd = 8,
     X86BcjZstd = 9,
-    ShuffleZstd = 10
+    ShuffleZstd = 10,
+    BitshuffleZstd = 11
 };
 
 enum class TransformKind : std::uint8_t {
@@ -42,7 +43,8 @@ enum class TransformKind : std::uint8_t {
     BwtMtf = 2,
     BwtRlt = 3,
     X86Bcj = 4,
-    Shuffle = 5
+    Shuffle = 5,
+    Bitshuffle = 6
 };
 
 struct ArchiveHeader {

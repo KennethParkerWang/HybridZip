@@ -20,7 +20,7 @@ void print_usage(std::ostream& output) {
     output << "Usage:\n\n"
               "  hybridzip c <input> <archive>\n"
               "  hybridzip c --profile=r2 "
-              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|shuffle-zstd] "
+              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|shuffle-zstd|bitshuffle-zstd] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
@@ -82,6 +82,7 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     }
     if (value == "x86-bcj-zstd") return r2::CandidatePolicy::X86BcjZstdOnly;
     if (value == "shuffle-zstd") return r2::CandidatePolicy::ShuffleZstdOnly;
+    if (value == "bitshuffle-zstd") return r2::CandidatePolicy::BitshuffleZstdOnly;
     throw std::invalid_argument("Invalid --r2-mode");
 }
 
@@ -89,7 +90,7 @@ void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
-              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd)="
+              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'
@@ -100,7 +101,8 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << stats.blocks_by_mode[7] << '/'
               << stats.blocks_by_mode[8] << '/'
               << stats.blocks_by_mode[9] << '/'
-              << stats.blocks_by_mode[10] << '\n';
+              << stats.blocks_by_mode[10] << '/'
+              << stats.blocks_by_mode[11] << '\n';
 }
 
 }  // namespace
