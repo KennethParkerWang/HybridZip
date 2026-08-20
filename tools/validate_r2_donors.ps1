@@ -280,6 +280,19 @@ $expectedDonors = @(
         NoteTokens = @("complete-codec", "third_party/zstd")
     },
     [pscustomobject]@{
+        RelativePath = "compressors/bwt/libsais"
+        Provenance = "libsais.json"
+        RootLicense = "Apache-2.0"
+        CentralLicense = "Apache-2.0"
+        SelectedLicense = $null
+        ExpectedStatus = "ported"
+        SourceCopyAllowed = $true
+        PortEvidence = "third_party/libsais/PROVENANCE.md"
+        NoteTokens = @(
+            "libsais_bwt()", "libsais_unbwt()", "third_party/libsais",
+            "bwt_transform")
+    },
+    [pscustomobject]@{
         RelativePath = "compressors/meta/kanzi-cpp"
         Provenance = "kanzi-cpp.json"
         RootLicense = "Apache-2.0"
@@ -572,7 +585,7 @@ if ($script:Failures.Count -gt 0) {
 }
 
 Write-Host (
-    "PASS: validated 7 donor manifests, 5 port evidence records, " +
-    "7 Git revisions/origins, and 7 license evidence hashes across " +
+    "PASS: validated 8 donor manifests, 6 port evidence records, " +
+    "8 Git revisions/origins, and 8 license evidence hashes across " +
     "$script:CheckCount checks.") -ForegroundColor Green
 exit 0

@@ -87,28 +87,41 @@ void validate_archive_header(const ArchiveHeader& header) {
 }
 
 void validate_block_header(const BlockHeader& header) {
-    if (header.transform != TransformKind::Raw ||
-        header.flags != kR2BlockFlagCrc32 ||
+    const bool valid_transform_metadata =
+        (header.transform == TransformKind::Raw &&
+         header.metadata_size == kR2BlockChecksumSize) ||
+        (header.transform == TransformKind::Bwt &&
+         header.metadata_size == kR2BwtMetadataSize);
+    if (!valid_transform_metadata || header.flags != kR2BlockFlagCrc32 ||
         header.uncompressed_size == 0 ||
         header.uncompressed_size > kR2MaximumBlockSize ||
-        header.payload_size == 0 ||
-        header.metadata_size != kR2BlockChecksumSize) {
+        header.payload_size == 0) {
         throw std::runtime_error("Unsupported HZ02 block metadata");
     }
 
+    const bool raw_transform = header.transform == TransformKind::Raw;
     const bool valid_pair =
         (header.mode == BlockMode::Stored &&
+         raw_transform &&
          header.entropy == EntropyKind::Stored) ||
         (header.mode == BlockMode::PredictiveV1 &&
+         raw_transform &&
          header.entropy == EntropyKind::SymbolArithmetic) ||
         (header.mode == BlockMode::Zstd &&
+         raw_transform &&
          header.entropy == EntropyKind::ZstdFse) ||
         (header.mode == BlockMode::Fse &&
+         raw_transform &&
          header.entropy == EntropyKind::Fse) ||
         (header.mode == BlockMode::Lzma &&
+         raw_transform &&
          header.entropy == EntropyKind::Lzma) ||
         (header.mode == BlockMode::DonorMatchPredictive &&
-         header.entropy == EntropyKind::SymbolArithmetic);
+         raw_transform &&
+         header.entropy == EntropyKind::SymbolArithmetic) ||
+        (header.mode == BlockMode::BwtZstd &&
+         header.transform == TransformKind::Bwt &&
+         header.entropy == EntropyKind::ZstdFse);
     if (!valid_pair) {
         throw std::runtime_error("HZ02 block mode and entropy backend disagree");
     }

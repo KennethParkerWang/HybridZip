@@ -49,6 +49,19 @@ The imported paths and configuration are recorded in
 `third_party/zstd/PROVENANCE.md`. The BSD license is in
 `third_party/zstd/LICENSE`.
 
+## libsais
+
+- Project: libsais
+- Source: https://github.com/IlyaGrebnov/libsais
+- Revision used: `b6e52ef33fe14f9d5c14c580d162b6fd2c27f2a8` (2.10.4)
+- License: Apache License 2.0
+- Use: single-threaded BWT and inverse-BWT implementation for HZ02 BwtZstd
+  blocks
+
+The unmodified source closure and Apache license are under
+`third_party/libsais`; exact source hashes and the project-owned adapter
+boundary are recorded in `third_party/libsais/PROVENANCE.md`.
+
 ## FiniteStateEntropy
 
 - Project: FiniteStateEntropy

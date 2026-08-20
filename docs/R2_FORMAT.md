@@ -2,8 +2,8 @@
 
 HZ02 is HybridZip's second-generation, block-oriented single-file format. It
 supports stored, PROFILE_V1 predictive, donor-Match predictive, zstd, direct
-FSE, and LZMA1 block payloads. A valid archive must decode to the original
-bytes exactly.
+FSE, LZMA1, and libsais BWT plus zstd block payloads. A valid archive must
+decode to the original bytes exactly.
 
 The words MUST, MUST NOT, SHOULD, and MAY in this document are normative.
 
@@ -25,8 +25,8 @@ field by field and never from native C++ structure memory.
 
 ```text
 40-byte archive header
-block 0: 16-byte block header | 4-byte CRC32 metadata | payload
-block 1: 16-byte block header | 4-byte CRC32 metadata | payload
+block 0: 16-byte block header | metadata | payload
+block 1: 16-byte block header | metadata | payload
 ...
 ```
 
@@ -63,10 +63,11 @@ input, `original_size` and `block_count` are both zero. For a non-empty input,
 | 8 | 4 | payload size | encoded payload bytes, excluding header and metadata |
 | 12 | 4 | metadata size | metadata bytes between this header and payload |
 
-The current profile requires `flags = 0x01` and `metadata_size = 4`. Therefore
-the checksum is always present and appears immediately after the block header.
-A decoder MUST reject a missing checksum flag, an unknown flag bit, or any
-other metadata size.
+The current profile requires `flags = 0x01`. Raw blocks set `metadata_size =
+4`, containing only the checksum. BWT blocks set `metadata_size = 8`,
+containing the checksum followed by a four-byte primary index. A decoder MUST
+reject a missing checksum flag, an unknown flag bit, or a metadata size that
+does not match the selected transform.
 
 Each block's `uncompressed_size` MUST be the smaller of the archive block size
 and the remaining original bytes. It is in `1..16 MiB`. `payload_size` MUST be
@@ -85,6 +86,7 @@ Only these triples are valid in the current profile:
 | Fse | 3 | Raw | 0 | Fse | 4 |
 | Lzma | 4 | Raw | 0 | Lzma | 5 |
 | DonorMatchPredictive | 5 | Raw | 0 | SymbolArithmetic | 1 |
+| BwtZstd | 6 | Bwt | 1 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -117,6 +119,18 @@ cmix updates after every decoded bit. PROFILE_V1 and PAQ8px update only after
 the complete byte is reconstructed. All three models reset at each HZ02 block
 and derive their state causally from the archive model seed and decoded prefix;
 the archive carries no hidden candidate bytes or encoder-only routing state.
+
+### BwtZstd
+
+The encoder applies the single-threaded Apache-2.0 `libsais_bwt()` donor to
+the complete block, then writes the transformed bytes as one zstd frame. The
+metadata is eight bytes: the mandatory original-byte CRC32 followed by the
+donor's one-based BWT primary index as unsigned little-endian `uint32_t`.
+The primary index MUST be in `1..uncompressed_size`. The decoder obtains
+exactly `uncompressed_size` transformed bytes from zstd, calls
+`libsais_unbwt()` with that primary index, checks the resulting size, and then
+checks the CRC32 over final reconstructed bytes. The four primary-index bytes
+are part of the archive cost and are included in automatic candidate selection.
 
 ### Zstd
 
@@ -208,11 +222,11 @@ Failed decoding must not publish a partial destination file.
 An encoder MAY try several coding paths for a block because the selected mode
 is explicitly recorded. The selection is not a decoder-invisible oracle.
 Candidate comparison MUST include block headers, metadata, side data, and
-payload bytes. The current six modes have equal 20-byte outer per-block
-overhead, so comparing their payload sizes yields the same choice as comparing
-complete block sizes. FSE framing and the 40-byte HZL1 envelope are already
-inside their payload sizes. Future modes with different outer metadata must
-compare total bytes.
+payload bytes. The six Raw modes have equal 20-byte outer per-block overhead.
+BwtZstd has four additional primary-index bytes, so candidate selection
+compares payload plus transform side information. FSE framing and the 40-byte
+HZL1 envelope are already inside their payload sizes. Future modes with
+different outer metadata must compare total bytes.
 
 Routing MUST NOT depend on benchmark filenames, paths, or test-case IDs. Any
 dictionary ID, model family/version/hash, transform parameter, or other state

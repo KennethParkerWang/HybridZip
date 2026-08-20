@@ -71,6 +71,9 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     if (value == "donor-match") {
         return r2::CandidatePolicy::DonorMatchPredictiveOnly;
     }
+    if (value == "bwt-zstd") {
+        return r2::CandidatePolicy::BwtZstdOnly;
+    }
     throw std::invalid_argument("Invalid --r2-mode");
 }
 
@@ -78,13 +81,14 @@ void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
-              << " blocks(stored/predictive/zstd/fse/lzma/donor-match)="
+              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'
               << stats.blocks_by_mode[3] << '/'
               << stats.blocks_by_mode[4] << '/'
-              << stats.blocks_by_mode[5] << '\n';
+              << stats.blocks_by_mode[5] << '/'
+              << stats.blocks_by_mode[6] << '\n';
 }
 
 }  // namespace

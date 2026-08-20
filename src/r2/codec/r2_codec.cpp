@@ -18,6 +18,7 @@
 #include "r2/entropy/lzma_backend.h"
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
+#include "r2/representation/bwt_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -73,24 +74,38 @@ void read_exact(std::istream& input,
 
 std::vector<std::uint8_t> decode_block(const BlockHeader& header,
                                        const ByteView payload,
+                                       const ByteView transform_metadata,
                                        const std::uint64_t model_seed) {
+    std::vector<std::uint8_t> decoded;
     switch (header.mode) {
         case BlockMode::Stored:
-            return StoredBackend().decode(payload, header.uncompressed_size);
+            decoded = StoredBackend().decode(payload, header.uncompressed_size);
+            break;
         case BlockMode::PredictiveV1:
-            return PredictiveV1Backend(model_seed).decode(
+            decoded = PredictiveV1Backend(model_seed).decode(
                 payload, header.uncompressed_size);
+            break;
         case BlockMode::Zstd:
-            return ZstdBackend().decode(payload, header.uncompressed_size);
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
         case BlockMode::Fse:
-            return FseBackend().decode(payload, header.uncompressed_size);
+            decoded = FseBackend().decode(payload, header.uncompressed_size);
+            break;
         case BlockMode::Lzma:
-            return LzmaBackend().decode(payload, header.uncompressed_size);
+            decoded = LzmaBackend().decode(payload, header.uncompressed_size);
+            break;
         case BlockMode::DonorMatchPredictive:
-            return DonorMatchPredictiveBackend(model_seed).decode(
+            decoded = DonorMatchPredictiveBackend(model_seed).decode(
                 payload, header.uncompressed_size);
+            break;
+        case BlockMode::BwtZstd:
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
     }
-    throw std::runtime_error("Unknown HZ02 block mode");
+    if (header.transform == TransformKind::Bwt) {
+        decoded = BwtTransform().inverse(ByteView(decoded), transform_metadata);
+    }
+    return decoded;
 }
 
 std::uint32_t crc32(const ByteView input) noexcept {
@@ -110,7 +125,7 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::Stored) {
         return header.uncompressed_size;
     }
-    if (header.mode == BlockMode::Zstd) {
+    if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd) {
         return ZstdBackend::maximum_payload_size(header.uncompressed_size);
     }
     if (header.mode == BlockMode::Fse) {
@@ -191,14 +206,25 @@ CompressionStats compress_file(const std::filesystem::path& input,
 
             BlockHeader block_header{};
             block_header.mode = decision.mode;
-            block_header.transform = TransformKind::Raw;
+            block_header.transform = decision.transform;
             block_header.entropy = decision.entropy;
             block_header.uncompressed_size =
                 static_cast<std::uint32_t>(block_bytes);
             block_header.payload_size =
                 static_cast<std::uint32_t>(decision.payload.size());
+            block_header.metadata_size = static_cast<std::uint32_t>(
+                kR2BlockChecksumSize + decision.transform_metadata.size());
             write_block_header(archive, block_header);
             write_block_crc32(archive, crc32(ByteView(raw)));
+            if (!decision.transform_metadata.empty()) {
+                archive.write(reinterpret_cast<const char*>(
+                                  decision.transform_metadata.data()),
+                              static_cast<std::streamsize>(
+                                  decision.transform_metadata.size()));
+                if (!archive) {
+                    throw std::runtime_error("Failed to write HZ02 transform metadata");
+                }
+            }
             archive.write(
                 reinterpret_cast<const char*>(decision.payload.data()),
                 static_cast<std::streamsize>(decision.payload.size()));
@@ -262,10 +288,18 @@ void decompress_file(const std::filesystem::path& input,
             }
 
             const std::uint32_t expected_checksum = read_block_crc32(archive);
+            std::vector<std::uint8_t> transform_metadata(
+                block_header.metadata_size - kR2BlockChecksumSize);
+            read_exact(archive, transform_metadata,
+                       "Truncated HZ02 transform metadata");
             std::vector<std::uint8_t> payload(block_header.payload_size);
             read_exact(archive, payload, "Truncated HZ02 block payload");
             const std::vector<std::uint8_t> decoded = decode_block(
-                block_header, ByteView(payload), archive_header.model_seed);
+                block_header, ByteView(payload), ByteView(transform_metadata),
+                archive_header.model_seed);
+            if (decoded.size() != block_header.uncompressed_size) {
+                throw std::runtime_error("HZ02 transform output size mismatch");
+            }
             if (crc32(ByteView(decoded)) != expected_checksum) {
                 throw std::runtime_error("HZ02 block checksum mismatch");
             }

@@ -9,18 +9,24 @@
 #include "r2/entropy/lzma_backend.h"
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
+#include "r2/representation/bwt_transform.h"
 
 namespace hz::r2 {
 namespace {
 
 void consider(BlockDecision& decision,
               const BlockMode mode,
+              const TransformKind transform,
               const EntropyKind entropy,
-              std::vector<std::uint8_t> payload) {
-    if (payload.size() < decision.payload.size()) {
+              std::vector<std::uint8_t> payload,
+              std::vector<std::uint8_t> transform_metadata = {}) {
+    if (payload.size() + transform_metadata.size() <
+        decision.payload.size() + decision.transform_metadata.size()) {
         decision.mode = mode;
+        decision.transform = transform;
         decision.entropy = entropy;
         decision.payload = std::move(payload);
+        decision.transform_metadata = std::move(transform_metadata);
     }
 }
 
@@ -51,7 +57,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
             decision.payload = std::move(payload);
             return decision;
         }
-        consider(decision, BlockMode::PredictiveV1,
+        consider(decision, BlockMode::PredictiveV1, TransformKind::Raw,
                  EntropyKind::SymbolArithmetic, std::move(payload));
     }
 
@@ -66,7 +72,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
             decision.payload = std::move(payload);
             return decision;
         }
-        consider(decision, BlockMode::DonorMatchPredictive,
+        consider(decision, BlockMode::DonorMatchPredictive, TransformKind::Raw,
                  EntropyKind::SymbolArithmetic, std::move(payload));
     }
 
@@ -81,7 +87,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
             decision.payload = std::move(payload);
             return decision;
         }
-        consider(decision, BlockMode::Zstd, EntropyKind::ZstdFse,
+        consider(decision, BlockMode::Zstd, TransformKind::Raw,
+                 EntropyKind::ZstdFse,
                  std::move(payload));
     }
 
@@ -96,7 +103,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
             decision.payload = std::move(payload);
             return decision;
         }
-        consider(decision, BlockMode::Fse, EntropyKind::Fse,
+        consider(decision, BlockMode::Fse, TransformKind::Raw, EntropyKind::Fse,
                  std::move(payload));
     }
 
@@ -112,8 +119,30 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
             decision.payload = std::move(payload);
             return decision;
         }
-        consider(decision, BlockMode::Lzma, EntropyKind::Lzma,
+        consider(decision, BlockMode::Lzma, TransformKind::Raw, EntropyKind::Lzma,
                  std::move(payload));
+    }
+
+    if (options_.policy == CandidatePolicy::BwtZstdOnly ||
+        options_.policy == CandidatePolicy::Auto) {
+        const BwtTransform bwt;
+        const TransformResult transformed = bwt.forward(input);
+        const ZstdBackend zstd(options_.zstd_level);
+        std::vector<std::uint8_t> payload = zstd.encode(
+            ByteView(transformed.bytes));
+        decision.bwt_zstd_candidate_bytes =
+            payload.size() + transformed.side_information.size();
+        if (options_.policy == CandidatePolicy::BwtZstdOnly) {
+            decision.mode = BlockMode::BwtZstd;
+            decision.transform = TransformKind::Bwt;
+            decision.entropy = EntropyKind::ZstdFse;
+            decision.payload = std::move(payload);
+            decision.transform_metadata = transformed.side_information;
+            return decision;
+        }
+        consider(decision, BlockMode::BwtZstd, TransformKind::Bwt,
+                 EntropyKind::ZstdFse, std::move(payload),
+                 transformed.side_information);
     }
 
     return decision;

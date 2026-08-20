@@ -13,6 +13,9 @@ constexpr std::uint16_t kR2ArchiveHeaderSize = 40;
 constexpr std::uint16_t kR2BlockHeaderSize = 16;
 constexpr std::uint8_t kR2BlockFlagCrc32 = 1U << 0U;
 constexpr std::uint32_t kR2BlockChecksumSize = 4;
+constexpr std::uint32_t kR2BwtPrimaryIndexSize = 4;
+constexpr std::uint32_t kR2BwtMetadataSize =
+    kR2BlockChecksumSize + kR2BwtPrimaryIndexSize;
 constexpr std::uint32_t kR2ProfileId = 2;
 constexpr std::uint32_t kR2DefaultBlockSize = 64U * 1024U;
 constexpr std::uint32_t kR2MaximumBlockSize = 16U * 1024U * 1024U;
@@ -23,11 +26,13 @@ enum class BlockMode : std::uint8_t {
     Zstd = 2,
     Fse = 3,
     Lzma = 4,
-    DonorMatchPredictive = 5
+    DonorMatchPredictive = 5,
+    BwtZstd = 6
 };
 
 enum class TransformKind : std::uint8_t {
-    Raw = 0
+    Raw = 0,
+    Bwt = 1
 };
 
 struct ArchiveHeader {

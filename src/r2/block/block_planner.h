@@ -17,7 +17,8 @@ enum class CandidatePolicy {
     ZstdOnly,
     FseOnly,
     LzmaOnly,
-    DonorMatchPredictiveOnly
+    DonorMatchPredictiveOnly,
+    BwtZstdOnly
 };
 
 struct BlockPlannerOptions {
@@ -30,14 +31,17 @@ struct BlockPlannerOptions {
 
 struct BlockDecision {
     BlockMode mode = BlockMode::Stored;
+    TransformKind transform = TransformKind::Raw;
     EntropyKind entropy = EntropyKind::Stored;
     std::vector<std::uint8_t> payload;
+    std::vector<std::uint8_t> transform_metadata;
     std::size_t stored_candidate_bytes = 0;
     std::optional<std::size_t> predictive_candidate_bytes;
     std::optional<std::size_t> zstd_candidate_bytes;
     std::optional<std::size_t> fse_candidate_bytes;
     std::optional<std::size_t> lzma_candidate_bytes;
     std::optional<std::size_t> donor_match_predictive_candidate_bytes;
+    std::optional<std::size_t> bwt_zstd_candidate_bytes;
 };
 
 class BlockPlanner {

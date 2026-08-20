@@ -85,6 +85,10 @@ endfunction()
 
 hz_enable_warnings(hz_fse_donor)
 
+add_library(hz_libsais_donor STATIC third_party/libsais/src/libsais.c)
+target_include_directories(hz_libsais_donor PUBLIC third_party/libsais/include)
+hz_enable_warnings(hz_libsais_donor)
+
 add_library(hz_7zip_lzma STATIC
     third_party/7zip-lzma/C/Alloc.c
     third_party/7zip-lzma/C/CpuArch.c
@@ -185,11 +189,12 @@ add_library(hz_r2
     src/r2/entropy/zstd_backend.cpp
     src/r2/lz/lzma_match_finder_service.cpp
     src/r2/lz/zstd_sequence_service.cpp
+    src/r2/representation/bwt_transform.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)
 target_link_libraries(hz_r2 PUBLIC hz_codec
                          PRIVATE hz_7zip_lzma hz_cmix_match hz_fse_donor
-                                 hz_paq8px_match libzstd_static)
+                                 hz_paq8px_match hz_libsais_donor libzstd_static)
 hz_enable_warnings(hz_r2)
 
 add_executable(hybridzip

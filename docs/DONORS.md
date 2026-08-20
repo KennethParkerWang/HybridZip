@@ -17,12 +17,13 @@ permission to copy code. The file-level review required before a port is in
 | cmix | `compressors/context-mixing/cmix` | `1d95fe95381a01442fceab585375cdec7c06922f` | PPMd, match, byte model, mixer/SSE, online LSTM | ported |
 | 7-Zip | `compressors/lz/7zip` | `f9d78aff31a5f2521ae7ddbdc97c4a8855808959` | LZMA match finder/parser, PPMd7/8, BCJ/BCJ2 | ported |
 | zstd | `compressors/lz/zstd` | `82d322c4973d9e2968d94047a40892bc6d9a9bdf` | complete codec, matchers, optimal parser, long-distance matching, FSE/Huffman, stored decision | ported |
+| libsais | `compressors/bwt/libsais` | `b6e52ef33fe14f9d5c14c580d162b6fd2c27f2a8` | suffix array, BWT, inverse BWT | ported |
 | kanzi-cpp | `compressors/meta/kanzi-cpp` | `66a80678f1a32bceb2d7949fbde05033d4d448e4` | transform portfolio, BWT, context mixing, ANS, content classification | downloaded |
 | FiniteStateEntropy | `entropy/fse` | `9f30e0918f87bd835fa040d922a208d7b219e50b` | FSE, Huff0 | ported |
 | ryg_rans | `entropy/ryg-rans` | `c9d162d996fd600315af9ae8eb89d832576cb32d` | scalar rANS, rANS64, SIMD rANS | downloaded |
 
 Paths in the table are relative to `E:/MIXER/KU/hybridzip-r2`. The fixed
-inventory contains seven donor roots. An empty category directory, such as
+inventory contains eight donor roots. An empty category directory, such as
 `compressors/ppm-ctw`, is not a donor root and does not require a manifest.
 
 ## Provenance Contract
@@ -69,6 +70,7 @@ every candidate module or override a file-level license boundary.
 | paq8px | Adapted generic MatchCore with the order-9/7/5 lookup and MatchInfo lifecycle | `third_party/paq8px`; source hashes and adaptation boundary in `third_party/paq8px/PROVENANCE.md` and `third_party/paq8px/MODIFICATIONS.md` |
 | cmix | Adapted PPMD, Online LSTM, and Match implementations | `third_party/cmix`; source evidence and modified-file ledger in `third_party/cmix/MODIFICATIONS.md` |
 | zstd | Complete single-threaded codec branch under the selected BSD-3-Clause option | `third_party/zstd`; imported paths in `third_party/zstd/PROVENANCE.md` |
+| libsais | Unmodified single-threaded BWT/inverse-BWT C source with a project-owned primary-index adapter | `third_party/libsais`; source hashes in `third_party/libsais/PROVENANCE.md` |
 | FiniteStateEntropy | Byte-identical `lib/` dependency closure for the direct FSE block backend | `third_party/fse`; integration record in `third_party/fse/README.hybridzip.md` |
 | 7-Zip | Public-domain single-threaded LZMA1 SDK subset, complete LZMA backend, and direct `LzFind` binary-tree greedy parse candidate | `third_party/7zip-lzma`; paths and hashes in `third_party/7zip-lzma/PROVENANCE.md`, adapter boundary in `third_party/7zip-lzma/MODIFICATIONS.md` |
 
@@ -112,7 +114,7 @@ From the HybridZip repository root:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/validate_r2_donors.ps1
 ```
 
-The validator checks the closed seven-donor inventory, manifest schema and
+The validator checks the closed eight-donor inventory, manifest schema and
 ported status, central/root agreement, Git HEAD and origin, license evidence
 paths and SHA-256 values, five port-evidence records, and the exact GPL-3.0
 declaration for cmix.
