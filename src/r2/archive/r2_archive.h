@@ -30,14 +30,16 @@ enum class BlockMode : std::uint8_t {
     DonorMatchPredictive = 5,
     BwtZstd = 6,
     BwtMtfZstd = 7,
-    BwtRltZstd = 8
+    BwtRltZstd = 8,
+    X86BcjZstd = 9
 };
 
 enum class TransformKind : std::uint8_t {
     Raw = 0,
     Bwt = 1,
     BwtMtf = 2,
-    BwtRlt = 3
+    BwtRlt = 3,
+    X86Bcj = 4
 };
 
 struct ArchiveHeader {

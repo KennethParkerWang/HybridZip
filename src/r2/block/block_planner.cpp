@@ -12,6 +12,7 @@
 #include "r2/representation/bwt_transform.h"
 #include "r2/representation/kanzi_mtf_transform.h"
 #include "r2/representation/kanzi_rlt_transform.h"
+#include "r2/representation/xz_x86_bcj_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -203,6 +204,22 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
                      EntropyKind::ZstdFse, std::move(payload),
                      std::move(metadata));
         }
+    }
+
+    if (options_.policy == CandidatePolicy::X86BcjZstdOnly ||
+        options_.policy == CandidatePolicy::Auto) {
+        const TransformResult bcj = XzX86BcjTransform().forward(input);
+        std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(bcj.bytes));
+        decision.x86_bcj_zstd_candidate_bytes = payload.size();
+        if (options_.policy == CandidatePolicy::X86BcjZstdOnly) {
+            decision.mode = BlockMode::X86BcjZstd;
+            decision.transform = TransformKind::X86Bcj;
+            decision.entropy = EntropyKind::ZstdFse;
+            decision.payload = std::move(payload);
+            return decision;
+        }
+        consider(decision, BlockMode::X86BcjZstd, TransformKind::X86Bcj,
+                 EntropyKind::ZstdFse, std::move(payload));
     }
 
     return decision;

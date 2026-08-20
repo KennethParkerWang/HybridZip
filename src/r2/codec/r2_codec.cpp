@@ -21,6 +21,7 @@
 #include "r2/representation/bwt_transform.h"
 #include "r2/representation/kanzi_mtf_transform.h"
 #include "r2/representation/kanzi_rlt_transform.h"
+#include "r2/representation/xz_x86_bcj_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -132,6 +133,9 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
                 ByteView(decoded), header.uncompressed_size);
             break;
         }
+        case BlockMode::X86BcjZstd:
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
     }
     if (header.transform == TransformKind::BwtMtf) {
         decoded = KanziMtfTransform().inverse(ByteView(decoded), ByteView{});
@@ -144,6 +148,9 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         decoded = BwtTransform().inverse(
             ByteView(decoded),
             ByteView(transform_metadata.data(), kR2BwtPrimaryIndexSize));
+    }
+    if (header.transform == TransformKind::X86Bcj) {
+        decoded = XzX86BcjTransform().inverse(ByteView(decoded), ByteView{});
     }
     return decoded;
 }
@@ -167,7 +174,7 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     }
     if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd ||
         header.mode == BlockMode::BwtMtfZstd ||
-        header.mode == BlockMode::BwtRltZstd) {
+        header.mode == BlockMode::BwtRltZstd || header.mode == BlockMode::X86BcjZstd) {
         return ZstdBackend::maximum_payload_size(header.uncompressed_size);
     }
     if (header.mode == BlockMode::Fse) {

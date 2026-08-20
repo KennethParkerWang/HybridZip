@@ -1,0 +1,17 @@
+{
+  "scope": "minimal single-block round trip; not an executable compression benchmark",
+  "date": "2026-08-20",
+  "input_bytes": 32768,
+  "archive_bytes": 13216,
+  "mode": "X86BcjZstd",
+  "mode_id": 9,
+  "transform": "X86Bcj",
+  "transform_id": 4,
+  "entropy": "ZstdFse",
+  "metadata_bytes": 4,
+  "blocks_by_mode": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "0E9998FB8CD8B019EAADB06898773F13020917321ECC948880F5EB58FA93210A",
+  "round_trip_sha256_match": true
+}

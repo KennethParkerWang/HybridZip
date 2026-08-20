@@ -92,6 +92,7 @@ Only these triples are valid in the current profile:
 | BwtZstd | 6 | Bwt | 1 | ZstdFse | 2 |
 | BwtMtfZstd | 7 | BwtMtf | 2 | ZstdFse | 2 |
 | BwtRltZstd | 8 | BwtRlt | 3 | ZstdFse | 2 |
+| X86BcjZstd | 9 | X86Bcj | 4 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -155,6 +156,13 @@ little-endian RLT transformed length. The transformed length MUST be in
 zstd, inverse-RLTs it to `uncompressed_size` BWT bytes, inverse-BWTs it with
 the primary index, and then validates the final CRC32. Both side-information
 fields are included in automatic candidate cost.
+
+### X86BcjZstd
+
+This mode applies the XZ Utils 0BSD x86 BCJ transform with start offset zero,
+then stores one zstd frame. Its metadata is only the mandatory four-byte raw
+CRC32. The decoder obtains exactly `uncompressed_size` BCJ bytes from zstd,
+applies the decoder-direction BCJ transform, then validates the CRC32.
 
 ### Zstd
 

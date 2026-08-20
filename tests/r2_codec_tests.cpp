@@ -119,7 +119,7 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const hz::r2::CompressionStats empty =
         round_trip(directory, "empty", {}, options);
     require(empty.archive_bytes == hz::r2::kR2ArchiveHeaderSize &&
-                empty.blocks_by_mode == std::array<std::uint32_t, 9>{},
+                empty.blocks_by_mode == std::array<std::uint32_t, 10>{},
             "Empty HZ02 archive contract is wrong");
 
     options.policy = hz::r2::CandidatePolicy::StoredOnly;
@@ -173,6 +173,11 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const auto bwt_rlt_zstd = round_trip(directory, "bwt-rlt-zstd", repeated, options);
     require(bwt_rlt_zstd.blocks_by_mode[8] == 1,
             "Forced BWT+RLT+zstd mode selected another backend");
+
+    options.policy = hz::r2::CandidatePolicy::X86BcjZstdOnly;
+    const auto x86_bcj_zstd = round_trip(directory, "x86-bcj-zstd", repeated, options);
+    require(x86_bcj_zstd.blocks_by_mode[9] == 1,
+            "Forced x86 BCJ+zstd mode selected another backend");
 }
 
 void test_auto_selection(const std::filesystem::path& directory) {

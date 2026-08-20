@@ -71,6 +71,13 @@ boundary are recorded in `third_party/libsais/PROVENANCE.md`.
 
 The imported closure and source hashes are in `third_party/kanzi/PROVENANCE.md`.
 
+## XZ Utils
+
+- Source: https://github.com/tukaani-project/xz
+- Revision used: `11334a5d4d5ea3e8b2a3cbce74c1062d25cef772`
+- License: BSD Zero Clause License (0BSD)
+- Use: x86 BCJ transform in HZ02 X86BcjZstd blocks
+
 ## FiniteStateEntropy
 
 - Project: FiniteStateEntropy
