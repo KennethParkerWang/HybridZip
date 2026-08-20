@@ -289,3 +289,19 @@ Routing MUST NOT depend on benchmark filenames, paths, or test-case IDs. Any
 dictionary ID, model family/version/hash, transform parameter, or other state
 needed by the decoder must either be causally reproducible or encoded and
 counted as archive bytes.
+
+## Automatic Representation Activation
+
+Before `Auto` evaluates an expensive representation candidate, it computes
+deterministic features from the block bytes: byte-histogram entropy,
+printable-byte and zero-byte fractions, sampled repeated-window length and
+coverage, x86 `E8`/`E9` branch-opcode density, and width-1/2/4/8 delta-byte
+similarity. Repeated-window comparison uses a bounded 512-probe sample. The
+feature computation has no archive state and uses neither file
+names nor paths. It gates BWT family candidates to structured, low-entropy or
+repetitive blocks; BCJ to sufficient branch density; and shuffle, bitshuffle,
+and delta to correlated or zero-rich blocks. Forced modes bypass this gate.
+
+Activation is a workload-cost reduction only. Every activated candidate still
+competes using complete real HZ02 block bytes, including its metadata. The
+router is not decoder state and does not alter how a selected block decodes.

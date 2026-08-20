@@ -14,6 +14,8 @@
 #include "r2/representation/kanzi_rlt_transform.h"
 #include "r2/representation/xz_x86_bcj_transform.h"
 #include "r2/representation/blosc_shuffle_transform.h"
+#include "r2/representation/structure_analyzer.h"
+#include "r2/routing/activation_router.h"
 #include "r2/representation/blosc_bitshuffle_transform.h"
 #include "r2/representation/blosc_delta_transform.h"
 
@@ -59,6 +61,11 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
     if (options_.policy == CandidatePolicy::StoredOnly) {
         return decision;
     }
+
+    const bool automatic = options_.policy == CandidatePolicy::Auto;
+    const RepresentationActivation activation = automatic
+        ? StructureActivationRouter().activate(StructureAnalyzer().analyze(input))
+        : RepresentationActivation{};
 
     if (options_.policy == CandidatePolicy::PredictiveV1Only ||
         options_.policy == CandidatePolicy::Auto) {
@@ -138,7 +145,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
     }
 
     if (options_.policy == CandidatePolicy::BwtZstdOnly ||
-        options_.policy == CandidatePolicy::Auto) {
+        (automatic && activation.bwt_zstd)) {
         const BwtTransform bwt;
         const TransformResult transformed = bwt.forward(input);
         const ZstdBackend zstd(options_.zstd_level);
@@ -160,7 +167,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
     }
 
     if (options_.policy == CandidatePolicy::BwtMtfZstdOnly ||
-        options_.policy == CandidatePolicy::Auto) {
+        (automatic && activation.bwt_mtf_zstd)) {
         const TransformResult bwt = BwtTransform().forward(input);
         const TransformResult mtf = KanziMtfTransform().forward(ByteView(bwt.bytes));
         std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(mtf.bytes));
@@ -179,7 +186,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
     }
 
     if (options_.policy == CandidatePolicy::BwtRltZstdOnly ||
-        options_.policy == CandidatePolicy::Auto) {
+        (automatic && activation.bwt_rlt_zstd)) {
         const TransformResult bwt = BwtTransform().forward(input);
         const std::optional<std::vector<std::uint8_t>> rlt =
             KanziRltTransform().forward_if_smaller(ByteView(bwt.bytes));
@@ -210,7 +217,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
     }
 
     if (options_.policy == CandidatePolicy::X86BcjZstdOnly ||
-        options_.policy == CandidatePolicy::Auto) {
+        (automatic && activation.x86_bcj_zstd)) {
         const TransformResult bcj = XzX86BcjTransform().forward(input);
         std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(bcj.bytes));
         decision.x86_bcj_zstd_candidate_bytes = payload.size();
@@ -225,7 +232,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
                  EntropyKind::ZstdFse, std::move(payload));
     }
 
-    if (options_.policy == CandidatePolicy::ShuffleZstdOnly || options_.policy == CandidatePolicy::Auto) {
+    if (options_.policy == CandidatePolicy::ShuffleZstdOnly ||
+        (automatic && activation.shuffle_zstd)) {
         std::vector<std::uint8_t> best_payload;
         std::uint8_t best_width = 0;
         const BloscShuffleTransform shuffle;
@@ -251,7 +259,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
                  std::move(best_payload), std::move(metadata));
     }
 
-    if (options_.policy == CandidatePolicy::BitshuffleZstdOnly || options_.policy == CandidatePolicy::Auto) {
+    if (options_.policy == CandidatePolicy::BitshuffleZstdOnly ||
+        (automatic && activation.bitshuffle_zstd)) {
         std::vector<std::uint8_t> best_payload;
         std::uint8_t best_width = 0;
         const BloscBitshuffleTransform bitshuffle;
@@ -276,7 +285,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
         }
     }
 
-    if (options_.policy == CandidatePolicy::DeltaZstdOnly || options_.policy == CandidatePolicy::Auto) {
+    if (options_.policy == CandidatePolicy::DeltaZstdOnly ||
+        (automatic && activation.delta_zstd)) {
         std::vector<std::uint8_t> best_payload;
         std::uint8_t best_width = 0;
         const BloscDeltaTransform delta;

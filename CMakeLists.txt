@@ -212,6 +212,8 @@ add_library(hz_r2
     src/r2/representation/blosc_shuffle_transform.cpp
     src/r2/representation/blosc_bitshuffle_transform.cpp
     src/r2/representation/blosc_delta_transform.cpp
+    src/r2/representation/structure_analyzer.cpp
+    src/r2/routing/activation_router.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)
 target_link_libraries(hz_r2 PUBLIC hz_codec
@@ -372,4 +374,10 @@ if(HYBRIDZIP_BUILD_TESTS)
     hz_enable_portable_runtime(hz_lzma_match_finder_service_tests)
     add_test(NAME hz_lzma_match_finder_service_tests
              COMMAND hz_lzma_match_finder_service_tests)
+
+    add_executable(hz_structure_routing_tests tests/structure_routing_tests.cpp)
+    target_link_libraries(hz_structure_routing_tests PRIVATE hz_r2)
+    hz_enable_warnings(hz_structure_routing_tests)
+    hz_enable_portable_runtime(hz_structure_routing_tests)
+    add_test(NAME hz_structure_routing_tests COMMAND hz_structure_routing_tests)
 endif()

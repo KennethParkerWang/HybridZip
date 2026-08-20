@@ -11,6 +11,12 @@ struct StructureFeatures {
     double entropy_bits = 0.0;
     double printable_fraction = 0.0;
     double zero_fraction = 0.0;
+    double repeated_window_fraction = 0.0;
+    double x86_branch_fraction = 0.0;
+    double delta_similarity_1 = 0.0;
+    double delta_similarity_2 = 0.0;
+    double delta_similarity_4 = 0.0;
+    double delta_similarity_8 = 0.0;
     std::uint32_t longest_match = 0;
 };
 
@@ -33,4 +39,3 @@ public:
 };
 
 }  // namespace hz::r2
-
