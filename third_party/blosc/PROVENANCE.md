@@ -14,3 +14,8 @@ adapter is `src/r2/representation/blosc_shuffle_transform.cpp`.
 The owned `src/r2/representation/blosc_bitshuffle_transform.cpp` adapts the
 same donor's scalar element/bit transpose contract for 2/4/8-byte elements in
 groups of eight. It stores the selected width in HZ02 metadata.
+
+The owned `src/r2/representation/blosc_delta_transform.cpp` adapts the
+offset-zero delta branch from `blosc/delta.c` (SHA-256
+`AB706CA0CDF2066A67529BBFD72578683212366A37175B87E35C79A63098BF54`)
+for independent HZ02 blocks.

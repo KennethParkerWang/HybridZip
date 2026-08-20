@@ -15,6 +15,7 @@
 #include "r2/representation/xz_x86_bcj_transform.h"
 #include "r2/representation/blosc_shuffle_transform.h"
 #include "r2/representation/blosc_bitshuffle_transform.h"
+#include "r2/representation/blosc_delta_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -273,6 +274,27 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
             consider(decision, BlockMode::BitshuffleZstd, TransformKind::Bitshuffle, EntropyKind::ZstdFse,
                      std::move(best_payload), std::move(metadata));
         }
+    }
+
+    if (options_.policy == CandidatePolicy::DeltaZstdOnly || options_.policy == CandidatePolicy::Auto) {
+        std::vector<std::uint8_t> best_payload;
+        std::uint8_t best_width = 0;
+        const BloscDeltaTransform delta;
+        for (const std::uint8_t width : {std::uint8_t{1}, std::uint8_t{2}, std::uint8_t{4}, std::uint8_t{8}}) {
+            if (!delta.applicable(input, width)) continue;
+            const TransformResult transformed = delta.forward(input, width);
+            std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(transformed.bytes));
+            if (best_width == 0 || payload.size() < best_payload.size()) { best_payload = std::move(payload); best_width = width; }
+        }
+        decision.delta_zstd_candidate_bytes = best_payload.size() + 1;
+        std::vector<std::uint8_t> metadata{best_width};
+        if (options_.policy == CandidatePolicy::DeltaZstdOnly) {
+            decision.mode = BlockMode::DeltaZstd; decision.transform = TransformKind::Delta;
+            decision.entropy = EntropyKind::ZstdFse; decision.payload = std::move(best_payload);
+            decision.transform_metadata = std::move(metadata); return decision;
+        }
+        consider(decision, BlockMode::DeltaZstd, TransformKind::Delta, EntropyKind::ZstdFse,
+                 std::move(best_payload), std::move(metadata));
     }
 
     return decision;

@@ -211,6 +211,7 @@ add_library(hz_r2
     src/r2/representation/xz_x86_bcj_transform.cpp
     src/r2/representation/blosc_shuffle_transform.cpp
     src/r2/representation/blosc_bitshuffle_transform.cpp
+    src/r2/representation/blosc_delta_transform.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)
 target_link_libraries(hz_r2 PUBLIC hz_codec

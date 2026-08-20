@@ -95,6 +95,7 @@ Only these triples are valid in the current profile:
 | X86BcjZstd | 9 | X86Bcj | 4 | ZstdFse | 2 |
 | ShuffleZstd | 10 | Shuffle | 5 | ZstdFse | 2 |
 | BitshuffleZstd | 11 | Bitshuffle | 6 | ZstdFse | 2 |
+| DeltaZstd | 12 | Delta | 7 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -179,6 +180,13 @@ This mode applies C-Blosc2's scalar bitshuffle contract to 2, 4, or 8-byte
 elements in groups of eight, then zstd. Metadata is `CRC32 + width`; the
 decoder rejects unsupported widths or a block shape that cannot satisfy the
 same eight-element constraint before inverse bitshuffle and CRC validation.
+
+### DeltaZstd
+
+This mode applies the independent-block C-Blosc2 offset-zero XOR delta filter
+to 1, 2, 4, or 8-byte elements before zstd. Metadata is `CRC32 + width`; the
+decoder rejects all other widths, inverse-deltas in element order, and then
+checks CRC32 over the reconstructed raw bytes.
 
 ### Zstd
 

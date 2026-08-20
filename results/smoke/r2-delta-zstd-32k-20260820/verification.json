@@ -1,0 +1,18 @@
+{
+  "scope": "minimal single-block round trip; not a numeric compression benchmark",
+  "date": "2026-08-20",
+  "input_bytes": 32768,
+  "archive_bytes": 15849,
+  "mode": "DeltaZstd",
+  "mode_id": 12,
+  "transform": "Delta",
+  "transform_id": 7,
+  "entropy": "ZstdFse",
+  "metadata_bytes": 5,
+  "delta_width": 1,
+  "blocks_by_mode": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "05B1C7467A8B5B521B499049AEAA9DC12FDD87D211B54B310F4B8B0DE27CCD49",
+  "round_trip_sha256_match": true
+}

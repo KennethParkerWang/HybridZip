@@ -119,7 +119,7 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const hz::r2::CompressionStats empty =
         round_trip(directory, "empty", {}, options);
     require(empty.archive_bytes == hz::r2::kR2ArchiveHeaderSize &&
-                empty.blocks_by_mode == std::array<std::uint32_t, 12>{},
+                empty.blocks_by_mode == std::array<std::uint32_t, 13>{},
             "Empty HZ02 archive contract is wrong");
 
     options.policy = hz::r2::CandidatePolicy::StoredOnly;
@@ -188,6 +188,11 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const auto bitshuffle_zstd = round_trip(directory, "bitshuffle-zstd", repeated, options);
     require(bitshuffle_zstd.blocks_by_mode[11] == 1,
             "Forced bitshuffle+zstd mode selected another backend");
+
+    options.policy = hz::r2::CandidatePolicy::DeltaZstdOnly;
+    const auto delta_zstd = round_trip(directory, "delta-zstd", repeated, options);
+    require(delta_zstd.blocks_by_mode[12] == 1,
+            "Forced delta+zstd mode selected another backend");
 }
 
 void test_auto_selection(const std::filesystem::path& directory) {
@@ -209,7 +214,8 @@ void test_auto_selection(const std::filesystem::path& directory) {
                         compressible.blocks_by_mode[8] +
                         compressible.blocks_by_mode[9] +
                         compressible.blocks_by_mode[10] +
-                        compressible.blocks_by_mode[11] ==
+                        compressible.blocks_by_mode[11] +
+                        compressible.blocks_by_mode[12] ==
                     1,
             "Auto mode selected stored for compressible repeated data");
 
