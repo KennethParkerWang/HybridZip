@@ -298,10 +298,10 @@ $expectedDonors = @(
         RootLicense = "Apache-2.0"
         CentralLicense = "Apache-2.0"
         SelectedLicense = $null
-        ExpectedStatus = "downloaded"
+        ExpectedStatus = "ported"
         SourceCopyAllowed = $true
-        PortEvidence = $null
-        NoteTokens = @()
+        PortEvidence = "third_party/kanzi/PROVENANCE.md"
+        NoteTokens = @("SBRT MTF", "BwtMtfZstd", "third_party/kanzi")
     },
     [pscustomobject]@{
         RelativePath = "entropy/fse"

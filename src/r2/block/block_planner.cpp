@@ -10,6 +10,7 @@
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
 #include "r2/representation/bwt_transform.h"
+#include "r2/representation/kanzi_mtf_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -143,6 +144,25 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
         consider(decision, BlockMode::BwtZstd, TransformKind::Bwt,
                  EntropyKind::ZstdFse, std::move(payload),
                  transformed.side_information);
+    }
+
+    if (options_.policy == CandidatePolicy::BwtMtfZstdOnly ||
+        options_.policy == CandidatePolicy::Auto) {
+        const TransformResult bwt = BwtTransform().forward(input);
+        const TransformResult mtf = KanziMtfTransform().forward(ByteView(bwt.bytes));
+        std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(mtf.bytes));
+        decision.bwt_mtf_zstd_candidate_bytes = payload.size() + bwt.side_information.size();
+        if (options_.policy == CandidatePolicy::BwtMtfZstdOnly) {
+            decision.mode = BlockMode::BwtMtfZstd;
+            decision.transform = TransformKind::BwtMtf;
+            decision.entropy = EntropyKind::ZstdFse;
+            decision.payload = std::move(payload);
+            decision.transform_metadata = std::move(bwt.side_information);
+            return decision;
+        }
+        consider(decision, BlockMode::BwtMtfZstd, TransformKind::BwtMtf,
+                 EntropyKind::ZstdFse, std::move(payload),
+                 std::move(bwt.side_information));
     }
 
     return decision;

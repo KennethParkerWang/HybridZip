@@ -18,7 +18,8 @@ enum class CandidatePolicy {
     FseOnly,
     LzmaOnly,
     DonorMatchPredictiveOnly,
-    BwtZstdOnly
+    BwtZstdOnly,
+    BwtMtfZstdOnly
 };
 
 struct BlockPlannerOptions {
@@ -42,6 +43,7 @@ struct BlockDecision {
     std::optional<std::size_t> lzma_candidate_bytes;
     std::optional<std::size_t> donor_match_predictive_candidate_bytes;
     std::optional<std::size_t> bwt_zstd_candidate_bytes;
+    std::optional<std::size_t> bwt_mtf_zstd_candidate_bytes;
 };
 
 class BlockPlanner {

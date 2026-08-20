@@ -19,6 +19,7 @@
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
 #include "r2/representation/bwt_transform.h"
+#include "r2/representation/kanzi_mtf_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -101,8 +102,15 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::BwtZstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::BwtMtfZstd:
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
     }
-    if (header.transform == TransformKind::Bwt) {
+    if (header.transform == TransformKind::BwtMtf) {
+        decoded = KanziMtfTransform().inverse(ByteView(decoded), ByteView{});
+    }
+    if (header.transform == TransformKind::Bwt ||
+        header.transform == TransformKind::BwtMtf) {
         decoded = BwtTransform().inverse(ByteView(decoded), transform_metadata);
     }
     return decoded;
@@ -125,7 +133,8 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::Stored) {
         return header.uncompressed_size;
     }
-    if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd) {
+    if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd ||
+        header.mode == BlockMode::BwtMtfZstd) {
         return ZstdBackend::maximum_payload_size(header.uncompressed_size);
     }
     if (header.mode == BlockMode::Fse) {

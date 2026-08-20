@@ -20,7 +20,7 @@ void print_usage(std::ostream& output) {
     output << "Usage:\n\n"
               "  hybridzip c <input> <archive>\n"
               "  hybridzip c --profile=r2 "
-              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match] "
+              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match|bwt-zstd|bwt-mtf-zstd] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
@@ -74,6 +74,9 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     if (value == "bwt-zstd") {
         return r2::CandidatePolicy::BwtZstdOnly;
     }
+    if (value == "bwt-mtf-zstd") {
+        return r2::CandidatePolicy::BwtMtfZstdOnly;
+    }
     throw std::invalid_argument("Invalid --r2-mode");
 }
 
@@ -81,14 +84,15 @@ void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
-              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd)="
+              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'
               << stats.blocks_by_mode[3] << '/'
               << stats.blocks_by_mode[4] << '/'
               << stats.blocks_by_mode[5] << '/'
-              << stats.blocks_by_mode[6] << '\n';
+              << stats.blocks_by_mode[6] << '/'
+              << stats.blocks_by_mode[7] << '\n';
 }
 
 }  // namespace

@@ -90,7 +90,8 @@ void validate_block_header(const BlockHeader& header) {
     const bool valid_transform_metadata =
         (header.transform == TransformKind::Raw &&
          header.metadata_size == kR2BlockChecksumSize) ||
-        (header.transform == TransformKind::Bwt &&
+        ((header.transform == TransformKind::Bwt ||
+          header.transform == TransformKind::BwtMtf) &&
          header.metadata_size == kR2BwtMetadataSize);
     if (!valid_transform_metadata || header.flags != kR2BlockFlagCrc32 ||
         header.uncompressed_size == 0 ||
@@ -121,6 +122,9 @@ void validate_block_header(const BlockHeader& header) {
          header.entropy == EntropyKind::SymbolArithmetic) ||
         (header.mode == BlockMode::BwtZstd &&
          header.transform == TransformKind::Bwt &&
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::BwtMtfZstd &&
+         header.transform == TransformKind::BwtMtf &&
          header.entropy == EntropyKind::ZstdFse);
     if (!valid_pair) {
         throw std::runtime_error("HZ02 block mode and entropy backend disagree");

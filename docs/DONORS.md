@@ -18,7 +18,7 @@ permission to copy code. The file-level review required before a port is in
 | 7-Zip | `compressors/lz/7zip` | `f9d78aff31a5f2521ae7ddbdc97c4a8855808959` | LZMA match finder/parser, PPMd7/8, BCJ/BCJ2 | ported |
 | zstd | `compressors/lz/zstd` | `82d322c4973d9e2968d94047a40892bc6d9a9bdf` | complete codec, matchers, optimal parser, long-distance matching, FSE/Huffman, stored decision | ported |
 | libsais | `compressors/bwt/libsais` | `b6e52ef33fe14f9d5c14c580d162b6fd2c27f2a8` | suffix array, BWT, inverse BWT | ported |
-| kanzi-cpp | `compressors/meta/kanzi-cpp` | `66a80678f1a32bceb2d7949fbde05033d4d448e4` | transform portfolio, BWT, context mixing, ANS, content classification | downloaded |
+| kanzi-cpp | `compressors/meta/kanzi-cpp` | `66a80678f1a32bceb2d7949fbde05033d4d448e4` | transform portfolio, BWT, context mixing, ANS, content classification | ported |
 | FiniteStateEntropy | `entropy/fse` | `9f30e0918f87bd835fa040d922a208d7b219e50b` | FSE, Huff0 | ported |
 | ryg_rans | `entropy/ryg-rans` | `c9d162d996fd600315af9ae8eb89d832576cb32d` | scalar rANS, rANS64, SIMD rANS | downloaded |
 
@@ -71,6 +71,7 @@ every candidate module or override a file-level license boundary.
 | cmix | Adapted PPMD, Online LSTM, and Match implementations | `third_party/cmix`; source evidence and modified-file ledger in `third_party/cmix/MODIFICATIONS.md` |
 | zstd | Complete single-threaded codec branch under the selected BSD-3-Clause option | `third_party/zstd`; imported paths in `third_party/zstd/PROVENANCE.md` |
 | libsais | Unmodified single-threaded BWT/inverse-BWT C source with a project-owned primary-index adapter | `third_party/libsais`; source hashes in `third_party/libsais/PROVENANCE.md` |
+| kanzi-cpp | SBRT MTF post-BWT transform closure | `third_party/kanzi/PROVENANCE.md` |
 | FiniteStateEntropy | Byte-identical `lib/` dependency closure for the direct FSE block backend | `third_party/fse`; integration record in `third_party/fse/README.hybridzip.md` |
 | 7-Zip | Public-domain single-threaded LZMA1 SDK subset, complete LZMA backend, and direct `LzFind` binary-tree greedy parse candidate | `third_party/7zip-lzma`; paths and hashes in `third_party/7zip-lzma/PROVENANCE.md`, adapter boundary in `third_party/7zip-lzma/MODIFICATIONS.md` |
 

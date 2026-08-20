@@ -87,6 +87,7 @@ Only these triples are valid in the current profile:
 | Lzma | 4 | Raw | 0 | Lzma | 5 |
 | DonorMatchPredictive | 5 | Raw | 0 | SymbolArithmetic | 1 |
 | BwtZstd | 6 | Bwt | 1 | ZstdFse | 2 |
+| BwtMtfZstd | 7 | BwtMtf | 2 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -131,6 +132,12 @@ exactly `uncompressed_size` transformed bytes from zstd, calls
 `libsais_unbwt()` with that primary index, checks the resulting size, and then
 checks the CRC32 over final reconstructed bytes. The four primary-index bytes
 are part of the archive cost and are included in automatic candidate selection.
+
+### BwtMtfZstd
+
+This mode applies Kanzi SBRT `MODE_MTF` to libsais BWT bytes before zstd. Its
+metadata is the same `CRC32 + primary index` contract as BwtZstd. The decoder
+must inverse MTF before inverse BWT.
 
 ### Zstd
 
