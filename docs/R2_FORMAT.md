@@ -2,7 +2,8 @@
 
 HZ02 is HybridZip's second-generation, block-oriented single-file format. It
 supports stored, PROFILE_V1 predictive, donor-Match predictive, zstd, direct
-FSE, LZMA1, and libsais BWT plus zstd block payloads. A valid archive must
+FSE, LZMA1, and libsais BWT plus zstd block payloads, including Kanzi MTF and
+RLT post-BWT stages. A valid archive must
 decode to the original bytes exactly.
 
 The words MUST, MUST NOT, SHOULD, and MAY in this document are normative.
@@ -64,8 +65,10 @@ input, `original_size` and `block_count` are both zero. For a non-empty input,
 | 12 | 4 | metadata size | metadata bytes between this header and payload |
 
 The current profile requires `flags = 0x01`. Raw blocks set `metadata_size =
-4`, containing only the checksum. BWT blocks set `metadata_size = 8`,
-containing the checksum followed by a four-byte primary index. A decoder MUST
+4`, containing only the checksum. BWT and BWT+MTF blocks set `metadata_size =
+8`, containing the checksum followed by a four-byte primary index. BWT+RLT
+blocks set `metadata_size = 12`, adding the four-byte transformed RLT length.
+A decoder MUST
 reject a missing checksum flag, an unknown flag bit, or a metadata size that
 does not match the selected transform.
 
@@ -88,6 +91,7 @@ Only these triples are valid in the current profile:
 | DonorMatchPredictive | 5 | Raw | 0 | SymbolArithmetic | 1 |
 | BwtZstd | 6 | Bwt | 1 | ZstdFse | 2 |
 | BwtMtfZstd | 7 | BwtMtf | 2 | ZstdFse | 2 |
+| BwtRltZstd | 8 | BwtRlt | 3 | ZstdFse | 2 |
 
 Entropy ID `3` (rANS) is reserved by the implementation but is not a valid
 HZ02 block backend yet. Unknown IDs and mismatched mode/entropy pairs MUST be
@@ -138,6 +142,19 @@ are part of the archive cost and are included in automatic candidate selection.
 This mode applies Kanzi SBRT `MODE_MTF` to libsais BWT bytes before zstd. Its
 metadata is the same `CRC32 + primary index` contract as BwtZstd. The decoder
 must inverse MTF before inverse BWT.
+
+### BwtRltZstd
+
+This mode applies Kanzi `RLT` to libsais BWT bytes, then writes the shorter
+RLT result as one zstd frame. The encoder MUST NOT select this candidate when
+the donor reports that RLT cannot reduce the BWT bytes; a forced request then
+fails rather than writing another mode. Metadata is twelve bytes: the mandatory
+original-byte CRC32, the one-based BWT primary index, and an unsigned
+little-endian RLT transformed length. The transformed length MUST be in
+`1..uncompressed_size-1`. The decoder obtains exactly that RLT length from
+zstd, inverse-RLTs it to `uncompressed_size` BWT bytes, inverse-BWTs it with
+the primary index, and then validates the final CRC32. Both side-information
+fields are included in automatic candidate cost.
 
 ### Zstd
 
@@ -230,8 +247,9 @@ An encoder MAY try several coding paths for a block because the selected mode
 is explicitly recorded. The selection is not a decoder-invisible oracle.
 Candidate comparison MUST include block headers, metadata, side data, and
 payload bytes. The six Raw modes have equal 20-byte outer per-block overhead.
-BwtZstd has four additional primary-index bytes, so candidate selection
-compares payload plus transform side information. FSE framing and the 40-byte
+BwtZstd and BwtMtfZstd have four additional primary-index bytes. BwtRltZstd
+has eight additional bytes for the primary index and transformed length, so
+candidate selection compares payload plus transform side information. FSE framing and the 40-byte
 HZL1 envelope are already inside their payload sizes. Future modes with
 different outer metadata must compare total bytes.
 

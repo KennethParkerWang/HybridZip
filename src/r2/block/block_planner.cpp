@@ -11,6 +11,7 @@
 #include "r2/entropy/zstd_backend.h"
 #include "r2/representation/bwt_transform.h"
 #include "r2/representation/kanzi_mtf_transform.h"
+#include "r2/representation/kanzi_rlt_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -29,6 +30,14 @@ void consider(BlockDecision& decision,
         decision.payload = std::move(payload);
         decision.transform_metadata = std::move(transform_metadata);
     }
+}
+
+void append_u32_le(std::vector<std::uint8_t>& bytes,
+                   const std::uint32_t value) {
+    bytes.push_back(static_cast<std::uint8_t>(value));
+    bytes.push_back(static_cast<std::uint8_t>(value >> 8U));
+    bytes.push_back(static_cast<std::uint8_t>(value >> 16U));
+    bytes.push_back(static_cast<std::uint8_t>(value >> 24U));
 }
 
 }  // namespace
@@ -163,6 +172,37 @@ BlockDecision BlockPlanner::plan(const ByteView input) const {
         consider(decision, BlockMode::BwtMtfZstd, TransformKind::BwtMtf,
                  EntropyKind::ZstdFse, std::move(payload),
                  std::move(bwt.side_information));
+    }
+
+    if (options_.policy == CandidatePolicy::BwtRltZstdOnly ||
+        options_.policy == CandidatePolicy::Auto) {
+        const TransformResult bwt = BwtTransform().forward(input);
+        const std::optional<std::vector<std::uint8_t>> rlt =
+            KanziRltTransform().forward_if_smaller(ByteView(bwt.bytes));
+        if (!rlt.has_value()) {
+            if (options_.policy == CandidatePolicy::BwtRltZstdOnly) {
+                throw std::runtime_error(
+                    "Kanzi RLT did not reduce the BWT block");
+            }
+        } else {
+            std::vector<std::uint8_t> payload =
+                ZstdBackend(options_.zstd_level).encode(ByteView(*rlt));
+            std::vector<std::uint8_t> metadata = bwt.side_information;
+            append_u32_le(metadata, static_cast<std::uint32_t>(rlt->size()));
+            decision.bwt_rlt_zstd_candidate_bytes =
+                payload.size() + metadata.size();
+            if (options_.policy == CandidatePolicy::BwtRltZstdOnly) {
+                decision.mode = BlockMode::BwtRltZstd;
+                decision.transform = TransformKind::BwtRlt;
+                decision.entropy = EntropyKind::ZstdFse;
+                decision.payload = std::move(payload);
+                decision.transform_metadata = std::move(metadata);
+                return decision;
+            }
+            consider(decision, BlockMode::BwtRltZstd, TransformKind::BwtRlt,
+                     EntropyKind::ZstdFse, std::move(payload),
+                     std::move(metadata));
+        }
     }
 
     return decision;

@@ -67,7 +67,7 @@ boundary are recorded in `third_party/libsais/PROVENANCE.md`.
 - Source: https://github.com/flanglet/kanzi-cpp
 - Revision used: `66a80678f1a32bceb2d7949fbde05033d4d448e4`
 - License: Apache License 2.0
-- Use: `SBRT::MODE_MTF` in HZ02 BwtMtfZstd blocks
+- Use: `SBRT::MODE_MTF` and `RLT` in HZ02 BWT post-transform blocks
 
 The imported closure and source hashes are in `third_party/kanzi/PROVENANCE.md`.
 

@@ -119,7 +119,7 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const hz::r2::CompressionStats empty =
         round_trip(directory, "empty", {}, options);
     require(empty.archive_bytes == hz::r2::kR2ArchiveHeaderSize &&
-                empty.blocks_by_mode == std::array<std::uint32_t, 8>{},
+                empty.blocks_by_mode == std::array<std::uint32_t, 9>{},
             "Empty HZ02 archive contract is wrong");
 
     options.policy = hz::r2::CandidatePolicy::StoredOnly;
@@ -168,6 +168,11 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const auto bwt_mtf_zstd = round_trip(directory, "bwt-mtf-zstd", repeated, options);
     require(bwt_mtf_zstd.blocks_by_mode[7] == 1,
             "Forced BWT+MTF+zstd mode selected another backend");
+
+    options.policy = hz::r2::CandidatePolicy::BwtRltZstdOnly;
+    const auto bwt_rlt_zstd = round_trip(directory, "bwt-rlt-zstd", repeated, options);
+    require(bwt_rlt_zstd.blocks_by_mode[8] == 1,
+            "Forced BWT+RLT+zstd mode selected another backend");
 }
 
 void test_auto_selection(const std::filesystem::path& directory) {
@@ -185,7 +190,8 @@ void test_auto_selection(const std::filesystem::path& directory) {
                         compressible.blocks_by_mode[4] +
                         compressible.blocks_by_mode[5] +
                         compressible.blocks_by_mode[6] +
-                        compressible.blocks_by_mode[7] ==
+                        compressible.blocks_by_mode[7] +
+                        compressible.blocks_by_mode[8] ==
                     1,
             "Auto mode selected stored for compressible repeated data");
 

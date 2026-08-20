@@ -20,6 +20,7 @@
 #include "r2/entropy/zstd_backend.h"
 #include "r2/representation/bwt_transform.h"
 #include "r2/representation/kanzi_mtf_transform.h"
+#include "r2/representation/kanzi_rlt_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -73,6 +74,16 @@ void read_exact(std::istream& input,
     }
 }
 
+std::uint32_t read_u32_le(const ByteView input) {
+    if (input.size() != 4U) {
+        throw std::runtime_error("HZ02 uint32 metadata is malformed");
+    }
+    return static_cast<std::uint32_t>(input[0]) |
+           (static_cast<std::uint32_t>(input[1]) << 8U) |
+           (static_cast<std::uint32_t>(input[2]) << 16U) |
+           (static_cast<std::uint32_t>(input[3]) << 24U);
+}
+
 std::vector<std::uint8_t> decode_block(const BlockHeader& header,
                                        const ByteView payload,
                                        const ByteView transform_metadata,
@@ -105,6 +116,22 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::BwtMtfZstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::BwtRltZstd: {
+            if (transform_metadata.size() !=
+                kR2BwtRltMetadataSize - kR2BlockChecksumSize) {
+                throw std::runtime_error("HZ02 BWT+RLT metadata is malformed");
+            }
+            const std::uint32_t rlt_size = read_u32_le(ByteView(
+                transform_metadata.data() + kR2BwtPrimaryIndexSize, 4U));
+            if (rlt_size == 0 || rlt_size >= header.uncompressed_size ||
+                rlt_size > kR2MaximumBlockSize) {
+                throw std::runtime_error("HZ02 BWT+RLT length is invalid");
+            }
+            decoded = ZstdBackend().decode(payload, rlt_size);
+            decoded = KanziRltTransform().inverse(
+                ByteView(decoded), header.uncompressed_size);
+            break;
+        }
     }
     if (header.transform == TransformKind::BwtMtf) {
         decoded = KanziMtfTransform().inverse(ByteView(decoded), ByteView{});
@@ -112,6 +139,11 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
     if (header.transform == TransformKind::Bwt ||
         header.transform == TransformKind::BwtMtf) {
         decoded = BwtTransform().inverse(ByteView(decoded), transform_metadata);
+    }
+    if (header.transform == TransformKind::BwtRlt) {
+        decoded = BwtTransform().inverse(
+            ByteView(decoded),
+            ByteView(transform_metadata.data(), kR2BwtPrimaryIndexSize));
     }
     return decoded;
 }
@@ -134,7 +166,8 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
         return header.uncompressed_size;
     }
     if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd ||
-        header.mode == BlockMode::BwtMtfZstd) {
+        header.mode == BlockMode::BwtMtfZstd ||
+        header.mode == BlockMode::BwtRltZstd) {
         return ZstdBackend::maximum_payload_size(header.uncompressed_size);
     }
     if (header.mode == BlockMode::Fse) {

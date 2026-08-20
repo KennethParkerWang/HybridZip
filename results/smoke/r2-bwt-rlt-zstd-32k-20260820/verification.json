@@ -1,0 +1,22 @@
+{
+  "scope": "minimal single-block round trip; not a benchmark",
+  "date": "2026-08-20",
+  "input": "input-32k.bin",
+  "input_bytes": 32768,
+  "archive": "archive.hz2",
+  "archive_bytes": 14522,
+  "decoded": "decoded.bin",
+  "mode": "BwtRltZstd",
+  "mode_id": 8,
+  "transform": "BwtRlt",
+  "transform_id": 3,
+  "entropy": "ZstdFse",
+  "metadata_bytes": 12,
+  "bwt_primary_index": 7046,
+  "rlt_transformed_bytes": 24978,
+  "blocks_by_mode": [0, 0, 0, 0, 0, 0, 0, 0, 1],
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "E91B241D5957055021FD4CA99B611D9750F41DF15E08E33E61852464BD89D919",
+  "round_trip_sha256_match": true
+}
