@@ -1,0 +1,4 @@
+HybridZip PROFILE_V1 smoke test.
+The same byte history must produce the same four expert distributions, mixer
+state, CDF24 table, and arithmetic-coded payload during encode and decode.
+abracadabra abracadabra abracadabra

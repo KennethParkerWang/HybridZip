@@ -1,0 +1,9 @@
+/build/
+/build-*/
+/results/generated/
+/results/experiments/*/inputs/
+/results/experiments/*/archives/
+/results/experiments/*/decoded/
+/results/experiments/*/logs/
+*.hz
+*.decoded

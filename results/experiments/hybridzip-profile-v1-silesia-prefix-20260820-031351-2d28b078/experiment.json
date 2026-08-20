@@ -1,0 +1,46 @@
+{
+    "schema_version":  1,
+    "experiment_id":  "hybridzip-profile-v1-silesia-prefix-20260820-031351-2d28b078",
+    "name":  "HybridZip PROFILE_V1 Silesia prefix experiment",
+    "state":  "完成",
+    "description":  "HybridZip first-generation four-expert lossless compressor on Silesia 32/64/128 KiB prefixes.",
+    "model_structure":  "NGram + PPMD + Match + Online LSTM -\u003e AdaptiveLinearMixer -\u003e CDF24 -\u003e Nayuki ArithmeticCoder32.",
+    "change_from_baseline":  "New PROFILE_V1 byte-native hybrid compressor; no baseline component is substituted at run time.",
+    "hypothesis":  "HybridZip should improve over fast LZ baselines on structured prefixes, at substantially higher encode/decode cost.",
+    "baseline_description":  "Product comparison uses available gzip, zstd, brotli, xz, and 7-Zip binaries on identical bytes.",
+    "created_at":  "2026-08-20T03:14:09.8581393+08:00",
+    "dataset_name":  "Silesia",
+    "dataset_path":  "F:\\paq8px\\silesia",
+    "files":  [
+                  "dickens",
+                  "mozilla",
+                  "mr",
+                  "nci",
+                  "ooffice",
+                  "osdb",
+                  "reymont",
+                  "samba",
+                  "sao",
+                  "webster",
+                  "x-ray",
+                  "xml"
+              ],
+    "scopes_kib":  [
+                       32,
+                       64,
+                       128
+                   ],
+    "variants":  [
+                     "profile-v1"
+                 ],
+    "repeat_count":  1,
+    "codec_name":  "HybridZip",
+    "codec_version":  "1.0.0-profile-v1",
+    "codec_path":  "E:\\MIXER\\hybridzip\\build\\Release\\hybridzip.exe",
+    "codec_sha256":  "2D28B07863E576FE63DF8A5BC5C50C0FDA1DB1A0DD0364BE964981D97E942BD6",
+    "source_revision":  "working-tree-uncommitted",
+    "command_template":  "\"\u003ccodec-path\u003e\" c \"\u003cinput-path\u003e\" \"\u003carchive-path\u003e\"; \"\u003ccodec-path\u003e\" d \"\u003carchive-path\u003e\" \"\u003coutput-path\u003e\"",
+    "configuration":  "profile_id=1; experts=NGram,PPMD,Match,OnlineLSTM; mixer_eta=0.5; cdf_bits=24; coder_state_bits=32; threads=1; process_timeout_seconds=3600",
+    "environment":  "Windows 10.0.19045.0; CPU=12th Gen Intel(R) Core(TM) i7-12650H; sequential execution",
+    "notes":  "archive_bytes includes the complete 40-byte HZ01 header and arithmetic payload."
+}
