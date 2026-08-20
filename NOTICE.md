@@ -98,6 +98,18 @@ HybridZip applies compile-time symbol prefixes so it can coexist with zstd's
 private FSE copy. The license and integration record are in
 `third_party/fse/LICENSE` and `third_party/fse/README.hybridzip.md`.
 
+## FastPFOR
+
+- Project: FastPFOR
+- Source: https://github.com/fast-pack/FastPFOR.git
+- Revision used: `2457e1ed1af35bbf7f4c509c863fa9797e637cb3`
+- License: Apache License 2.0
+- Use: scalar `FastPFor<8>` integer coding path for HZ02 FastPfor blocks
+
+The Apache license, AUTHORS file, complete source/header closure, and source
+identity are retained in `third_party/fastpfor`. HybridZip-owned HZ02 framing
+is documented in `third_party/fastpfor/PROVENANCE.md`.
+
 ## 7-Zip LZMA SDK Subset
 
 - Project: 7-Zip

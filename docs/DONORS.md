@@ -21,6 +21,7 @@ permission to copy code. The file-level review required before a port is in
 | kanzi-cpp | `compressors/meta/kanzi-cpp` | `66a80678f1a32bceb2d7949fbde05033d4d448e4` | transform portfolio, BWT, context mixing, ANS, content classification | ported |
 | FiniteStateEntropy | `entropy/fse` | `9f30e0918f87bd835fa040d922a208d7b219e50b` | FSE, Huff0 | ported |
 | ryg_rans | `entropy/ryg-rans` | `c9d162d996fd600315af9ae8eb89d832576cb32d` | scalar rANS, rANS64, SIMD rANS | downloaded |
+| FastPFOR | `transforms/numeric/FastPFOR` | `2457e1ed1af35bbf7f4c509c863fa9797e637cb3` | scalar FastPFor, NewPFor, BinaryPacking | ported |
 
 Paths in the table are relative to `E:/MIXER/KU/hybridzip-r2`. The fixed
 inventory contains eight donor roots. An empty category directory, such as
@@ -73,6 +74,7 @@ every candidate module or override a file-level license boundary.
 | libsais | Unmodified single-threaded BWT/inverse-BWT C source with a project-owned primary-index adapter | `third_party/libsais`; source hashes in `third_party/libsais/PROVENANCE.md` |
 | kanzi-cpp | SBRT MTF and RLT post-BWT transform closure | `third_party/kanzi/PROVENANCE.md` |
 | FiniteStateEntropy | Byte-identical `lib/` dependency closure for the direct FSE block backend | `third_party/fse`; integration record in `third_party/fse/README.hybridzip.md` |
+| FastPFOR | Scalar `FastPFor<8>` bit-packing closure with HZ02 little-endian word and tail framing | `third_party/fastpfor`; source identity and adapter boundary in `third_party/fastpfor/PROVENANCE.md` |
 | 7-Zip | Public-domain single-threaded LZMA1 SDK subset, complete LZMA backend, and direct `LzFind` binary-tree greedy parse candidate | `third_party/7zip-lzma`; paths and hashes in `third_party/7zip-lzma/PROVENANCE.md`, adapter boundary in `third_party/7zip-lzma/MODIFICATIONS.md` |
 
 The six compiled 7-Zip donor files are `C/Alloc.c`, `C/CpuArch.c`,
