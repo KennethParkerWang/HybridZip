@@ -16,6 +16,26 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Windows PowerShell 5 can inherit both `Path` and `PATH` from mixed tooling.
+# Start-Process materializes its environment through a case-insensitive map
+# and fails before launching the codec when both aliases exist. Keep the
+# canonical spelling for this runner process only.
+$pathEnvironmentNames = @(
+    [System.Environment]::GetEnvironmentVariables().Keys |
+        Where-Object {
+            [string]::Equals(
+                [string]$_, 'PATH', [System.StringComparison]::OrdinalIgnoreCase)
+        }
+)
+if ($pathEnvironmentNames.Count -gt 1) {
+    foreach ($pathEnvironmentName in $pathEnvironmentNames) {
+        if ([string]$pathEnvironmentName -cne 'Path') {
+            Remove-Item -LiteralPath ("Env:{0}" -f $pathEnvironmentName) `
+                -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 $files = @(
     'dickens', 'mozilla', 'mr', 'nci', 'ooffice', 'osdb',
     'reymont', 'samba', 'sao', 'webster', 'x-ray', 'xml'
