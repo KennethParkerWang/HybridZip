@@ -1,6 +1,6 @@
 # HybridZip Product Status
 
-Status date: 2026-08-26
+Status date: 2026-08-27
 
 ## R2 Current Status
 
@@ -24,6 +24,16 @@ The Silesia experiment runner, family runner, and package validator now expose
 the complete decoder-visible R2 mode set through mode 42. This is a tooling
 capability checkpoint only; it does not claim that the missing final ledger
 has been executed.
+
+The complete-ledger tooling is now present. `tools/run_r2_complete_ledger.ps1`
+creates a non-overwriting manifest for Auto plus all 43 forced R2 paths (44
+packages for 43 decoder-visible modes), supports resume by ledger ID, and refuses to
+start codec processes unless `-AuthorizeRuntimeExperiment` is supplied.
+`tools/derive_r2_complete_ledger.ps1` then validates every declared package,
+complete archive length, encode/decode timing and peak memory fields, and input,
+archive, and decoded SHA-256 values before writing the Auto/oracle ledger. The
+tools have passed PowerShell parse and `-ListOnly` checks; no final runtime
+ledger has been run yet.
 
 Post-build branch gates on 2026-08-26 used the current Release binary
 (`FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`) and one
@@ -168,7 +178,7 @@ Ledger package are present and independently validated.
 | Toolchain | CMake 4.3.2, Ninja 1.13.2, GCC 16.1.0 |
 | Executable | `E:\MIXER\hybridzip\build\Release\hybridzip.exe` |
 | Executable size | 3,220,993 bytes |
-| Executable SHA-256 | `2D28B07863E576FE63DF8A5BC5C50C0FDA1DB1A0DD0364BE964981D97E942BD6` |
+| HZ01 baseline executable SHA-256 | `2D28B07863E576FE63DF8A5BC5C50C0FDA1DB1A0DD0364BE964981D97E942BD6` |
 | CLI | `hybridzip c <input> <archive>` and `hybridzip d <archive> <output>` |
 
 ## Active Product Contract

@@ -1,10 +1,12 @@
 # HybridZip
 
-HybridZip is a C++17 research compressor for one regular file at a time. Its
-legacy HZ01 format uses four online, byte-native probability experts,
-an adaptive mixer, a deterministic 24-bit CDF, and a 32-bit arithmetic coder.
-The decoder reconstructs the same model state from the archive profile, seed,
-and decoded byte prefix; no model file is stored in the archive.
+HybridZip is a C++17 research compressor for one regular file at a time. It
+keeps the legacy HZ01 format and PROFILE_V1 decoder path for regression
+compatibility, and adds the block-oriented HZ02 R2 portfolio described below.
+The HZ01 path uses four online, byte-native probability experts, an adaptive
+mixer, a deterministic 24-bit CDF, and a 32-bit arithmetic coder. The decoder
+reconstructs the same model state from the archive profile, seed, and decoded
+byte prefix; no model file is stored in the archive.
 
 The current R2 build adds the block-oriented HZ02 portfolio: 43 decoder-visible
 candidate paths spanning representation transforms, LZ/entropy donors,
@@ -12,10 +14,15 @@ specialist PAQ8px branches, neural profiles, and router-controlled Auto
 selection. See [docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) for the
 current evidence boundary and known limitations.
 
-The current Release executable, five repository tests, the nine-input product
-matrix, and the 36-case Silesia Experiment Ledger run are complete.
+The HZ01 baseline Release executable, five repository tests, nine-input product
+matrix, and 36-case Silesia ledger are complete. R2 implementation is active:
+42/43 decoder-visible modes currently have current-Release 1 KiB byte-exact
+branch gates, while the final Auto plus 43-mode archive-byte ledger, candidate
+retirement, and final hot-path selection remain pending. The missing branch
+gate is `bwt-rlt-zstd` on random 1 KiB input; suitable 32 KiB evidence exists.
 
 ```text
+HZ01 compatibility path
 ByteHistory
   -> NGram + PPMD + Match + Online LSTM
   -> AdaptiveLinearMixer
@@ -23,6 +30,12 @@ ByteHistory
   -> deterministic CDF24
   -> Project Nayuki ArithmeticCoder (32-bit state)
   -> HZ01
+
+HZ02 R2 path
+input -> structure/representation candidates
+      -> LZ, specialist, neural, and multi-coder candidates
+      -> decoder-visible Auto router or forced mode
+      -> checksummed HZ02 blocks
 ```
 
 ## Build
@@ -63,6 +76,22 @@ been certified.
 .\build\Release\hybridzip.exe d .\output.hz .\restored.bin
 ```
 
+## R2 HZ02 Path
+
+R2 compression is selected explicitly with `--profile=r2`. Auto evaluates the
+enabled candidate portfolio for each block; a decoder-visible path can be
+forced for branch experiments. HZ02 archives use the same decompression
+command because the archive header selects the decoder.
+
+```powershell
+.\build\Release\hybridzip.exe c --profile=r2 --r2-mode=auto .\input.bin .\output.hz
+.\build\Release\hybridzip.exe c --profile=r2 --r2-mode=zstd .\input.bin .\output-zstd.hz
+.\build\Release\hybridzip.exe d .\output.hz .\restored.bin
+```
+
+Run `hybridzip --help` for the complete decoder-visible mode list and optional
+block/LZ parameters.
+
 Input and output must be different paths. HybridZip refuses to overwrite an
 existing output or an existing `<output>.tmp`; successful writes are renamed
 from the temporary path.
@@ -101,7 +130,12 @@ modified cmix source. Exact upstream locations and adaptations are recorded in
 [SOURCES.md](docs/SOURCES.md); required attributions are in
 [NOTICE.md](NOTICE.md).
 
-## Current Measured Results
+## HZ01 Baseline Measured Results
+
+The measurements in this section are the completed HZ01/PROFILE_V1 baseline.
+They are not the pending R2 Auto/oracle archive-byte ledger; the current R2
+evidence boundary and remaining work are tracked in
+[docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md).
 
 The product corpus contains nine data classes and 251,589 input bytes. Large
 sources are exact leading-byte prefixes, not full-corpus runs; selections and
@@ -146,7 +180,7 @@ statistical or paper-grade benchmark. Exact rows are in
 [baseline_test.tsv](results/baseline_test.tsv), and
 [baseline_tools.tsv](results/baseline_tools.tsv).
 
-### Silesia Experiment Ledger
+### HZ01 Silesia Baseline Ledger
 
 The formal import package covers all 12 Silesia members at 32, 64, and 128 KiB
 with one fixed PROFILE_V1 variant and one repeat. All 36 rows are
@@ -184,8 +218,9 @@ directories are excluded from normal Git staging but remain present locally.
 - HZ01 has no checksum, CRC, corruption recovery, authentication, random
   access, or metadata channel. A truncated or modified payload is not
   guaranteed to be detected.
-- PROFILE_V1 is fixed; there is no model selection, preprocessing, file-type
-  routing, multithreading, GPU path, or checkpointing.
+- HZ01/PROFILE_V1 is fixed; that compatibility path has no model selection,
+  preprocessing, file-type routing, multithreading, GPU path, or checkpointing.
+  These constraints do not describe the HZ02 R2 portfolio.
 - PROFILE_V1 is CPU-intensive in the current implementation. The nine-case run
   above summed to 170.030261 s encode and 163.049962 s decode.
 - The floating-point Online LSTM is deterministic in the released binary and

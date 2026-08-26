@@ -19,8 +19,9 @@ decoder-visible routing, and a final archive-byte experiment ledger.
 
 ### Phase 6 execution checklist
 
-- [ ] Add a resumable runner manifest for Auto plus all 43 forced R2 modes.
-- [ ] Add a read-only ledger derivation step that validates complete archive
+- [x] Add a resumable runner manifest for Auto plus all 43 decoder-visible R2
+  modes (44 packages: Auto plus 43 forced paths).
+- [x] Add a read-only ledger derivation step that validates complete archive
   bytes, timing, peak memory, and byte-exact hashes before writing outputs.
 - [ ] Run the authorized current-Release corpus experiment and preserve one
   package per mode without overwriting prior evidence.
@@ -75,6 +76,29 @@ Donor warehouse validation passed with 2506 checks across 21 manifests and
 their provenance/license evidence. No additional complete model-free C++17
 decoder closure was found, so implementation proceeds with the existing
 portfolio while the final ledger remains pending.
+
+Tooling checkpoint on 2026-08-27: `tools/run_r2_complete_ledger.ps1` now emits
+a fixed, resumable 44-package manifest (Auto plus 43 forced decoder-visible
+modes) and requires `-AuthorizeRuntimeExperiment`
+before starting any codec process. `tools/derive_r2_complete_ledger.ps1` is a
+read-only derivation step: it refuses incomplete packages, mixed codec hashes,
+duplicate cases, mismatched archive lengths, or non-byte-exact SHA-256
+round-trips. `-ListOnly` was parsed and run successfully; no runtime experiment
+was started. Phase 6 runtime execution remains pending explicit authorization.
+
+Documentation checkpoint on 2026-08-27: `README.md` now separates the completed
+HZ01 baseline measurements from the active HZ02 R2 implementation, records the
+42/43 current-Release branch-gate boundary, and shows both compatibility and R2
+paths. `docs/PRODUCT_STATUS.md` now uses the current Release SHA-256; the final
+R2 ledger and candidate decisions remain intentionally unclaimed. Its HZ01
+baseline table retains the historical `2D28...` hash that is embedded in the
+completed product and Silesia evidence packages.
+
+Ledger validation checkpoint on 2026-08-27: `derive_r2_complete_ledger.ps1`
+now rejects missing/non-finite/negative timing or memory values, non-zero codec
+exit codes, malformed codec hashes, and inconsistent peak-memory aggregates
+before deriving any R2 result table. PowerShell parsing passed; no package was
+executed.
 
 The next one-mode gate completed for mode 40 (`kanzi-ans`) on the current
 Release binary. The current-hash evidence index now covers 3/43 modes (40..42)
