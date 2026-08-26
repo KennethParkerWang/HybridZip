@@ -262,3 +262,10 @@ The next implementation checkpoint is metadata-only: use the mode registry
 emitted by `tools/index_r2_smoke_evidence.ps1` to keep the 43-mode evidence
 boundary auditable, then wait for authorization before running the final Auto
 archive-byte ledger.
+
+Metadata checkpoint completed on 2026-08-26 without starting the codec. The
+current Release hash index is
+`results/analysis/r2-smoke-evidence-index-20260826-registry`; its fixed
+43-row registry contains 42 `PASS` modes and mode 8 as
+`MISSING_CURRENT_HASH_EVIDENCE`. The index and the registry changes were
+committed and pushed as `47766f1`.

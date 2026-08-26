@@ -34,13 +34,14 @@ codec, and archive handling paths. This proves decoder-visible source coverage,
 not final runtime or compression-quality completion.
 
 The consolidated metadata-only smoke index at
-`results/analysis/r2-smoke-evidence-index-20260826-parallel` filters for the
+`results/analysis/r2-smoke-evidence-index-20260826-registry` filters for the
 current binary hash and finds unique 1 KiB byte-exact evidence for 42/43 HZ02
-modes. Mode 8 (`bwt-rlt-zstd`) is the only missing mode in this index because
-the random 1 KiB input did not produce a smaller Kanzi RLT representation; the
-forced path therefore emitted no archive. Existing corpus evidence confirms
-that mode 8 is runnable for suitable 32 KiB inputs. Historical smoke records
-use earlier binary hashes and remain provenance, not current-build evidence.
+modes. Its fixed `mode_registry.tsv` includes all 43 names and marks mode 8
+(`bwt-rlt-zstd`) as the only missing mode because the random 1 KiB input did
+not produce a smaller Kanzi RLT representation; the forced path therefore
+emitted no archive. Existing corpus evidence confirms that mode 8 is runnable
+for suitable 32 KiB inputs. Historical smoke records use earlier binary hashes
+and remain provenance, not current-build evidence.
 
 The remaining current-Release gates were executed in three parallel lanes with
 unique output directories, separate stdout/stderr logs, current-hash skipping,
@@ -134,7 +135,7 @@ archive (8.914063 bpb), decoded to 1024 bytes, and matched the input SHA-256
 exactly. Evidence is stored in
 `results/smoke/r2-postbuild-jax-compress-portable-1k-20260826/verification.json`.
 
-The current continuation record is [hybridzip_r2_task_plan.md](../hybridzip_r2_task_plan.md)
+The current continuation record is [task_plan.md](../task_plan.md)
 and the donor audit notes are [notes.md](../notes.md).
 
 Donor warehouse validation passed on 2026-08-26 with 2506 checks: 21 donor
