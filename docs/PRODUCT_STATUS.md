@@ -11,11 +11,14 @@ specialist PAQ8px graphs, neural profiles, router activation, and multi-coder
 selection. The Release executable and the R2 codec test executable compile and
 link successfully.
 
-Every newly added R2 branch has one deterministic 1 KiB archive/decode smoke
-with byte-exact input/output SHA-256 evidence. These smokes establish
-correctness only; they do not establish corpus-level ratio, speed, or memory
-rankings. The final Auto archive-byte ledger has not yet been regenerated for
-modes `30..42`, and candidate retirement/hot-path selection remains open.
+Forty-two of the 43 R2 branches have one deterministic 1 KiB archive/decode
+smoke with byte-exact input/output SHA-256 evidence. Mode 8
+(`bwt-rlt-zstd`) is the documented exception: random 1 KiB input did not
+produce a smaller RLT representation, while suitable 32 KiB evidence exists.
+These smokes establish correctness only; they do not establish corpus-level
+ratio, speed, or memory rankings. The final Auto archive-byte ledger has not
+yet been regenerated for the current Release hash across all R2 modes, and
+candidate retirement/hot-path selection remains open.
 
 Post-build branch gates on 2026-08-26 used the current Release binary
 (`FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`) and one
@@ -44,6 +47,10 @@ unique output directories, separate stdout/stderr logs, current-hash skipping,
 and a 60-second process timeout. No Auto, D40, CTest, batch, or larger-block
 test was run during this acceleration pass. The detailed mode-8 boundary record
 is `results/smoke/r2-postbuild-bwt-rlt-zstd-mode8-1k-20260826-230041-parallel/failure.json`.
+
+The indexer also emits `mode_registry.tsv`, a fixed 43-row registry with the
+numeric mode, source-level name, PASS/MISSING status, and accepted evidence
+path. It is metadata-only and does not run the codec.
 
 The latest forced mode 29 (`zpaq`) gate produced a 1365-byte archive
 (10.664063 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.

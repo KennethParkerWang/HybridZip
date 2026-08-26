@@ -11,8 +11,11 @@ decoder-visible routing, and a final archive-byte experiment ledger.
 - [x] Phase 1: Record current state and preserve the existing R2 plan.
 - [x] Phase 2: Audit the next R2-D donor candidates in `E:/MIXER/KU`.
 - [x] Phase 3: Port one license-cleared, runnable candidate into HZ02.
-- [ ] Phase 4: Release-build and run the single allowed 1 KiB round-trip gate.
+- [x] Phase 4: Release-build and run the allowed 1 KiB branch round-trip gates
+  (42/43 current-hash modes pass; mode 8 is unsuitable for the random input).
 - [x] Phase 5: Update provenance, format, ledger, and choose the next candidate.
+- [ ] Phase 6: Regenerate the complete current-hash Auto/archive-byte ledger
+  and retire or retain candidates after explicit experiment authorization.
 
 ## Constraints
 
@@ -32,8 +35,9 @@ C++17 closure. The current warehouse donors are already represented as
 portfolio is therefore the candidate set for the next accounting pass. A
 small Auto family-gating defect was fixed in `src/r2/block/block_planner.cpp`;
 mode 41 is now gated by the neural family and mode 42 by the numeric family.
-Release incremental compilation passed on 2026-08-26. Phase 4 remains pending
-because the current user constraint forbids a new Auto/CTest run.
+Release incremental compilation passed on 2026-08-26. The branch-level Phase 4
+gate is complete under the 1 KiB-only policy; the final Auto/CTest ledger is
+separate and remains pending because the current user constraint forbids it.
 
 Read-only evidence audit on 2026-08-26 found 50 smoke directories whose names
 contain `1k` and 59 `verification.json` files under `results/smoke`. These
@@ -253,3 +257,8 @@ The current-hash index is
 `results/analysis/r2-smoke-evidence-index-20260826-parallel` and reports
 42/43 unique passing modes with only mode 8 missing. No Auto, D40, CTest, or
 larger-block test was run.
+
+The next implementation checkpoint is metadata-only: use the mode registry
+emitted by `tools/index_r2_smoke_evidence.ps1` to keep the 43-mode evidence
+boundary auditable, then wait for authorization before running the final Auto
+archive-byte ledger.

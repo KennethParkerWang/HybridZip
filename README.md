@@ -1,10 +1,16 @@
 # HybridZip
 
 HybridZip is a C++17 research compressor for one regular file at a time. Its
-first-generation format uses four online, byte-native probability experts,
+legacy HZ01 format uses four online, byte-native probability experts,
 an adaptive mixer, a deterministic 24-bit CDF, and a 32-bit arithmetic coder.
 The decoder reconstructs the same model state from the archive profile, seed,
 and decoded byte prefix; no model file is stored in the archive.
+
+The current R2 build adds the block-oriented HZ02 portfolio: 43 decoder-visible
+candidate paths spanning representation transforms, LZ/entropy donors,
+specialist PAQ8px branches, neural profiles, and router-controlled Auto
+selection. See [docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) for the
+current evidence boundary and known limitations.
 
 The current Release executable, five repository tests, the nine-input product
 matrix, and the 36-case Silesia Experiment Ledger run are complete.

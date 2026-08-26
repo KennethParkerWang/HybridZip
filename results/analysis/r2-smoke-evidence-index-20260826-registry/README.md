@@ -1,0 +1,16 @@
+# R2 Smoke Evidence Index
+
+This index scans existing verification.json files only. It accepts one-byte-
+exact 1 KiB record per HZ02 mode and does not execute the codec.
+
+- candidate modes: 0..42 (43 total)
+- qualifying records found: 42
+- unique modes covered: 42
+- missing modes: 8
+- codec hash filter: `FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`
+
+latest_by_mode.tsv keeps the newest qualifying record per mode. Historical
+records and rebuild duplicates are intentionally reduced rather than treated
+as independent final evidence. mode_registry.tsv is a fixed 43-row view
+that includes every mode name and explicitly marks missing current-hash
+evidence; it does not infer success from router-only records.

@@ -82,6 +82,7 @@ foreach ($path in Get-ChildItem -LiteralPath $SmokeRoot -Recurse -Filter 'verifi
             $hash.ToUpperInvariant() -ne $CodecSha256.ToUpperInvariant()) { continue }
         $records += [pscustomobject][ordered]@{
             mode = $mode
+            mode_name = $modeNames[$mode]
             input_bytes = $inputBytes
             archive_bytes = if ($null -ne $archiveValue) { [int64]$archiveValue } else { 0 }
             bpb = if ($null -ne $bpbValue) { [double]$bpbValue } else { $null }
@@ -99,6 +100,32 @@ $latest = @($records | Sort-Object mode, evidence_mtime -Descending |
 $expected = 0..42
 $covered = @($latest | ForEach-Object mode)
 $missing = @($expected | Where-Object { $_ -notin $covered })
+$registry = foreach ($mode in $expected) {
+    $record = @($latest | Where-Object mode -eq $mode | Select-Object -First 1)
+    if ($record.Count -eq 1) {
+        [pscustomobject][ordered]@{
+            mode = $mode
+            mode_name = $modeNames[$mode]
+            status = 'PASS'
+            input_bytes = $record[0].input_bytes
+            archive_bytes = $record[0].archive_bytes
+            bpb = $record[0].bpb
+            codec_sha256 = $record[0].codec_sha256
+            evidence_path = $record[0].evidence_path
+        }
+    } else {
+        [pscustomobject][ordered]@{
+            mode = $mode
+            mode_name = $modeNames[$mode]
+            status = 'MISSING_CURRENT_HASH_EVIDENCE'
+            input_bytes = ''
+            archive_bytes = ''
+            bpb = ''
+            codec_sha256 = ''
+            evidence_path = ''
+        }
+    }
+}
 
 New-Item -ItemType Directory -Path $OutputPath | Out-Null
 function Write-NoBom([string]$Path, [string]$Text) {
@@ -109,6 +136,8 @@ Write-NoBom (Join-Path $OutputPath 'latest_by_mode.tsv') `
 Write-NoBom (Join-Path $OutputPath 'missing_modes.tsv') `
     (($missing | ForEach-Object { [pscustomobject]@{ mode = $_ } } |
         ConvertTo-Csv -Delimiter "`t" -NoTypeInformation) -join "`r`n")
+Write-NoBom (Join-Path $OutputPath 'mode_registry.tsv') `
+    (($registry | ConvertTo-Csv -Delimiter "`t" -NoTypeInformation) -join "`r`n")
 
 $hashFilterLine = if ([string]::IsNullOrWhiteSpace($CodecSha256)) {
     '- codec hash filter: none'
@@ -129,7 +158,9 @@ $hashFilterLine
 
 `latest_by_mode.tsv` keeps the newest qualifying record per mode. Historical
 records and rebuild duplicates are intentionally reduced rather than treated
-as independent final evidence.
+as independent final evidence. `mode_registry.tsv` is a fixed 43-row view
+that includes every mode name and explicitly marks missing current-hash
+evidence; it does not infer success from router-only records.
 "@
 Write-NoBom (Join-Path $OutputPath 'README.md') $readme
 
