@@ -20,7 +20,7 @@ void print_usage(std::ostream& output) {
     output << "Usage:\n\n"
               "  hybridzip c <input> <archive>\n"
               "  hybridzip c --profile=r2 "
-              "[--r2-mode=auto|stored|zstd|fse|lzma|predictive|donor-match|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|fastpfor] "
+              "[--r2-mode=auto|stored|zstd|fse|lzma|lz4|kanzi-ans|lmic-arithmetic|delta-binary-packed-zstd|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
@@ -68,8 +68,56 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     if (value == "lzma") {
         return r2::CandidatePolicy::LzmaOnly;
     }
+    if (value == "lz4") {
+        return r2::CandidatePolicy::Lz4Only;
+    }
+    if (value == "kanzi-ans") {
+        return r2::CandidatePolicy::KanziAnsOnly;
+    }
+    if (value == "lmic-arithmetic") {
+        return r2::CandidatePolicy::LmicArithmeticOnly;
+    }
+    if (value == "delta-binary-packed-zstd") {
+        return r2::CandidatePolicy::DeltaBinaryPackedZstdOnly;
+    }
+    if (value == "ppmd7") {
+        return r2::CandidatePolicy::Ppmd7Only;
+    }
+    if (value == "ppmd8") {
+        return r2::CandidatePolicy::Ppmd8Only;
+    }
+    if (value == "zpaq") {
+        return r2::CandidatePolicy::ZpaqOnly;
+    }
+    if (value == "ctw") {
+        return r2::CandidatePolicy::CtwOnly;
+    }
     if (value == "donor-match") {
         return r2::CandidatePolicy::DonorMatchPredictiveOnly;
+    }
+    if (value == "paq8px-apm") {
+        return r2::CandidatePolicy::Paq8pxApmPredictiveOnly;
+    }
+    if (value == "paq8px-record-model") {
+        return r2::CandidatePolicy::Paq8pxRecordModelOnly;
+    }
+    if (value == "paq8px-linear-prediction") {
+        return r2::CandidatePolicy::Paq8pxLinearPredictionOnly;
+    }
+    if (value == "paq8px-similarity") {
+        return r2::CandidatePolicy::Paq8pxSimilarityOnly;
+    }
+    if (value == "paq8px-similarity-sse") {
+        return r2::CandidatePolicy::Paq8pxSimilaritySseOnly;
+    }
+    if (value == "paq8px-generic-sse") {
+        return r2::CandidatePolicy::Paq8pxGenericSseOnly;
+    }
+    if (value == "paq8px-detected-sse") {
+        return r2::CandidatePolicy::Paq8pxDetectedSseOnly;
+    }
+    if (value == "wavpack") {
+        return r2::CandidatePolicy::WavpackOnly;
     }
     if (value == "bwt-zstd") {
         return r2::CandidatePolicy::BwtZstdOnly;
@@ -84,7 +132,34 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     if (value == "shuffle-zstd") return r2::CandidatePolicy::ShuffleZstdOnly;
     if (value == "bitshuffle-zstd") return r2::CandidatePolicy::BitshuffleZstdOnly;
     if (value == "delta-zstd") return r2::CandidatePolicy::DeltaZstdOnly;
+    if (value == "delta-of-delta-zstd") {
+        return r2::CandidatePolicy::DeltaOfDeltaZstdOnly;
+    }
     if (value == "fastpfor") return r2::CandidatePolicy::FastPforOnly;
+    if (value == "rans") return r2::CandidatePolicy::RansOnly;
+    if (value == "bcj2-zstd") return r2::CandidatePolicy::Bcj2ZstdOnly;
+    if (value == "record-transpose-zstd") return r2::CandidatePolicy::RecordTransposeZstdOnly;
+    if (value == "jpegls") return r2::CandidatePolicy::JpegLsOnly;
+    if (value == "flac-residual") return r2::CandidatePolicy::FlacResidualOnly;
+    if (value == "brotli-text") return r2::CandidatePolicy::BrotliTextOnly;
+    if (value == "cmix-word-zstd") {
+        return r2::CandidatePolicy::CmixWordDictionaryZstdOnly;
+    }
+    if (value == "neural-lstm") {
+        return r2::CandidatePolicy::NeuralLstmOnly;
+    }
+    if (value == "shared-neural-lstm") {
+        return r2::CandidatePolicy::SharedNeuralLstmOnly;
+    }
+    if (value == "lstm-compress") {
+        return r2::CandidatePolicy::LstmCompressOnly;
+    }
+    if (value == "bgpt-shared-prior") {
+        return r2::CandidatePolicy::BgptSharedPriorOnly;
+    }
+    if (value == "jax-compress-portable") {
+        return r2::CandidatePolicy::JaxCompressPortableOnly;
+    }
     throw std::invalid_argument("Invalid --r2-mode");
 }
 
@@ -92,7 +167,11 @@ void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
-              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor)="
+              << " candidates=" << stats.candidates_evaluated
+              << " selected=" << stats.selected_candidate_bytes
+              << " oracle=" << stats.oracle_candidate_bytes
+              << " oracle_gap=" << stats.oracle_gap_bytes
+              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'
@@ -106,7 +185,36 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << stats.blocks_by_mode[10] << '/'
               << stats.blocks_by_mode[11] << '/'
               << stats.blocks_by_mode[12] << '/'
-              << stats.blocks_by_mode[13] << '\n';
+              << stats.blocks_by_mode[13] << '/'
+              << stats.blocks_by_mode[14] << '/'
+              << stats.blocks_by_mode[15] << '/'
+              << stats.blocks_by_mode[16] << '/'
+              << stats.blocks_by_mode[17] << '/'
+              << stats.blocks_by_mode[18] << '/'
+              << stats.blocks_by_mode[19] << '/'
+              << stats.blocks_by_mode[20] << '/'
+              << stats.blocks_by_mode[21] << '/'
+              << stats.blocks_by_mode[22] << '/'
+              << stats.blocks_by_mode[23] << '/'
+              << stats.blocks_by_mode[24] << '/'
+              << stats.blocks_by_mode[25] << '/'
+              << stats.blocks_by_mode[26] << '/'
+              << stats.blocks_by_mode[27] << '/'
+              << stats.blocks_by_mode[28] << '/'
+              << stats.blocks_by_mode[29] << '/'
+              << stats.blocks_by_mode[30] << '/'
+              << stats.blocks_by_mode[31] << '/'
+              << stats.blocks_by_mode[32] << '/'
+              << stats.blocks_by_mode[33] << '/'
+              << stats.blocks_by_mode[34] << '/'
+              << stats.blocks_by_mode[35] << '/'
+              << stats.blocks_by_mode[36] << '/'
+              << stats.blocks_by_mode[37] << '/'
+              << stats.blocks_by_mode[38] << '/'
+              << stats.blocks_by_mode[39] << '/'
+              << stats.blocks_by_mode[40] << '/'
+              << stats.blocks_by_mode[41] << '/'
+              << stats.blocks_by_mode[42] << '\n';
 }
 
 }  // namespace

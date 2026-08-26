@@ -1,0 +1,24 @@
+{
+    "schema_version":  1,
+    "experiment_id":  "hybridzip-r2-family-predictive-20260821-d42",
+    "state":  "complete",
+    "dataset_name":  "KU family-specific raw corpus",
+    "manifest_path":  "E:\\MIXER\\hybridzip\\results\\corpus\\r2-family-raw-20260821\\manifest.tsv",
+    "manifest_sha256":  "B7D5D442777A0F6B193EF390290571DF18A08F4486CA78829F4B6A86991AFD1F",
+    "files":  [
+                  "cmix-dictionary",
+                  "brotli-dictionary",
+                  "zstd-compress",
+                  "libsais",
+                  "fastpfor-bitpacking",
+                  "flac-stream-encoder",
+                  "charls-jpegls",
+                  "lstm-dictionary"
+              ],
+    "scope_kib":  32,
+    "mode":  "predictive",
+    "codec_path":  "E:\\MIXER\\hybridzip\\build\\Release\\hybridzip.exe",
+    "codec_sha256":  "DDD852EF0744740735E6D32EE0FFCB197C3C8349C0D695AD192C7CB96BF298BA",
+    "selection_policy":  "first 32768 bytes from each provenance-tracked donor source",
+    "notes":  "32 KiB only; source files remain in KU and are not modified."
+}

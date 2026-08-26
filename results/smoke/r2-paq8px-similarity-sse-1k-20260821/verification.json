@@ -1,0 +1,45 @@
+{
+  "test": "forced-paq8px-similarity-sse-1k",
+  "timestamp": "2026-08-21T16:22:38.0588458+08:00",
+  "input_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-sse-1k-20260821\\gettysburg.1k",
+  "archive_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-sse-1k-20260821\\gettysburg.1k.hz2",
+  "decoded_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-sse-1k-20260821\\gettysburg.1k.decoded",
+  "input_bytes": 1024,
+  "archive_bytes": 652,
+  "payload_bytes": 592,
+  "metadata_bytes": 4,
+  "decoded_bytes": 1024,
+  "mode": 35,
+  "transform": 0,
+  "entropy": 18,
+  "flags": 1,
+  "declared_uncompressed_bytes": 1024,
+  "encode": {
+    "exit_code": 0,
+    "wall_seconds": 0.3236861,
+    "cpu_seconds": 0.125,
+    "peak_working_set_bytes": 157782016,
+    "peak_working_set_mib": 150.47265625
+  },
+  "decode": {
+    "exit_code": 0,
+    "wall_seconds": 0.1416271,
+    "cpu_seconds": 0.109375,
+    "peak_working_set_bytes": 157847552,
+    "peak_working_set_mib": 150.53515625
+  },
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "BE161536211591FCB318E55073BAAC17B18A1C12B304C8D78C90102EC0F2B947",
+  "codec_sha256": "69699B520166B29A2316512F013BA018AD6E63B2D5CEC74398B40C8E86B7E84B",
+  "byte_exact": true,
+  "constraints": {
+    "auto_run": false,
+    "d40_run": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false,
+    "encode_runs": 1,
+    "decode_runs": 1
+  }
+}

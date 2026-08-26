@@ -1,0 +1,36 @@
+{
+  "test": "forced-lstm-compress-donor-port-1k",
+  "timestamp": "2026-08-26T12:03:39.9446312+08:00",
+  "input_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-lstm-compress-donor-port-1k-20260826\\input.bin",
+  "archive_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-lstm-compress-donor-port-1k-20260826\\input.hz2",
+  "decoded_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-lstm-compress-donor-port-1k-20260826\\input.decoded",
+  "input_bytes": 1024,
+  "archive_bytes": 688,
+  "payload_bytes": 628,
+  "decoded_bytes": 1024,
+  "mode": 23,
+  "transform": 15,
+  "entropy": 1,
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "1ED24AEF7DD77A9DED7F0D0E8C85CB8631E0564E2034905A1C79C008AB72EBF0",
+  "byte_exact": true,
+  "encode": {
+    "exit_code": 0,
+    "note": "direct CLI invocation; process wrapper argument failure did not start codec"
+  },
+  "decode": {
+    "exit_code": 0,
+    "wall_seconds": 0.6252309,
+    "peak_working_set_bytes": null,
+    "peak_working_set_mib": null
+  },
+  "constraints": {
+    "auto_run": false,
+    "d40_run": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false
+  },
+  "metadata_bytes": 4
+}

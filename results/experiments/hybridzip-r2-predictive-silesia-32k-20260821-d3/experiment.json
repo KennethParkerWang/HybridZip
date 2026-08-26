@@ -1,0 +1,44 @@
+{
+    "schema_version":  1,
+    "experiment_id":  "hybridzip-r2-predictive-silesia-32k-20260821-d3",
+    "name":  "HybridZip R2 predictive Silesia prefix experiment",
+    "state":  "完成",
+    "description":  "HybridZip HZ02 block portfolio mode predictive on Silesia 32/64/128 KiB prefixes.",
+    "model_structure":  "HZ02 donor-driven block portfolio with representation, specialist, neural, LZ, and multi-coder candidates.",
+    "change_from_baseline":  "Uses HZ02 mode predictive instead of the fixed HZ01 PROFILE_V1 full-file path.",
+    "hypothesis":  "The block portfolio should retain byte-exact reconstruction and choose only payloads smaller than stored in auto mode.",
+    "baseline_description":  "Product comparison uses available gzip, zstd, brotli, xz, and 7-Zip binaries on identical bytes.",
+    "created_at":  "2026-08-21T04:49:30.3713628+08:00",
+    "dataset_name":  "Silesia",
+    "dataset_path":  "F:\\paq8px\\silesia",
+    "files":  [
+                  "dickens",
+                  "mozilla",
+                  "mr",
+                  "nci",
+                  "ooffice",
+                  "osdb",
+                  "reymont",
+                  "samba",
+                  "sao",
+                  "webster",
+                  "x-ray",
+                  "xml"
+              ],
+    "scopes_kib":  [
+                       32
+                   ],
+    "variants":  [
+                     "r2-predictive"
+                 ],
+    "repeat_count":  1,
+    "codec_name":  "HybridZip",
+    "codec_version":  "1.0.0-r2-predictive",
+    "codec_path":  "E:\\MIXER\\hybridzip\\build\\Release\\hybridzip.exe",
+    "codec_sha256":  "8D0798541BC867734D16AC65ECC6DD25B3E94B69B5531FBFA28B806324A84688",
+    "source_revision":  "working-tree-uncommitted",
+    "command_template":  "\"\u003ccodec-path\u003e\" c --profile=r2 --r2-mode=\u003cmode\u003e \"\u003cinput-path\u003e\" \"\u003carchive-path\u003e\"; \"\u003ccodec-path\u003e\" d \"\u003carchive-path\u003e\" \"\u003coutput-path\u003e\"",
+    "configuration":  "profile_id=2;mode=predictive;block_size=65536;zstd_level=19;lzma_level=9;threads=1;process_timeout_seconds=1800",
+    "environment":  "Windows 10.0.19045.0; CPU=12th Gen Intel(R) Core(TM) i7-12650H; sequential execution",
+    "notes":  "archive_bytes includes the complete HZ02 archive header, every block header, CRC32 metadata, backend envelope, and payload."
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "branch": "LZ4 high-speed LZ candidate",
+  "date": "2026-08-21",
+  "input_path": "E:/MIXER/hybridzip/results/smoke/r2-lz4-1k-20260821/gettysburg.1k",
+  "archive_path": "E:/MIXER/hybridzip/results/smoke/r2-lz4-1k-20260821/gettysburg.1k.hz02",
+  "decoded_path": "E:/MIXER/hybridzip/results/smoke/r2-lz4-1k-20260821/gettysburg.1k.decoded",
+  "input_bytes": 1024,
+  "archive_bytes": 875,
+  "payload_bytes": 815,
+  "metadata_bytes": 4,
+  "decoded_bytes": 1024,
+  "ratio": 0.8544921875,
+  "bpb": 6.8359375,
+  "mode": 39,
+  "transform": 0,
+  "entropy": 22,
+  "payload_magic": "HZ41",
+  "payload_version": 1,
+  "lz4_hc_level": 12,
+  "lz4_stream_bytes": 791,
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "4955CCD1A64F8B283D8823CC1A059D308B55E7D531110C1CD5C08A6321FBC24D",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "codec_sha256": "555FF1812B3183B2F239CC420572B65DD631362A5162080D7FD0B633138FEC71",
+  "encode": {
+    "exit_code": 0,
+    "wall_seconds": 0.2152184,
+    "peak_working_set_mib": null
+  },
+  "decode": {
+    "exit_code": 0,
+    "wall_seconds": 0.0114161,
+    "peak_working_set_mib": null
+  },
+  "byte_differences": 0,
+  "roundtrip": "PASS",
+  "attempts": {
+    "encode": 1,
+    "decode": 1
+  },
+  "notes": "The process wrapper did not retain peak working set after exit; memory is null and the codec was not rerun. No Auto, D40, CTest, batch, or block larger than 1 KiB was run."
+}

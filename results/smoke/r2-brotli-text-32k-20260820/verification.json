@@ -1,0 +1,19 @@
+{
+  "kind": "minimal-byte-exact-round-trip",
+  "date": "2026-08-20",
+  "source": "F:/paq8px/silesia/dickens first 32768 bytes",
+  "profile": "r2",
+  "mode": "brotli-text",
+  "block_size": 32768,
+  "input_bytes": 32768,
+  "archive_bytes": 11322,
+  "payload_bytes": 11262,
+  "blocks_by_mode": {
+    "brotli_text": 1
+  },
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "F279686158C0638706C9A7E513FFCD4099C7DBE46CECEBA4D1647117D1493B7B",
+  "result": "PASS",
+  "scope_limit": "One forced 32 KiB round trip proves this path reconstructs these bytes exactly; it is not a compression benchmark."
+}

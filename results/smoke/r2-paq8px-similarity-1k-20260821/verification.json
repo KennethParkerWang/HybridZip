@@ -1,0 +1,56 @@
+{
+  "test": "forced-paq8px-similarity-1k",
+  "timestamp": "2026-08-21T15:52:54.2154663+08:00",
+  "input_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-1k-20260821\\gettysburg.1k",
+  "archive_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-1k-20260821\\gettysburg.1k.hz2",
+  "decoded_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-1k-20260821\\gettysburg.1k.decoded",
+  "decoder_recheck_path": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-1k-20260821\\gettysburg.1k.recheck.decoded",
+  "input_bytes": 1024,
+  "archive_bytes": 705,
+  "payload_bytes": 645,
+  "metadata_bytes": 4,
+  "decoded_bytes": 1024,
+  "mode": 34,
+  "transform": 0,
+  "entropy": 17,
+  "flags": 1,
+  "declared_uncompressed_bytes": 1024,
+  "encode": {
+    "exit_code": 0,
+    "wall_seconds": 0.2230943,
+    "cpu_seconds": 0.015625,
+    "peak_working_set_bytes": null,
+    "peak_working_set_mib": null,
+    "measurement_note": "Start-Process returned no retained peak-working-set value after process exit; no second encode was run."
+  },
+  "decode": {
+    "exit_code": 0,
+    "wall_seconds": 0.0254001,
+    "cpu_seconds": 0.015625,
+    "peak_working_set_bytes": null,
+    "peak_working_set_mib": null
+  },
+  "decoder_only_recheck": {
+    "exit_code": 0,
+    "wall_seconds": 0.0593894,
+    "observed_peak_working_set_bytes": 6873088,
+    "observed_peak_working_set_mib": 6.5546875,
+    "byte_exact": true
+  },
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoder_recheck_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "1E9283AF18C643BA813EFD29886614A3E33BD425A40E80133ECF8D2F40C3597B",
+  "codec_sha256": "8A64B0128D53592CAE667F9E215E45746BB44A062493E77665A2162AA3E77A00",
+  "byte_exact": true,
+  "constraints": {
+    "auto_run": false,
+    "d40_run": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false,
+    "encode_runs": 1,
+    "decode_runs": 2,
+    "second_decode_reason": "decoder-only recheck and observed peak-working-set sampling of the existing archive"
+  }
+}

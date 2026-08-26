@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "profile": "HZ02",
+  "branch": "paq8px-generic-sse",
+  "scope": "single forced 1 KiB smoke",
+  "input_bytes": 1024,
+  "archive_bytes": 483,
+  "payload_bytes": 423,
+  "metadata_bytes": 4,
+  "decoded_bytes": 1024,
+  "header": {
+    "mode": 36,
+    "transform": 0,
+    "entropy": 19,
+    "flags": 1,
+    "uncompressed_size": 1024
+  },
+  "roundtrip": "PASS",
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "8ECF6F1D72361A75846D2D9685B8D18C533ACDFAAD3D06BD874113A39DFE872A",
+  "codec_sha256": "E2F23D9C014FDF90A165E941780A7EBC3F1E28487EBA53BEDDFDA430500A2963",
+  "encode": {
+    "exit_code": 0,
+    "seconds": 0.9217634,
+    "peak_working_set_bytes": 561012736,
+    "peak_working_set_mib": 535.0234375
+  },
+  "decode": {
+    "exit_code": 0,
+    "seconds": 0.7457658,
+    "peak_working_set_bytes": 560963584,
+    "peak_working_set_mib": 534.9765625
+  },
+  "constraints": {
+    "encode_runs": 1,
+    "decode_runs": 1,
+    "auto_run": false,
+    "d40_rerun": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false,
+    "automatic_retry": false
+  }
+}

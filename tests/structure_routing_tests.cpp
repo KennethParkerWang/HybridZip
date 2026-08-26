@@ -51,5 +51,34 @@ int main() {
     }
     require(router.activate(analyzer.analyze(hz::r2::ByteView(x86))).x86_bcj_zstd,
             "x86 branch density did not activate BCJ");
+
+    std::vector<std::uint8_t> correlated(4096, 0U);
+    for (std::size_t index = 0; index < correlated.size(); ++index) {
+        correlated[index] = static_cast<std::uint8_t>(index & 1U);
+    }
+    const auto correlated_activation = router.activate(
+        analyzer.analyze(hz::r2::ByteView(correlated)));
+    require(correlated_activation.lstm_compress,
+            "Low-printable correlated bytes did not activate LSTM-Compress");
+
+    const hz::r2::StructureFeatures text_structure = analyzer.analyze(
+        hz::r2::ByteView(text));
+    std::vector<hz::r2::ExpertTelemetry> telemetry(
+        hz::r2::HierarchicalActivationRouter::family_slot_count());
+    for (auto& item : telemetry) {
+        item.recent_log_loss_256 = 1.0;
+    }
+    hz::r2::HierarchicalActivationRouter hierarchical;
+    const std::vector<bool> text_families = hierarchical.active_experts(
+        text_structure, telemetry);
+    require(text_families.size() == telemetry.size() &&
+                text_families[0] && text_families[1] && text_families[2] &&
+                text_families[5] && text_families[7],
+            "Text family router did not retain expected causal families");
+
+    telemetry[2].recent_log_loss_256 = 9.0;
+    telemetry[2].age = 8192;
+    require(!hierarchical.active_experts(text_structure, telemetry)[2],
+            "Stale high-loss neural family was not put to sleep");
     return 0;
 }

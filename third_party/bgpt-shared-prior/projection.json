@@ -1,0 +1,19 @@
+{
+  "cdf_total": 65536,
+  "checkpoint_bytes": 1324402756,
+  "checkpoint_file": "weights-text.pth",
+  "checkpoint_repository": "https://huggingface.co/sander-wood/bgpt",
+  "checkpoint_revision": "7b3fc8b7fe0b4fec4f40dd0bdeb39b2cacf0aa96",
+  "checkpoint_sha256": "f30ed5a814086c5b9e64f56a76ccfcded00a82fc71c3ba6de322b708d29f6ac7",
+  "contexts": 257,
+  "license": "MIT",
+  "model": "bGPT text",
+  "output": "src\\r2\\entropy\\bgpt_shared_prior_data.cpp",
+  "projection": "fixed-special-patch byte bigram posterior",
+  "projection_version": 1,
+  "schema_version": 1,
+  "source_repository": "https://github.com/sanderwood/bgpt",
+  "source_revision": "56b98d647b97c086bf9b3c0b840f0d662545e81c",
+  "symbols": 256,
+  "table_sha256": "1b135959d42b304d0bc4cce9da75022d4a8be7bc30061c5fe67405f1b2d06330"
+}

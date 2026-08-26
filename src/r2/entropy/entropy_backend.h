@@ -15,7 +15,26 @@ enum class EntropyKind : std::uint8_t {
     Rans = 3,
     Fse = 4,
     Lzma = 5,
-    FastPfor = 6
+    FastPfor = 6,
+    JpegLs = 7,
+    FlacResidual = 8,
+    BrotliText = 9,
+    Ppmd7 = 10,
+    Ppmd8 = 11,
+    Zpaq = 12,
+    Ctw = 13,
+    Paq8pxApm = 14,
+    Paq8pxRecordModel = 15,
+    Paq8pxLinearPrediction = 16,
+    Paq8pxSimilarity = 17,
+    Paq8pxSimilaritySse = 18,
+    Paq8pxGenericSse = 19,
+    Paq8pxDetectedSse = 20,
+    Wavpack = 21,
+    Lz4 = 22,
+    KanziAns = 23,
+    LmicArithmetic = 24,
+    ZstdFseDeltaBinaryPacked = 25
 };
 
 class IBlockEntropyBackend {

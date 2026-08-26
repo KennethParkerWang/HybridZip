@@ -91,6 +91,9 @@ hz_enable_warnings(hz_libsais_donor)
 
 add_library(hz_kanzi_mtf_donor STATIC
     third_party/kanzi/Global.cpp
+    third_party/kanzi/entropy/ANSRangeEncoder.cpp
+    third_party/kanzi/entropy/ANSRangeDecoder.cpp
+    third_party/kanzi/entropy/EntropyUtils.cpp
     third_party/kanzi/transform/RLT.cpp
     third_party/kanzi/transform/SBRT.cpp
 )
@@ -109,17 +112,166 @@ add_library(hz_fastpfor_donor STATIC third_party/fastpfor/src/bitpacking.cpp)
 target_include_directories(hz_fastpfor_donor PUBLIC third_party/fastpfor/headers)
 hz_enable_warnings(hz_fastpfor_donor)
 
+add_library(hz_charls_donor STATIC
+    third_party/charls/src/charls_jpegls_decoder.cpp
+    third_party/charls/src/charls_jpegls_encoder.cpp
+    third_party/charls/src/golomb_lut.cpp
+    third_party/charls/src/jpegls_error.cpp
+    third_party/charls/src/jpeg_stream_reader.cpp
+    third_party/charls/src/jpeg_stream_writer.cpp
+    third_party/charls/src/make_scan_codec.cpp
+    third_party/charls/src/pch.cpp
+    third_party/charls/src/quantization_lut.cpp
+    third_party/charls/src/validate_spiff_header.cpp
+    third_party/charls/src/version.cpp
+)
+target_include_directories(hz_charls_donor PUBLIC third_party/charls/include)
+target_compile_definitions(hz_charls_donor
+    PUBLIC CHARLS_STATIC
+    PRIVATE CHARLS_LIBRARY_BUILD
+)
+hz_enable_warnings(hz_charls_donor)
+
+add_library(hz_flac_donor STATIC
+    src/r2/representation/flac_donor_config.c
+    third_party/flac/src/libFLAC/bitmath.c
+    third_party/flac/src/libFLAC/fixed.c
+    third_party/flac/src/libFLAC/lpc.c
+)
+target_include_directories(hz_flac_donor PUBLIC
+    third_party/flac/include
+    third_party/flac/src/libFLAC/include
+)
+target_compile_definitions(hz_flac_donor PRIVATE
+    FLAC__NO_ASM
+    FLAC__NO_DLL
+    HAVE_FSEEKO=1
+    HAVE_LROUND=1
+)
+hz_enable_warnings(hz_flac_donor)
+
+add_library(hz_wavpack_donor STATIC
+    third_party/wavpack/src/common_utils.c
+    third_party/wavpack/src/decorr_utils.c
+    third_party/wavpack/src/entropy_utils.c
+    third_party/wavpack/src/extra1.c
+    third_party/wavpack/src/extra2.c
+    third_party/wavpack/src/open_utils.c
+    third_party/wavpack/src/open_raw.c
+    third_party/wavpack/src/pack.c
+    third_party/wavpack/src/pack_dns.c
+    third_party/wavpack/src/pack_floats.c
+    third_party/wavpack/src/pack_utils.c
+    third_party/wavpack/src/read_words.c
+    third_party/wavpack/src/tags.c
+    third_party/wavpack/src/tag_utils.c
+    third_party/wavpack/src/unpack.c
+    third_party/wavpack/src/unpack_floats.c
+    third_party/wavpack/src/unpack_seek.c
+    third_party/wavpack/src/unpack_utils.c
+    third_party/wavpack/src/write_words.c
+)
+target_include_directories(hz_wavpack_donor PUBLIC
+    third_party/wavpack/include
+)
+target_compile_definitions(hz_wavpack_donor PRIVATE
+    _CRT_SECURE_NO_WARNINGS
+    HAVE___BUILTIN_CLZ=1
+)
+hz_enable_warnings(hz_wavpack_donor)
+
+add_library(hz_lz4_donor STATIC
+    third_party/lz4/lz4.c
+    third_party/lz4/lz4hc.c
+)
+target_include_directories(hz_lz4_donor PUBLIC third_party/lz4)
+hz_enable_warnings(hz_lz4_donor)
+
+add_library(hz_brotli_common STATIC
+    third_party/brotli/c/common/constants.c
+    third_party/brotli/c/common/context.c
+    third_party/brotli/c/common/dictionary.c
+    third_party/brotli/c/common/platform.c
+    third_party/brotli/c/common/shared_dictionary.c
+    third_party/brotli/c/common/transform.c
+)
+target_include_directories(hz_brotli_common
+    PUBLIC third_party/brotli/c/include
+    PRIVATE third_party/brotli/c
+)
+hz_enable_warnings(hz_brotli_common)
+
+add_library(hz_brotli_dec STATIC
+    third_party/brotli/c/dec/bit_reader.c
+    third_party/brotli/c/dec/decode.c
+    third_party/brotli/c/dec/huffman.c
+    third_party/brotli/c/dec/prefix.c
+    third_party/brotli/c/dec/state.c
+    third_party/brotli/c/dec/static_init.c
+)
+target_include_directories(hz_brotli_dec
+    PUBLIC third_party/brotli/c/include
+    PRIVATE third_party/brotli/c
+)
+target_link_libraries(hz_brotli_dec PUBLIC hz_brotli_common)
+hz_enable_warnings(hz_brotli_dec)
+
+add_library(hz_brotli_enc STATIC
+    third_party/brotli/c/enc/backward_references.c
+    third_party/brotli/c/enc/backward_references_hq.c
+    third_party/brotli/c/enc/bit_cost.c
+    third_party/brotli/c/enc/block_splitter.c
+    third_party/brotli/c/enc/brotli_bit_stream.c
+    third_party/brotli/c/enc/cluster.c
+    third_party/brotli/c/enc/command.c
+    third_party/brotli/c/enc/compound_dictionary.c
+    third_party/brotli/c/enc/compress_fragment.c
+    third_party/brotli/c/enc/compress_fragment_two_pass.c
+    third_party/brotli/c/enc/dictionary_hash.c
+    third_party/brotli/c/enc/encode.c
+    third_party/brotli/c/enc/encoder_dict.c
+    third_party/brotli/c/enc/entropy_encode.c
+    third_party/brotli/c/enc/fast_log.c
+    third_party/brotli/c/enc/histogram.c
+    third_party/brotli/c/enc/literal_cost.c
+    third_party/brotli/c/enc/memory.c
+    third_party/brotli/c/enc/metablock.c
+    third_party/brotli/c/enc/static_dict.c
+    third_party/brotli/c/enc/static_dict_lut.c
+    third_party/brotli/c/enc/static_init.c
+    third_party/brotli/c/enc/utf8_util.c
+)
+target_include_directories(hz_brotli_enc
+    PUBLIC third_party/brotli/c/include
+    PRIVATE third_party/brotli/c
+)
+target_link_libraries(hz_brotli_enc PUBLIC hz_brotli_common)
+hz_enable_warnings(hz_brotli_enc)
+
 add_library(hz_7zip_lzma STATIC
     third_party/7zip-lzma/C/Alloc.c
+    third_party/7zip-lzma/C/Bcj2.c
+    third_party/7zip-lzma/C/Bcj2Enc.c
     third_party/7zip-lzma/C/CpuArch.c
     third_party/7zip-lzma/C/LzFind.c
     third_party/7zip-lzma/C/LzFindOpt.c
     third_party/7zip-lzma/C/LzmaDec.c
     third_party/7zip-lzma/C/LzmaEnc.c
+    third_party/7zip-lzma/C/Ppmd7.c
+    third_party/7zip-lzma/C/Ppmd7Dec.c
+    third_party/7zip-lzma/C/Ppmd7Enc.c
+    third_party/7zip-lzma/C/Ppmd8.c
+    third_party/7zip-lzma/C/Ppmd8Dec.c
+    third_party/7zip-lzma/C/Ppmd8Enc.c
 )
 target_include_directories(hz_7zip_lzma PUBLIC third_party/7zip-lzma/C)
 target_compile_definitions(hz_7zip_lzma PRIVATE Z7_ST)
 hz_enable_warnings(hz_7zip_lzma)
+
+add_library(hz_zpaq_donor STATIC third_party/zpaq/libzpaq.cpp)
+target_include_directories(hz_zpaq_donor PUBLIC third_party/zpaq)
+target_compile_definitions(hz_zpaq_donor PRIVATE NOJIT)
+hz_enable_warnings(hz_zpaq_donor)
 
 add_library(hz_nayuki
     third_party/nayuki/ArithmeticCoder.cpp
@@ -169,6 +321,29 @@ target_include_directories(hz_cmix_match
 )
 hz_enable_warnings(hz_cmix_match)
 
+set(HZ_CMIX_DICTIONARY_SOURCE
+    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/cmix/preprocess/english.dic")
+set(HZ_CMIX_DICTIONARY_GENERATED_DIR
+    "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(HZ_CMIX_DICTIONARY_GENERATED_SOURCE
+    "${HZ_CMIX_DICTIONARY_GENERATED_DIR}/cmix_dictionary_data.cpp")
+file(READ "${HZ_CMIX_DICTIONARY_SOURCE}" HZ_CMIX_DICTIONARY_HEX HEX)
+string(REGEX REPLACE "([0-9A-Fa-f][0-9A-Fa-f])" "0x\\1, "
+       HZ_CMIX_DICTIONARY_INITIALIZERS "${HZ_CMIX_DICTIONARY_HEX}")
+file(MAKE_DIRECTORY "${HZ_CMIX_DICTIONARY_GENERATED_DIR}")
+file(SIZE "${HZ_CMIX_DICTIONARY_SOURCE}" HZ_CMIX_DICTIONARY_SIZE)
+file(WRITE "${HZ_CMIX_DICTIONARY_GENERATED_SOURCE}" "#include \"r2/representation/cmix_dictionary_data.h\"\n\n#include <array>\n\nnamespace hz::r2 {\nnamespace {\n\nconst std::array<std::uint8_t, ${HZ_CMIX_DICTIONARY_SIZE}> kDictionary{\n${HZ_CMIX_DICTIONARY_INITIALIZERS}\n};\n\n}  // namespace\n\nconst std::uint8_t* cmix_dictionary_data() noexcept {\n    return kDictionary.data();\n}\n\nstd::size_t cmix_dictionary_size() noexcept {\n    return kDictionary.size();\n}\n\n}  // namespace hz::r2\n")
+
+add_library(hz_cmix_dictionary_donor STATIC
+    third_party/cmix/preprocess/dictionary.cpp
+    "${HZ_CMIX_DICTIONARY_GENERATED_SOURCE}"
+)
+target_include_directories(hz_cmix_dictionary_donor PUBLIC
+    src
+    third_party/cmix/preprocess
+)
+hz_enable_warnings(hz_cmix_dictionary_donor)
+
 add_library(hz_paq8px_match
     third_party/paq8px/match_core.cpp
     src/r2/experts/paq8px_match_expert.cpp
@@ -176,6 +351,139 @@ add_library(hz_paq8px_match
 )
 target_include_directories(hz_paq8px_match PUBLIC src)
 hz_enable_warnings(hz_paq8px_match)
+
+add_library(hz_paq8px_apm STATIC third_party/paq8px/apm1.cpp)
+target_include_directories(hz_paq8px_apm PUBLIC third_party/paq8px)
+hz_enable_warnings(hz_paq8px_apm)
+
+add_library(hz_paq8px_record_model STATIC
+    third_party/paq8px/record_model/AdaptiveMap.cpp
+    third_party/paq8px/record_model/BitCount.cpp
+    third_party/paq8px/record_model/BlockType.cpp
+    third_party/paq8px/record_model/ContextMap.cpp
+    third_party/paq8px/record_model/Ilog.cpp
+    third_party/paq8px/record_model/IndirectMap.cpp
+    third_party/paq8px/record_model/Mixer.cpp
+    third_party/paq8px/record_model/Mixer_Scalar.cpp
+    third_party/paq8px/record_model/ProgramChecker.cpp
+    third_party/paq8px/record_model/Random.cpp
+    third_party/paq8px/record_model/Shared.cpp
+    third_party/paq8px/record_model/SmallStationaryContextMap.cpp
+    third_party/paq8px/record_model/Squash.cpp
+    third_party/paq8px/record_model/StateMap.cpp
+    third_party/paq8px/record_model/StateTable.cpp
+    third_party/paq8px/record_model/StationaryMap.cpp
+    third_party/paq8px/record_model/Stretch.cpp
+    third_party/paq8px/record_model/UpdateBroadcaster.cpp
+    third_party/paq8px/record_model/model/RecordModel.cpp
+)
+target_include_directories(hz_paq8px_record_model PUBLIC
+    third_party/paq8px/record_model
+)
+hz_enable_warnings(hz_paq8px_record_model)
+
+add_library(hz_paq8px_linear_prediction_model STATIC
+    third_party/paq8px/record_model/OLS.cpp
+    third_party/paq8px/record_model/OLS_factory.cpp
+    third_party/paq8px/record_model/OLS_float_Scalar.cpp
+    third_party/paq8px/record_model/OLS_double_Scalar.cpp
+    third_party/paq8px/record_model/ResidualMap.cpp
+    third_party/paq8px/record_model/model/LinearPredictionModel.cpp
+)
+target_include_directories(hz_paq8px_linear_prediction_model PUBLIC
+    third_party/paq8px/record_model
+)
+target_link_libraries(hz_paq8px_linear_prediction_model PUBLIC
+    hz_paq8px_record_model
+)
+hz_enable_warnings(hz_paq8px_linear_prediction_model)
+
+add_library(hz_paq8px_similarity_model STATIC
+    third_party/paq8px/record_model/ContextMap2.cpp
+    third_party/paq8px/record_model/model/SimilarityEmaFunctions_Scalar.cpp
+    third_party/paq8px/record_model/model/SimilarityEmaFunctionsFactory.cpp
+    third_party/paq8px/record_model/model/SimilarityModel.cpp
+    third_party/paq8px/record_model/model/SimilarityModelPair.cpp
+)
+target_include_directories(hz_paq8px_similarity_model PUBLIC
+    third_party/paq8px/record_model
+)
+target_link_libraries(hz_paq8px_similarity_model PUBLIC
+    hz_paq8px_record_model
+)
+hz_enable_warnings(hz_paq8px_similarity_model)
+
+add_library(hz_paq8px_sse STATIC
+    third_party/paq8px/record_model/APM.cpp
+    third_party/paq8px/record_model/APM1.cpp
+    third_party/paq8px/record_model/APMPost.cpp
+    third_party/paq8px/record_model/SSE.cpp
+)
+target_include_directories(hz_paq8px_sse PUBLIC
+    third_party/paq8px/record_model
+)
+target_link_libraries(hz_paq8px_sse PUBLIC
+    hz_paq8px_record_model
+)
+hz_enable_warnings(hz_paq8px_sse)
+
+add_library(hz_paq8px_generic_model STATIC
+    third_party/paq8px/record_model/LargeStationaryMap.cpp
+    third_party/paq8px/record_model/LMS.cpp
+    third_party/paq8px/record_model/LMS_Scalar.cpp
+    third_party/paq8px/record_model/MTFList.cpp
+    third_party/paq8px/record_model/MixerFactory.cpp
+    third_party/paq8px/record_model/StateMapPair.cpp
+    third_party/paq8px/record_model/String.cpp
+    third_party/paq8px/record_model/file/File.cpp
+    third_party/paq8px/record_model/file/FileDisk.cpp
+    third_party/paq8px/record_model/file/OpenFromMyFolder.cpp
+    third_party/paq8px/record_model/model/CharGroupModel.cpp
+    third_party/paq8px/record_model/model/AudioModel.cpp
+    third_party/paq8px/record_model/model/Audio8BitModel.cpp
+    third_party/paq8px/record_model/model/Audio16BitModel.cpp
+    third_party/paq8px/record_model/model/ChartModel.cpp
+    third_party/paq8px/record_model/model/DmcForest.cpp
+    third_party/paq8px/record_model/model/DmcModel.cpp
+    third_party/paq8px/record_model/model/DmcNode.cpp
+    third_party/paq8px/record_model/model/ExeModel.cpp
+    third_party/paq8px/record_model/model/IndirectModel.cpp
+    third_party/paq8px/record_model/model/Image8BitModel.cpp
+    third_party/paq8px/record_model/model/Image24BitModel.cpp
+    third_party/paq8px/record_model/model/JpegModel.cpp
+    third_party/paq8px/record_model/model/MatchInfo.cpp
+    third_party/paq8px/record_model/model/MatchModel.cpp
+    third_party/paq8px/record_model/model/NestModel.cpp
+    third_party/paq8px/record_model/model/NormalModel.cpp
+    third_party/paq8px/record_model/model/SparseBitModel.cpp
+    third_party/paq8px/record_model/model/SparseMatchModel.cpp
+    third_party/paq8px/record_model/model/SparseModel.cpp
+    third_party/paq8px/record_model/model/WordModel.cpp
+    third_party/paq8px/record_model/model/WordModelInfo.cpp
+    third_party/paq8px/record_model/model/XMLModel.cpp
+    third_party/paq8px/record_model/text/English.cpp
+    third_party/paq8px/record_model/text/EnglishStemmer.cpp
+    third_party/paq8px/record_model/text/French.cpp
+    third_party/paq8px/record_model/text/FrenchStemmer.cpp
+    third_party/paq8px/record_model/text/German.cpp
+    third_party/paq8px/record_model/text/GermanStemmer.cpp
+    third_party/paq8px/record_model/text/Stemmer.cpp
+    third_party/paq8px/record_model/text/TextModel.cpp
+    third_party/paq8px/record_model/text/Word.cpp
+    third_party/paq8px/record_model/text/WordEmbeddingDictionary.cpp
+    third_party/paq8px/record_model/filter/DecAlpha.cpp
+    third_party/paq8px/record_model/filter/TextParserStateInfo.cpp
+)
+target_include_directories(hz_paq8px_generic_model PUBLIC
+    third_party/paq8px/record_model
+)
+target_link_libraries(hz_paq8px_generic_model PUBLIC
+    hz_paq8px_record_model
+    hz_paq8px_linear_prediction_model
+    hz_paq8px_similarity_model
+    hz_paq8px_sse
+)
+hz_enable_warnings(hz_paq8px_generic_model)
 
 add_library(hz_models
     third_party/cmix/ppmd_core.cpp
@@ -203,8 +511,30 @@ add_library(hz_r2
     src/r2/entropy/binary_arithmetic_codec.cpp
     src/r2/entropy/donor_match_predictive_backend.cpp
     src/r2/entropy/fastpfor_backend.cpp
+    src/r2/entropy/rans_backend.cpp
     src/r2/entropy/fse_backend.cpp
     src/r2/entropy/lzma_backend.cpp
+    src/r2/entropy/lz4_backend.cpp
+    src/r2/entropy/kanzi_ans_backend.cpp
+    src/r2/entropy/ppmd7_backend.cpp
+    src/r2/entropy/ppmd8_backend.cpp
+    src/r2/entropy/zpaq_backend.cpp
+    src/r2/entropy/ctw_backend.cpp
+    src/r2/entropy/paq8px_apm_backend.cpp
+    src/r2/entropy/paq8px_record_model_backend.cpp
+    src/r2/entropy/paq8px_linear_prediction_backend.cpp
+    src/r2/entropy/paq8px_similarity_backend.cpp
+    src/r2/entropy/paq8px_similarity_sse_backend.cpp
+    src/r2/entropy/paq8px_generic_sse_backend.cpp
+    src/r2/entropy/paq8px_block_detector.cpp
+    src/r2/entropy/paq8px_detected_sse_backend.cpp
+    src/r2/entropy/wavpack_backend.cpp
+    src/r2/entropy/neural_lstm_backend.cpp
+    src/r2/entropy/lstm_compress_backend.cpp
+    src/r2/entropy/bgpt_shared_prior_backend.cpp
+    src/r2/entropy/bgpt_shared_prior_data.cpp
+    src/r2/entropy/jax_compress_portable_backend.cpp
+    src/r2/entropy/lmic_arithmetic_backend.cpp
     src/r2/entropy/predictive_v1_backend.cpp
     src/r2/entropy/stored_backend.cpp
     src/r2/entropy/zstd_backend.cpp
@@ -214,19 +544,40 @@ add_library(hz_r2
     src/r2/representation/kanzi_mtf_transform.cpp
     src/r2/representation/kanzi_rlt_transform.cpp
     src/r2/representation/xz_x86_bcj_transform.cpp
+    src/r2/representation/bcj2_transform.cpp
+    src/r2/representation/jpegls_transform.cpp
+    src/r2/representation/flac_residual_transform.cpp
+    src/r2/representation/brotli_text_transform.cpp
+    src/r2/representation/cmix_word_dictionary_transform.cpp
+    src/r2/representation/record_transpose_transform.cpp
     src/r2/representation/blosc_shuffle_transform.cpp
     src/r2/representation/blosc_bitshuffle_transform.cpp
     src/r2/representation/blosc_delta_transform.cpp
+    src/r2/representation/delta_of_delta_transform.cpp
+    src/r2/representation/delta_binary_packed_transform.cpp
     src/r2/representation/structure_analyzer.cpp
     src/r2/routing/activation_router.cpp
+    third_party/lstm-compress/port/lstm_compress_donor_port.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)
+target_include_directories(hz_r2 PRIVATE third_party/lstm-compress/port)
+target_include_directories(hz_r2 PRIVATE third_party/rans)
 target_link_libraries(hz_r2 PUBLIC hz_codec
-                         PRIVATE hz_7zip_lzma hz_cmix_match hz_fse_donor
-                                 hz_paq8px_match hz_libsais_donor hz_kanzi_mtf_donor libzstd_static)
+                         PRIVATE hz_models hz_7zip_lzma hz_cmix_match hz_fse_donor
+                                 hz_paq8px_match hz_paq8px_apm hz_paq8px_record_model
+                                 hz_paq8px_linear_prediction_model hz_paq8px_similarity_model
+                                 hz_paq8px_sse hz_paq8px_generic_model
+                                 hz_libsais_donor hz_kanzi_mtf_donor
+                                 hz_zpaq_donor libzstd_static)
 target_link_libraries(hz_r2 PRIVATE hz_xz_bcj_donor)
 target_link_libraries(hz_r2 PRIVATE hz_blosc_shuffle_donor)
 target_link_libraries(hz_r2 PRIVATE hz_fastpfor_donor)
+target_link_libraries(hz_r2 PRIVATE hz_charls_donor)
+target_link_libraries(hz_r2 PRIVATE hz_flac_donor)
+target_link_libraries(hz_r2 PRIVATE hz_wavpack_donor)
+target_link_libraries(hz_r2 PRIVATE hz_lz4_donor)
+target_link_libraries(hz_r2 PRIVATE hz_brotli_enc hz_brotli_dec)
+target_link_libraries(hz_r2 PRIVATE hz_cmix_dictionary_donor)
 hz_enable_warnings(hz_r2)
 
 add_executable(hybridzip

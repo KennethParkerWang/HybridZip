@@ -2,23 +2,65 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$PackagePath,
-    [string]$CodecPath = (Join-Path $PSScriptRoot '..\build\Release\hybridzip.exe'),
+    [string]$CodecPath = '',
     [string]$ExpectedDatasetPath = 'F:\paq8px\silesia',
     [ValidateSet(
         '', 'profile-v1', 'r2-auto', 'r2-stored', 'r2-predictive',
-        'r2-donor-match', 'r2-zstd', 'r2-fse', 'r2-lzma'
+        'r2-donor-match', 'r2-zstd', 'r2-fse', 'r2-lzma', 'r2-lz4', 'r2-ppmd7', 'r2-ppmd8', 'r2-zpaq', 'r2-ctw',
+        'r2-bwt-zstd', 'r2-bwt-mtf-zstd', 'r2-bwt-rlt-zstd',
+        'r2-x86-bcj-zstd', 'r2-shuffle-zstd', 'r2-bitshuffle-zstd',
+        'r2-delta-zstd', 'r2-delta-of-delta-zstd', 'r2-fastpfor', 'r2-rans', 'r2-bcj2-zstd',
+        'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
+        'r2-brotli-text', 'r2-cmix-word-zstd', 'r2-neural-lstm',
+        'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-bgpt-shared-prior',
+        'r2-jax-compress-portable'
     )]
-    [string]$ExpectedVariant = ''
+    [string]$ExpectedVariant = '',
+    [ValidateSet(32, 64, 128)]
+    [int[]]$ScopesKiB = @(32, 64, 128),
+    [string[]]$SilesiaFiles = @()
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$expectedFiles = @(
+ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ([string]::IsNullOrWhiteSpace($scriptRoot)) {
+    throw 'Unable to resolve the validator script directory'
+}
+if ([string]::IsNullOrWhiteSpace($CodecPath)) {
+    $CodecPath = Join-Path $scriptRoot '..\build\Release\hybridzip.exe'
+}
+
+$allFiles = @(
     'dickens', 'mozilla', 'mr', 'nci', 'ooffice', 'osdb',
     'reymont', 'samba', 'sao', 'webster', 'x-ray', 'xml'
 )
-$expectedScopes = @(32, 64, 128)
+if ($SilesiaFiles.Count -eq 0) {
+    $expectedFiles = @($allFiles)
+}
+else {
+    $expectedFiles = @()
+    $requestedFiles = @($SilesiaFiles | ForEach-Object {
+        ([string]$_).Split(',')
+    } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+    foreach ($requestedFile in $requestedFiles) {
+        $canonical = @($allFiles | Where-Object {
+            [string]::Equals(
+                $_,
+                [string]$requestedFile,
+                [System.StringComparison]::OrdinalIgnoreCase)
+        })
+        if ($canonical.Count -ne 1) {
+            throw "Unknown Silesia file in -SilesiaFiles: $requestedFile"
+        }
+        if ($expectedFiles -contains $canonical[0]) {
+            throw "Duplicate Silesia file in -SilesiaFiles: $requestedFile"
+        }
+        $expectedFiles += $canonical[0]
+    }
+}
+$expectedScopes = @($ScopesKiB | Sort-Object -Unique)
 $expectedHeader = @(
     'experiment_id', 'variant', 'repeat', 'case_order', 'file', 'scope_kib',
     'input_path', 'input_bytes', 'input_sha256', 'archive_path',
@@ -81,7 +123,14 @@ $metadata = $metadataText | ConvertFrom-Json
 $rows = @(Import-Csv -LiteralPath $resultsPath)
 $supportedVariants = @(
     'profile-v1', 'r2-auto', 'r2-stored', 'r2-predictive',
-    'r2-donor-match', 'r2-zstd', 'r2-fse', 'r2-lzma'
+    'r2-donor-match', 'r2-zstd', 'r2-fse', 'r2-lzma', 'r2-ppmd7', 'r2-ppmd8', 'r2-zpaq', 'r2-ctw',
+    'r2-bwt-zstd', 'r2-bwt-mtf-zstd', 'r2-bwt-rlt-zstd',
+    'r2-x86-bcj-zstd', 'r2-shuffle-zstd', 'r2-bitshuffle-zstd',
+    'r2-delta-zstd', 'r2-delta-of-delta-zstd', 'r2-fastpfor', 'r2-rans', 'r2-bcj2-zstd',
+    'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
+    'r2-brotli-text', 'r2-cmix-word-zstd', 'r2-neural-lstm',
+    'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-bgpt-shared-prior',
+    'r2-jax-compress-portable', 'r2-ppmd7', 'r2-ppmd8'
 )
 $metadataVariants = @($metadata.variants)
 Assert-True ($metadataVariants.Count -eq 1) `
@@ -116,7 +165,8 @@ Assert-True (Test-SamePath $metadata.codec_path $CodecPath) `
 $codecHash = Get-Sha256 $CodecPath
 Assert-True ([string]$metadata.codec_sha256 -eq $codecHash) `
     'metadata codec_sha256 does not match the executable'
-Assert-True ($rows.Count -eq 36) "results.csv has $($rows.Count) rows, expected 36"
+ $expectedRowCount = $expectedFiles.Count * $expectedScopes.Count
+Assert-True ($rows.Count -eq $expectedRowCount) "results.csv has $($rows.Count) rows, expected $expectedRowCount"
 Assert-True (($rows[0].PSObject.Properties.Name -join '|') -eq
     ($expectedHeader -join '|')) 'results.csv header mismatch'
 

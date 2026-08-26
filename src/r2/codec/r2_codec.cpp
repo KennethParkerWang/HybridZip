@@ -13,19 +13,47 @@
 #include "r2/archive/r2_archive.h"
 #include "r2/core/byte_view.h"
 #include "r2/entropy/donor_match_predictive_backend.h"
+#include "r2/entropy/paq8px_apm_backend.h"
+#include "r2/entropy/paq8px_record_model_backend.h"
+#include "r2/entropy/paq8px_linear_prediction_backend.h"
+#include "r2/entropy/paq8px_similarity_backend.h"
+#include "r2/entropy/paq8px_similarity_sse_backend.h"
+#include "r2/entropy/paq8px_generic_sse_backend.h"
+#include "r2/entropy/paq8px_detected_sse_backend.h"
+#include "r2/entropy/wavpack_backend.h"
 #include "r2/entropy/predictive_v1_backend.h"
 #include "r2/entropy/fse_backend.h"
 #include "r2/entropy/fastpfor_backend.h"
+#include "r2/entropy/rans_backend.h"
 #include "r2/entropy/lzma_backend.h"
+#include "r2/entropy/lz4_backend.h"
+#include "r2/entropy/kanzi_ans_backend.h"
+#include "r2/entropy/ppmd7_backend.h"
+#include "r2/entropy/ppmd8_backend.h"
+#include "r2/entropy/zpaq_backend.h"
+#include "r2/entropy/ctw_backend.h"
+#include "r2/entropy/neural_lstm_backend.h"
+#include "r2/entropy/lstm_compress_backend.h"
+#include "r2/entropy/bgpt_shared_prior_backend.h"
+#include "r2/entropy/jax_compress_portable_backend.h"
+#include "r2/entropy/lmic_arithmetic_backend.h"
 #include "r2/entropy/stored_backend.h"
 #include "r2/entropy/zstd_backend.h"
 #include "r2/representation/bwt_transform.h"
 #include "r2/representation/kanzi_mtf_transform.h"
 #include "r2/representation/kanzi_rlt_transform.h"
 #include "r2/representation/xz_x86_bcj_transform.h"
+#include "r2/representation/bcj2_transform.h"
+#include "r2/representation/jpegls_transform.h"
+#include "r2/representation/flac_residual_transform.h"
+#include "r2/representation/brotli_text_transform.h"
+#include "r2/representation/cmix_word_dictionary_transform.h"
+#include "r2/representation/record_transpose_transform.h"
 #include "r2/representation/blosc_shuffle_transform.h"
 #include "r2/representation/blosc_bitshuffle_transform.h"
 #include "r2/representation/blosc_delta_transform.h"
+#include "r2/representation/delta_of_delta_transform.h"
+#include "r2/representation/delta_binary_packed_transform.h"
 
 namespace hz::r2 {
 namespace {
@@ -102,6 +130,68 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
             decoded = PredictiveV1Backend(model_seed).decode(
                 payload, header.uncompressed_size);
             break;
+        case BlockMode::NeuralLstm:
+            decoded = NeuralLstmBackend(model_seed).decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::SharedNeuralLstm:
+            if (transform_metadata.size() != 4U ||
+                read_u32_le(transform_metadata) != kSharedNeuralModelId) {
+                throw std::runtime_error(
+                    "HZ02 shared neural model identity is unsupported");
+            }
+            decoded = NeuralLstmBackend(kSharedNeuralModelSeed).decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::LstmCompress:
+            decoded = LstmCompressBackend(model_seed).decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::BgptSharedPrior:
+            if (transform_metadata.size() !=
+                    kR2BgptSharedPriorIdentitySize ||
+                read_u32_le(ByteView(transform_metadata.data(), 4U)) !=
+                    kBgptSharedPriorModelId ||
+                !std::equal(kBgptTextCheckpointSha256.begin(),
+                            kBgptTextCheckpointSha256.end(),
+                            transform_metadata.data() + 4U)) {
+                throw std::runtime_error(
+                    "HZ02 bGPT shared-prior identity is unsupported");
+            }
+            decoded = BgptSharedPriorBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::JaxCompressPortable:
+            if (transform_metadata.size() !=
+                    kR2JaxCompressPortableIdentitySize ||
+                read_u32_le(ByteView(transform_metadata.data(), 4U)) !=
+                    kJaxCompressPortableModelId ||
+                !std::equal(kJaxCompressSourceRevision.begin(),
+                            kJaxCompressSourceRevision.end(),
+                            transform_metadata.data() + 4U) ||
+                !std::equal(kJaxCompressPortableProfileSha256.begin(),
+                            kJaxCompressPortableProfileSha256.end(),
+                            transform_metadata.data() + 24U)) {
+                throw std::runtime_error(
+                    "HZ02 jax-compress portable identity is unsupported");
+            }
+            decoded = JaxCompressPortableBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::LmicArithmetic:
+            if (transform_metadata.size() !=
+                    kR2LmicArithmeticIdentitySize ||
+                read_u32_le(ByteView(transform_metadata.data(), 4U)) !=
+                    kLmicArithmeticModelId ||
+                !std::equal(kLmicArithmeticProfileSha256.begin(),
+                            kLmicArithmeticProfileSha256.end(),
+                            transform_metadata.data() + 4U)) {
+                throw std::runtime_error(
+                    "HZ02 LMIC arithmetic identity is unsupported");
+            }
+            decoded = LmicArithmeticBackend().decode(
+                payload, header.uncompressed_size);
+            break;
         case BlockMode::Zstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
@@ -111,8 +201,58 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::Lzma:
             decoded = LzmaBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::Lz4:
+            decoded = Lz4Backend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::KanziAns:
+            decoded = KanziAnsBackend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::Ppmd7:
+            decoded = Ppmd7Backend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::Ppmd8:
+            decoded = Ppmd8Backend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::Zpaq:
+            decoded = ZpaqBackend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::Ctw:
+            decoded = CtwBackend().decode(payload, header.uncompressed_size);
+            break;
         case BlockMode::DonorMatchPredictive:
             decoded = DonorMatchPredictiveBackend(model_seed).decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxApmPredictive:
+            decoded = Paq8pxApmBackend(model_seed).decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxRecordModel:
+            decoded = Paq8pxRecordModelBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxLinearPrediction:
+            decoded = Paq8pxLinearPredictionBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxSimilarity:
+            decoded = Paq8pxSimilarityBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxSimilaritySse:
+            decoded = Paq8pxSimilaritySseBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxGenericSse:
+            decoded = Paq8pxGenericSseBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Paq8pxDetectedSse:
+            decoded = Paq8pxDetectedSseBackend().decode(
+                payload, header.uncompressed_size);
+            break;
+        case BlockMode::Wavpack:
+            decoded = WavpackBackend().decode(
                 payload, header.uncompressed_size);
             break;
         case BlockMode::BwtZstd:
@@ -149,10 +289,83 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::DeltaZstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::DeltaOfDeltaZstd:
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::DeltaBinaryPackedZstd: {
+            if (transform_metadata.size() != 5U ||
+                (transform_metadata[0] != 4U && transform_metadata[0] != 8U)) {
+                throw std::runtime_error(
+                    "HZ02 delta-binary-packed metadata is malformed");
+            }
+            const std::uint32_t transformed_size = read_u32_le(ByteView(
+                transform_metadata.data() + 1U, 4U));
+            const auto maximum = DeltaBinaryPackedTransform::maximum_transformed_size(
+                header.uncompressed_size, transform_metadata[0]);
+            if (transformed_size == 0U || transformed_size > maximum) {
+                throw std::runtime_error(
+                    "HZ02 delta-binary-packed transform length is invalid");
+            }
+            decoded = ZstdBackend().decode(payload, transformed_size);
+            break;
+        }
         case BlockMode::FastPfor:
             decoded = FastPforBackend().decode(payload, transform_metadata,
                                                 header.uncompressed_size);
             break;
+        case BlockMode::Rans:
+            decoded = RansBackend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::Bcj2Zstd: {
+            if (transform_metadata.size() != 16U) {
+                throw std::runtime_error("HZ02 BCJ2 metadata is malformed");
+            }
+            std::size_t transformed_size = 0;
+            for (std::size_t offset = 0; offset < transform_metadata.size(); offset += 4U) {
+                transformed_size += static_cast<std::size_t>(
+                    static_cast<std::uint32_t>(transform_metadata[offset]) |
+                    (static_cast<std::uint32_t>(transform_metadata[offset + 1U]) << 8U) |
+                    (static_cast<std::uint32_t>(transform_metadata[offset + 2U]) << 16U) |
+                    (static_cast<std::uint32_t>(transform_metadata[offset + 3U]) << 24U));
+            }
+            decoded = Bcj2Transform().inverse(
+                ByteView(ZstdBackend().decode(payload, transformed_size)),
+                transform_metadata, header.uncompressed_size);
+            break;
+        }
+        case BlockMode::RecordTransposeZstd:
+            decoded = ZstdBackend().decode(payload, header.uncompressed_size);
+            break;
+        case BlockMode::JpegLs:
+            decoded = JpegLsTransform().inverse(payload, transform_metadata,
+                                                 header.uncompressed_size);
+            break;
+        case BlockMode::FlacResidual:
+            decoded = FlacResidualTransform().inverse(payload, transform_metadata,
+                                                       header.uncompressed_size);
+            break;
+        case BlockMode::BrotliText:
+            decoded = BrotliTextTransform().inverse(payload,
+                                                     header.uncompressed_size);
+            break;
+        case BlockMode::CmixWordDictionaryZstd: {
+            if (transform_metadata.size() != 4U) {
+                throw std::runtime_error(
+                    "HZ02 cmix word dictionary metadata is malformed");
+            }
+            const std::uint32_t transformed_size =
+                read_u32_le(transform_metadata);
+            if (transformed_size == 0 ||
+                transformed_size > CmixWordDictionaryTransform::
+                    maximum_transformed_size(header.uncompressed_size)) {
+                throw std::runtime_error(
+                    "HZ02 cmix word dictionary transform length is invalid");
+            }
+            decoded = CmixWordDictionaryTransform().inverse(
+                ByteView(ZstdBackend().decode(payload, transformed_size)),
+                header.uncompressed_size);
+            break;
+        }
     }
     if (header.transform == TransformKind::BwtMtf) {
         decoded = KanziMtfTransform().inverse(ByteView(decoded), ByteView{});
@@ -181,6 +394,38 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         if (transform_metadata.size() != 1) throw std::runtime_error("HZ02 delta metadata is malformed");
         decoded = BloscDeltaTransform().inverse(ByteView(decoded), transform_metadata[0]);
     }
+    if (header.transform == TransformKind::DeltaOfDelta) {
+        if (transform_metadata.size() != 1U ||
+            (transform_metadata[0] != 4U && transform_metadata[0] != 8U)) {
+            throw std::runtime_error(
+                "HZ02 delta-of-delta metadata is malformed");
+        }
+        decoded = DeltaOfDeltaTransform().inverse(
+            ByteView(decoded), transform_metadata[0]);
+    }
+    if (header.transform == TransformKind::DeltaBinaryPacked) {
+        if (transform_metadata.size() != 5U ||
+            (transform_metadata[0] != 4U && transform_metadata[0] != 8U)) {
+            throw std::runtime_error(
+                "HZ02 delta-binary-packed metadata is malformed");
+        }
+        const std::uint32_t transformed_size = read_u32_le(ByteView(
+            transform_metadata.data() + 1U, 4U));
+        if (decoded.size() != transformed_size) {
+            throw std::runtime_error(
+                "HZ02 delta-binary-packed transformed size mismatch");
+        }
+        decoded = DeltaBinaryPackedTransform().inverse(
+            ByteView(decoded), transform_metadata[0], header.uncompressed_size);
+    }
+    if (header.transform == TransformKind::RecordTranspose) {
+        if (transform_metadata.size() != 1U ||
+            (transform_metadata[0] != 16U && transform_metadata[0] != 32U)) {
+            throw std::runtime_error("HZ02 record transpose metadata is malformed");
+        }
+        decoded = RecordTransposeTransform().inverse(
+            ByteView(decoded), transform_metadata[0]);
+    }
     return decoded;
 }
 
@@ -205,8 +450,16 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
         header.mode == BlockMode::BwtMtfZstd ||
         header.mode == BlockMode::BwtRltZstd || header.mode == BlockMode::X86BcjZstd ||
         header.mode == BlockMode::ShuffleZstd || header.mode == BlockMode::BitshuffleZstd ||
-        header.mode == BlockMode::DeltaZstd) {
+        header.mode == BlockMode::DeltaZstd ||
+        header.mode == BlockMode::DeltaOfDeltaZstd ||
+        header.mode == BlockMode::RecordTransposeZstd) {
         return ZstdBackend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::DeltaBinaryPackedZstd) {
+        const std::size_t transformed_size =
+            DeltaBinaryPackedTransform::maximum_transformed_size(
+                header.uncompressed_size, 4U);
+        return ZstdBackend::maximum_payload_size(transformed_size);
     }
     if (header.mode == BlockMode::Fse) {
         return FseBackend::maximum_payload_size(header.uncompressed_size);
@@ -214,7 +467,68 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::Lzma) {
         return LzmaBackend::maximum_payload_size(header.uncompressed_size);
     }
-    if (header.mode == BlockMode::DonorMatchPredictive) {
+    if (header.mode == BlockMode::Lz4) {
+        return Lz4Backend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::KanziAns) {
+        return KanziAnsBackend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::LmicArithmetic) {
+        return LmicArithmeticBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Ppmd7) {
+        return Ppmd7Backend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Ppmd8) {
+        return Ppmd8Backend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Zpaq) {
+        return ZpaqBackend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Ctw) {
+        return CtwBackend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxApmPredictive) {
+        return Paq8pxApmBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxRecordModel) {
+        return Paq8pxRecordModelBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxLinearPrediction) {
+        return Paq8pxLinearPredictionBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxSimilarity) {
+        return Paq8pxSimilarityBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxSimilaritySse) {
+        return Paq8pxSimilaritySseBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxGenericSse) {
+        return Paq8pxGenericSseBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Paq8pxDetectedSse) {
+        return Paq8pxDetectedSseBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Wavpack) {
+        return WavpackBackend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::LstmCompress) {
+        return LstmCompressBackend::maximum_payload_size(
+            header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::DonorMatchPredictive ||
+        header.mode == BlockMode::NeuralLstm ||
+        header.mode == BlockMode::SharedNeuralLstm ||
+        header.mode == BlockMode::BgptSharedPrior ||
+        header.mode == BlockMode::JaxCompressPortable) {
         return DonorMatchPredictiveBackend::maximum_payload_size(
             header.uncompressed_size);
     }
@@ -224,6 +538,27 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
             throw std::runtime_error("HZ02 FastPFOR payload bound overflow");
         }
         return static_cast<std::size_t>(header.uncompressed_size) * 8U + 4096U;
+    }
+    if (header.mode == BlockMode::Rans) {
+        return RansBackend::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::Bcj2Zstd) {
+        return ZstdBackend::maximum_payload_size(
+            static_cast<std::size_t>(header.uncompressed_size) * 2U + 32U);
+    }
+    if (header.mode == BlockMode::JpegLs) {
+        return JpegLsTransform::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::FlacResidual) {
+        return FlacResidualTransform::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::BrotliText) {
+        return BrotliTextTransform::maximum_payload_size(header.uncompressed_size);
+    }
+    if (header.mode == BlockMode::CmixWordDictionaryZstd) {
+        return ZstdBackend::maximum_payload_size(
+            CmixWordDictionaryTransform::maximum_transformed_size(
+                header.uncompressed_size));
     }
     const std::size_t size = header.uncompressed_size;
     if (size > (std::numeric_limits<std::size_t>::max() - 64U) / 4U) {
@@ -276,7 +611,7 @@ CompressionStats compress_file(const std::filesystem::path& input,
         planner_options.lzma_dictionary_size =
             options.lzma_dictionary_size;
         planner_options.model_seed = options.model_seed;
-        const BlockPlanner planner(planner_options);
+        BlockPlanner planner(planner_options);
 
         std::uint64_t remaining = stats.input_bytes;
         for (std::uint32_t block = 0; block < block_count; ++block) {
@@ -321,6 +656,10 @@ CompressionStats compress_file(const std::filesystem::path& input,
 
             ++stats.blocks_by_mode[static_cast<std::size_t>(decision.mode)];
             stats.payload_bytes += decision.payload.size();
+            stats.candidates_evaluated += decision.candidates_evaluated;
+            stats.selected_candidate_bytes += decision.selected_candidate_bytes;
+            stats.oracle_candidate_bytes += decision.oracle_candidate_bytes;
+            stats.oracle_gap_bytes += decision.oracle_gap_bytes;
             remaining -= block_bytes;
         }
 

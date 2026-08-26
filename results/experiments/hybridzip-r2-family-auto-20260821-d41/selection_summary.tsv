@@ -1,0 +1,3 @@
+"selected_mode"	"files"	"ids"	"total_archive_bytes"	"mean_archive_bytes"
+"cmix-word-zstd"	"2"	"cmix-dictionary,lstm-dictionary"	"12204"	"6102"
+"predictive"	"6"	"brotli-dictionary,zstd-compress,libsais,fastpfor-bitpacking,flac-stream-encoder,charls-jpegls"	"26282"	"4380.33333333333"

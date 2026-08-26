@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "timestamp": "2026-08-21T18:11:08+08:00",
+  "experiment_id": "r2-wavpack-1k-20260821",
+  "profile": "HZ02",
+  "branch": "wavpack-lossless",
+  "scope": "one forced 1 KiB round trip",
+  "source": "results/smoke/r2-wavpack-1k-20260821/gettysburg.1k",
+  "input_bytes": 1024,
+  "archive_bytes": 1196,
+  "payload_bytes": 1136,
+  "metadata_bytes": 4,
+  "decoded_bytes": 1024,
+  "header": {
+    "mode": 38,
+    "transform": 0,
+    "entropy": 21,
+    "flags": 1,
+    "uncompressed_size": 1024
+  },
+  "wavpack_payload": {
+    "magic": "HZW1",
+    "version": 1,
+    "bytes_per_sample": 1,
+    "channels": 2,
+    "tail_bytes": 0,
+    "stream_bytes": 1120,
+    "reserved": 0
+  },
+  "roundtrip": "PASS",
+  "byte_exact": true,
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "9143AD4FCF6C7EA30BFACF645E6D8429DBF805B39B8A24E39E23C104E237CF4C",
+  "codec_sha256": "EBE45E6458EDAD495100D6BF4218029A1A8E4F7760E312B2D548DF5973552B0E",
+  "encode": {
+    "exit_code": 0,
+    "wall_seconds": 0.0505158,
+    "peak_working_set_bytes": 2101248,
+    "peak_working_set_mib": 2.00390625
+  },
+  "decode": {
+    "exit_code": 0,
+    "wall_seconds": 0.0392222,
+    "peak_working_set_bytes": 2101248,
+    "peak_working_set_mib": 2.00390625
+  },
+  "constraints": {
+    "encode_runs": 1,
+    "decode_runs": 1,
+    "auto_run": false,
+    "d40_rerun": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false,
+    "automatic_retry": false
+  },
+  "limitations": [
+    "This smoke proves the forced raw-byte WavPack path for one 1 KiB input only; it is not a corpus performance claim.",
+    "The selected profile is a decoder-visible 8-bit stereo PCM interpretation with no incomplete-frame tail."
+  ]
+}

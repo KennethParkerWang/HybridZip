@@ -1,0 +1,69 @@
+{
+  "slide_size": [13.333333, 7.5],
+  "background": "#FFFFFF",
+  "colors": {
+    "navy": "#163A5F",
+    "gray": "#6B7280",
+    "text": "#111827",
+    "muted": "#374151",
+    "focus": "#E8EEF4"
+  },
+  "title": "HybridZip R2 完全目标架构图",
+  "zone_labels": [
+    {"text": "ZONE 2  压缩算法族", "box": [3.35, 0.98, 1.9, 0.22]},
+    {"text": "ZONE 3  分层路由与策略", "box": [5.55, 0.98, 3.4, 0.22]},
+    {"text": "ZONE 6  神经与共享运行时", "box": [10.15, 0.98, 2.4, 0.22]},
+    {"text": "ZONE 1  输入与结构分析", "box": [0.30, 2.88, 2.7, 0.22]},
+    {"text": "ZONE 4  候选 / 账本", "box": [4.53, 2.84, 1.55, 0.26], "size": 10.5},
+    {"text": "ZONE 5  归档 / 解码", "box": [6.43, 2.84, 2.05, 0.26], "size": 10.5},
+    {"text": "CURRENT BASELINE", "box": [0.30, 5.28, 2.2, 0.22]}
+  ],
+  "nodes": [
+    {"id": "families", "style": "planned", "box": [3.35, 1.30, 1.80, 1.50], "title": "Families｜算法族", "subtitle": "统计建模\n匹配 / LZ\n表示变换\n专用模型\n神经模型\n多重编码器", "title_size": 15.5, "subtitle_size": 11.5},
+    {"id": "layer_b", "style": "planned", "box": [5.55, 1.53, 1.55, 1.08], "title": "Layer B", "subtitle": "因果族级路由\n休眠 / 校准", "title_size": 17, "subtitle_size": 12.5},
+    {"id": "layer_c", "style": "planned", "box": [7.55, 1.53, 1.68, 1.08], "title": "Layer C", "subtitle": "分支策略\n模型策略\n编码器策略", "title_size": 17, "subtitle_size": 12.5},
+    {"id": "neural", "style": "planned", "box": [10.15, 1.53, 1.90, 1.08], "title": "计划神经扩展", "subtitle": "共享模型与运行时", "title_size": 16, "subtitle_size": 12.5},
+
+    {"id": "input", "style": "current", "box": [0.30, 3.30, 1.15, 0.88], "title": "输入\n字节流", "title_size": 17},
+    {"id": "splitter", "style": "current", "box": [1.67, 3.30, 1.15, 0.88], "title": "分块器", "title_size": 18},
+    {"id": "layer_a", "style": "current", "box": [3.04, 3.30, 1.30, 0.88], "title": "Layer A", "subtitle": "字节级结构门控", "title_size": 17, "subtitle_size": 12},
+    {"id": "candidate", "style": "focus", "box": [4.56, 3.20, 1.64, 1.08], "title": "当前候选系统", "subtitle": "真实归档字节比较", "title_size": 17, "subtitle_size": 12.5},
+    {"id": "writer", "style": "current", "box": [6.42, 3.30, 1.10, 0.88], "title": "HZ02\n写入器", "title_size": 16},
+    {"id": "archive", "style": "current", "box": [7.74, 3.30, 1.08, 0.88], "title": "HZ02\n归档", "title_size": 16},
+    {"id": "decoder", "style": "current", "box": [9.04, 3.30, 1.22, 0.88], "title": "严格解码器", "title_size": 16},
+    {"id": "output", "style": "current", "box": [10.48, 3.30, 1.42, 0.88], "title": "逐字节一致\n输出", "title_size": 16},
+
+    {"id": "baseline_input", "style": "current", "box": [0.30, 5.76, 1.15, 0.80], "title": "输入\n字节流", "title_size": 16},
+    {"id": "hz01", "style": "baseline", "box": [1.72, 5.76, 1.24, 0.80], "title": "HZ01 基线", "subtitle": "V1 四专家混合器", "title_size": 16, "subtitle_size": 11.5},
+    {"id": "hz01_archive", "style": "baseline", "box": [3.24, 5.76, 1.16, 0.80], "title": "HZ01 归档", "title_size": 16},
+    {"id": "ledger", "style": "current_dark", "box": [4.72, 5.42, 1.48, 0.94], "title": "当前实验账本", "subtitle": "候选字节数\nOracle 差距", "title_size": 15.5, "subtitle_size": 11.5},
+    {"id": "decoder_metadata", "style": "planned", "box": [6.72, 5.42, 1.74, 0.94], "title": "计划解码元数据", "subtitle": "模式 / 变换 / 模型标识", "title_size": 14.5, "subtitle_size": 11.5},
+    {"id": "decoder_extensions", "style": "planned", "box": [9.00, 5.42, 1.78, 0.94], "title": "计划解码扩展", "subtitle": "更严格契约与格式检查", "title_size": 14.5, "subtitle_size": 11.5}
+  ],
+  "captions": [
+    {"text": "模式 / 变换\n元数据 / CRC", "box": [6.18, 4.19, 1.10, 0.52]},
+    {"text": "归档格式\nCRC 验证", "box": [8.80, 4.19, 1.00, 0.52]}
+  ],
+  "edges": [
+    {"style": "planned", "points": [[5.15, 2.05], [5.55, 2.05]]},
+    {"style": "planned", "points": [[7.10, 2.05], [7.55, 2.05]]},
+    {"style": "planned", "points": [[9.23, 2.05], [10.15, 2.05]]},
+    {"style": "planned", "points": [[3.69, 3.30], [3.69, 2.96], [4.25, 2.96], [4.25, 2.80]]},
+    {"style": "planned", "points": [[8.39, 2.61], [8.39, 2.67], [6.10, 2.67], [6.10, 3.20]]},
+
+    {"style": "current", "points": [[1.45, 3.74], [1.67, 3.74]]},
+    {"style": "current", "points": [[2.82, 3.74], [3.04, 3.74]]},
+    {"style": "current", "points": [[4.34, 3.74], [4.56, 3.74]]},
+    {"style": "current", "points": [[6.20, 3.74], [6.42, 3.74]]},
+    {"style": "current", "points": [[7.52, 3.74], [7.74, 3.74]]},
+    {"style": "current", "points": [[8.82, 3.74], [9.04, 3.74]]},
+    {"style": "current", "points": [[10.26, 3.74], [10.48, 3.74]]},
+
+    {"style": "current", "points": [[5.38, 4.28], [5.38, 5.42]]},
+    {"style": "planned", "points": [[7.38, 4.18], [7.38, 4.82], [7.59, 4.82], [7.59, 5.42]]},
+    {"style": "planned", "points": [[10.08, 4.18], [10.08, 4.82], [9.89, 4.82], [9.89, 5.42]]},
+
+    {"style": "current", "points": [[1.45, 6.16], [1.72, 6.16]]},
+    {"style": "baseline", "points": [[2.96, 6.16], [3.24, 6.16]]}
+  ]
+}

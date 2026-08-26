@@ -1,0 +1,18 @@
+{
+  "input_bytes": 1024,
+  "archive_bytes": 855,
+  "decoded_bytes": 1024,
+  "encode_seconds": 0.2028593,
+  "decode_seconds": 0.0289138,
+  "input_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+  "archive_sha256": "B9C6C5DF6DE1BFE64F1174E6DF4FD7323319CE66FC9BBFCE8BD3AA807A1F17B1",
+  "decoded_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+  "roundtrip": "PASS",
+  "mode": 29,
+  "transform": 0,
+  "entropy": 12,
+  "payload_bytes": 795,
+  "metadata_bytes": 4,
+  "inner_magic": "HZQ1",
+  "method_level": 3
+}

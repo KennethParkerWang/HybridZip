@@ -22,3 +22,23 @@ through the owned `src/r2/representation/kanzi_mtf_transform.cpp` adapter and
 adapter only when the donor reduces the BWT bytes. The RLT transformed length
 is decoder-visible HZ02 side information. Both paths are Apache-2.0 and
 single-threaded.
+
+## ANS entropy closure
+
+The HZ02 mode 40 candidate imports the scalar Kanzi ANS range coder from the
+same pinned commit. The accepted byte-identical closure is:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `entropy/ANSRangeEncoder.hpp` | 4147 | `3F826C5211848393B4FFE1E938C0FC1A15EAC8224DF0C53B8E89017BD9CF2508` |
+| `entropy/ANSRangeEncoder.cpp` | 9419 | `0F2477297042080C1E21CB59BCF73AE5CADE629EB0C4601FF5127BF3ABEFBD0F` |
+| `entropy/ANSRangeDecoder.hpp` | 3093 | `2C0500F8ADA720D800A4D202488371EE1FB9487D34B0BAC2D4230D295252BA34` |
+| `entropy/ANSRangeDecoder.cpp` | 9712 | `379F84E38D0C45CE04731602907961BAE7F0506A257A05D8BA3BD6C17D76FAEE` |
+| `entropy/EntropyUtils.hpp` | 1520 | `CE1AC60BEE2F0741B45F883604AB6A61A96073ACBEA3BD666B7C761FF29AE7F8` |
+| `entropy/EntropyUtils.cpp` | 7783 | `BACD2C8B59C7BD041FB0FD55EDE4B4CE3690E29103508285A57CA0433FFD34DE` |
+
+`src/r2/entropy/kanzi_ans_backend.cpp` owns the HZK1 framing, CRC checks,
+bounded memory bitstream adapters, and decoder-visible order/log-range
+parameters. The ANS stream uses order 0, log range 12, and 16 KiB chunks.
+The one-block evidence is
+`results/smoke/r2-kanzi-ans-1k-20260826/verification.json`.

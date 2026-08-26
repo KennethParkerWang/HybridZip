@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "experiment": "r2-delta-binary-packed-zstd-1k-20260826-rebuild",
+  "profile": "HZ02",
+  "scope": "one forced 1 KiB encode and one decode after BitWriter padding fix",
+  "input": "input.bin",
+  "archive": "archive.hz02",
+  "decoded": "decoded.bin",
+  "input_bytes": 1024,
+  "archive_bytes": 1105,
+  "payload_bytes": 1040,
+  "decoded_bytes": 1024,
+  "metadata_bytes": 9,
+  "mode": 42,
+  "transform": 21,
+  "entropy": 25,
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "627EC902D3EC3AB6D325823983536EE45E20B5746891C352F091F18BCA72982C",
+  "encode_exit_code": 0,
+  "decode_exit_code": 0,
+  "byte_exact": true,
+  "attempts": {
+    "encode": 1,
+    "decode": 1
+  },
+  "constraints": {
+    "auto_run": false,
+    "d40_rerun": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false,
+    "automatic_retry": false
+  },
+  "note": "The BitWriter now materializes zero-valued trailing padding bytes; this is a correctness smoke only, not a ratio or performance benchmark."
+}

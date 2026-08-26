@@ -22,6 +22,15 @@ Modified cmix-derived files:
   the adapted Online LSTM dependency closure.
 - `match_core.h` and `match_core.cpp`: extracted cmix Match into a standalone
   bit predictor with owned history, context-map, probability, and count state.
+- `preprocess/dictionary.h` and `preprocess/dictionary.cpp`: imported cmix's
+  WRT word-dictionary transform; added read-only `HasPendingOutput()` so the
+  HybridZip decoder can reject a transformed stream that expands past its
+  declared raw length.
+
+The unchanged donor dictionary resource is
+`preprocess/english.dic`; CMake converts its fixed bytes into a private static
+array during configuration so the HZ02 decoder does not read KU or a
+working-directory resource.
 
 ## Match source evidence
 
@@ -57,6 +66,24 @@ adaptation.
   enforcement, bounded Q24 conversion, and block reset.
 - Added donor-golden, recurrence, allocation, reset, and lifecycle coverage in
   `tests/cmix_match_expert_tests.cpp`.
+
+## WRT Dictionary Source Evidence
+
+| Upstream path | Role in extraction | SHA-256 |
+| --- | --- | --- |
+| `src/preprocess/dictionary.cpp` | word transform encode/decode state machine | `D88D9038C645B21D0EC4811D444176F39647178034CCE49411F380A2BAE55DCD` |
+| `src/preprocess/dictionary.h` | donor Dictionary interface and state | `E698461A16A5F6C110F5F42F0A46167587CB9AFDAED154F72003B1850C1C951C` |
+| `dictionary/english.dic` | fixed 44,515-entry English word resource | `4C8568CCA9343B9A6212477880F56F8EFD162F8784224A25EDD043097D36215A` |
+
+## WRT Dictionary Integration Boundary
+
+`src/r2/representation/cmix_word_dictionary_transform.{h,cpp}` owns the
+HZ02 bridge. It materializes the build-embedded fixed dictionary into private
+temporary donor streams, invokes the donor word transform, and rejects
+truncated source input, residual transformed input, or buffered output beyond
+the declared block length. `BlockPlanner` zstd-compresses that transform as
+HZ02 mode 20; the decoder-visible transformed length is metadata. The one
+permitted smoke is `results/smoke/r2-cmix-word-zstd-32k-20260821`.
 
 HybridZip-specific wrappers outside this directory are documented in
 `../../docs/SOURCES.md`.

@@ -1,0 +1,36 @@
+[
+  {
+    "mode": 41,
+    "name": "lmic-arithmetic",
+    "input_bytes": 1024,
+    "archive_bytes": 1768,
+    "decoded_bytes": 1024,
+    "bpb": 13.8125,
+    "input_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+    "archive_sha256": "1070568E41A81D97C33846FF941773492C6B12977377DDA07FDB396AE8B219D6",
+    "decoded_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+    "byte_exact": true,
+    "encode_seconds": 0.025065,
+    "decode_seconds": 0.021912,
+    "codec_sha256": "FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B",
+    "transform": 20,
+    "entropy": 24
+  },
+  {
+    "mode": 42,
+    "name": "delta-binary-packed-zstd",
+    "input_bytes": 1024,
+    "archive_bytes": 1131,
+    "decoded_bytes": 1024,
+    "bpb": 8.835938,
+    "input_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+    "archive_sha256": "BB077C6AE55FF8BC4125EBF805EA3619F37807830B310B625636AF2A4BC795E4",
+    "decoded_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+    "byte_exact": true,
+    "encode_seconds": 0.010982,
+    "decode_seconds": 0.012418,
+    "codec_sha256": "FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B",
+    "transform": 21,
+    "entropy": 25
+  }
+]

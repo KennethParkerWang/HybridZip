@@ -1,0 +1,16 @@
+{
+  "scope": "minimal single-block rANS round trip; not a corpus benchmark",
+  "date": "2026-08-20",
+  "input_bytes": 32768,
+  "archive_bytes": 19469,
+  "mode": "Rans",
+  "mode_id": 14,
+  "transform": "Raw",
+  "transform_id": 0,
+  "entropy": "Rans",
+  "entropy_id": 3,
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "44C823226D323C4A35ACCBE82601D240B3C0C3348A9CDF754BF4F79A15F8F071",
+  "round_trip_sha256_match": true
+}

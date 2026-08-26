@@ -1,0 +1,2 @@
+"mode"	"rows"	"input_bytes"	"archive_bytes"	"ratio"	"bpb"	"encode_seconds"	"decode_seconds"	"peak_ram_mib"	"pass_rows"	"codec_sha256"
+"donor-match"	"12"	"393216"	"147229"	"0.374422709147135"	"2.99538167317708"	"227.1764538"	"227.7868024"	"129.90625"	"12"	"DDD852EF0744740735E6D32EE0FFCB197C3C8349C0D695AD192C7CB96BF298BA"

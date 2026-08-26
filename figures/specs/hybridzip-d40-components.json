@@ -1,0 +1,94 @@
+{
+  "title": "HybridZip R2 D40 historical component architecture",
+  "canvas": {"width": 2600, "height": 1720},
+  "style": {
+    "font_family": "Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif",
+    "font_size": 20,
+    "bg_color": "#F8FAFC",
+    "palette": ["#E8F1FA", "#EAF7F1", "#FFF5DA", "#F3ECFA"]
+  },
+  "labels": [
+    {"text": "HybridZip R2 · D40 阶段组件详细结构图", "x": 70, "y": 58, "font_size": 40, "color": "#143A5F", "anchor": "start"},
+    {"text": "历史边界：codec SHA-256 DDD852…98BA｜HZ02 mode 0–23｜1 Auto + 24 forced｜12 × 32 KiB｜300/300 PASS", "x": 70, "y": 105, "font_size": 20, "color": "#526274", "anchor": "start"},
+    {"text": "ENCODER CONTROL PLANE", "x": 70, "y": 160, "font_size": 18, "color": "#557189", "anchor": "start"},
+    {"text": "D40 CANDIDATE PORTFOLIO · 8 ROUTER FAMILIES", "x": 70, "y": 390, "font_size": 18, "color": "#557189", "anchor": "start"},
+    {"text": "ARCHIVE / DECODER DATA PLANE", "x": 70, "y": 1050, "font_size": 18, "color": "#557189", "anchor": "start"},
+    {"text": "COMPATIBILITY + EXPERIMENT EVIDENCE", "x": 70, "y": 1390, "font_size": 18, "color": "#557189", "anchor": "start"}
+  ],
+  "nodes": [
+    {"id": "input", "label": "输入字节流\nD40：32 KiB 前缀", "x": 140, "y": 255, "width": 190, "height": 100, "fill": "#FFFFFF", "stroke": "#174A75", "font_size": 19},
+    {"id": "split", "label": "分块器\nHZ02 默认 64 KiB\nD40：每文件 1 block", "x": 365, "y": 255, "width": 190, "height": 112, "fill": "#FFFFFF", "stroke": "#174A75", "font_size": 18},
+    {"id": "analyzer", "label": "StructureAnalyzer\nentropy / text / zero\nmatch / x86 / delta / image", "x": 610, "y": 255, "width": 245, "height": 122, "fill": "#E8F1FA", "stroke": "#174A75", "font_size": 18},
+    {"id": "layer_a", "label": "Layer A\n路径字节结构 gate\n只看当前 block", "x": 875, "y": 255, "width": 220, "height": 112, "fill": "#E8F1FA", "stroke": "#174A75", "font_size": 19},
+    {"id": "layer_b", "label": "Layer B\n8 家族 sleeping router\n近期 causal-loss telemetry", "x": 1120, "y": 255, "width": 220, "height": 112, "fill": "#E8F1FA", "stroke": "#174A75", "font_size": 18},
+    {"id": "active_set", "label": "激活候选集合\nStored 始终保底\n不适用路径不运行", "x": 1370, "y": 255, "width": 220, "height": 112, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 19},
+    {"id": "compare", "label": "真实编码与比较\npayload + 可变 metadata\n严格更小才换 winner", "x": 1640, "y": 255, "width": 255, "height": 112, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 19},
+    {"id": "winner", "label": "BlockDecision\nmode / transform / entropy\npayload / metadata / oracle gap", "x": 1920, "y": 255, "width": 250, "height": 112, "fill": "#EAF7F1", "stroke": "#287B62", "font_size": 18},
+    {"id": "writer", "label": "HZ02 Writer\nArchiveHeader + BlockHeader\nCRC32 + side info + payload", "x": 2200, "y": 255, "width": 250, "height": 112, "fill": "#EAF7F1", "stroke": "#287B62", "font_size": 18},
+    {"id": "after_d40", "label": "D40 后续（阶段外）\nmode 24：delta-of-delta\nmode 25：bGPT prior\nmode 26：JAX portable", "x": 2450, "y": 255, "width": 230, "height": 140, "fill": "#FFFFFF", "stroke": "#7B8491", "font_size": 17},
+
+    {"id": "stored", "label": "始终存在的保底\nmode 0 · Stored\n原字节 payload", "x": 225, "y": 500, "width": 300, "height": 120, "fill": "#FFFFFF", "stroke": "#174A75", "font_size": 20},
+    {"id": "family0", "label": "F0 · Statistical\nm1 PredictiveV1：4 experts → mixer\n→ CDF → arithmetic\nm2 zstd · m3 FSE", "x": 620, "y": 500, "width": 400, "height": 155, "fill": "#E8F1FA", "stroke": "#3B6F99", "font_size": 19},
+    {"id": "family1", "label": "F1 · Match\nm5 DonorMatchPredictive\nV1 CDF + cmix / paq8px Match\nbit-prefix causal arithmetic", "x": 1080, "y": 500, "width": 400, "height": 155, "fill": "#E8F1FA", "stroke": "#3B6F99", "font_size": 19},
+    {"id": "family2", "label": "F2 · Neural\nm21 neural-lstm\nm22 shared-neural-lstm\nm23 lstm-compress", "x": 1540, "y": 500, "width": 400, "height": 155, "fill": "#F3ECFA", "stroke": "#75559A", "font_size": 19},
+    {"id": "family3", "label": "F3 · Structured\nm6 BWT+zstd · m7 BWT+MTF+zstd\nm8 BWT+RLT+zstd · m9 x86 BCJ+zstd\nm15 BCJ2+zstd · …", "x": 2000, "y": 500, "width": 410, "height": 155, "fill": "#EAF7F1", "stroke": "#287B62", "font_size": 18},
+
+    {"id": "family4", "label": "F4 · Numeric\nm10 shuffle · m11 bitshuffle\nm12 delta · m13 FastPFOR\nm16 record transpose · …", "x": 620, "y": 730, "width": 400, "height": 155, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 19},
+    {"id": "family5", "label": "F5 · Text\nm19 Brotli text\nm20 cmix word dictionary + zstd\nstatic dictionary / context", "x": 1080, "y": 730, "width": 400, "height": 155, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 19},
+    {"id": "family6", "label": "F6 · Media\nm17 JPEG-LS / CharLS\nm18 FLAC residual\nPCM prediction + Rice", "x": 1540, "y": 730, "width": 400, "height": 155, "fill": "#F3ECFA", "stroke": "#75559A", "font_size": 19},
+    {"id": "family7", "label": "F7 · LZ / Coding\nm4 LZMA1 / 7-Zip\nm14 static byte rANS\n…", "x": 2000, "y": 730, "width": 410, "height": 155, "fill": "#EAF7F1", "stroke": "#287B62", "font_size": 19},
+    {"id": "candidate_output", "label": "候选输出统一合同\nmode + transform + entropy\npayload + decoder-visible side information", "x": 1300, "y": 930, "width": 520, "height": 115, "fill": "#FFFFFF", "stroke": "#526274", "font_size": 19},
+
+    {"id": "archive", "label": "HZ02 Archive\n40 B ArchiveHeader\n每块 16 B BlockHeader", "x": 260, "y": 1165, "width": 300, "height": 130, "fill": "#EAF7F1", "stroke": "#287B62", "font_size": 20},
+    {"id": "block_layout", "label": "每个 Block\nmode / transform / entropy / flags\nraw / payload / metadata size\nCRC32 → side info → payload", "x": 650, "y": 1165, "width": 400, "height": 150, "fill": "#EAF7F1", "stroke": "#287B62", "font_size": 18},
+    {"id": "contract", "label": "格式合同校验\nID 组合 · metadata 长度\npayload 上界 · model/dictionary identity\n截断与 trailing bytes", "x": 1110, "y": 1165, "width": 400, "height": 150, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 18},
+    {"id": "dispatch", "label": "按 mode 分派 decoder\nbackend decode\n→ inverse transform\n→ 精确消费输入", "x": 1570, "y": 1165, "width": 400, "height": 150, "fill": "#E8F1FA", "stroke": "#174A75", "font_size": 19},
+    {"id": "verify", "label": "无损验证\n输出长度 + block CRC32\n失败不发布输出", "x": 2015, "y": 1165, "width": 350, "height": 130, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 20},
+    {"id": "output", "label": "逐字节一致输出\n临时文件原子 rename", "x": 2380, "y": 1165, "width": 280, "height": 110, "fill": "#FFFFFF", "stroke": "#174A75", "font_size": 20},
+
+    {"id": "hz01", "label": "HZ01 兼容支线\nNGram + PPMd + Match + Online LSTM\nAdaptive mixer → CDF24\n→ arithmetic coder", "x": 360, "y": 1510, "width": 560, "height": 150, "fill": "#FFFFFF", "stroke": "#657181", "font_size": 19},
+    {"id": "forced", "label": "D40 实验矩阵\n1 Auto + 24 forced（不是 25 个 mode）\n同一批 12 个 32 KiB 输入\n25 × 12 = 300 rows", "x": 1030, "y": 1510, "width": 470, "height": 150, "fill": "#E8F1FA", "stroke": "#174A75", "font_size": 19},
+    {"id": "metrics", "label": "逐 case 记录\n完整 archive bytes\nencode / decode time · peak RAM\ninput / archive / output SHA-256", "x": 1530, "y": 1510, "width": 430, "height": 150, "fill": "#FFF5DA", "stroke": "#A97214", "font_size": 18},
+    {"id": "ledger", "label": "D40 账本\nmode_rows.tsv · 300 rows\nportfolio_aggregate.tsv · 25 rows\nper_file_winners.tsv · 12 rows\n300/300 PASS · Auto gap 12/12 = 0", "x": 2050, "y": 1510, "width": 500, "height": 165, "fill": "#163F66", "stroke": "#163F66", "text_color": "#FFFFFF", "font_size": 19}
+  ],
+  "edges": [
+    {"from": "input", "to": "split", "color": "#174A75", "thickness": 3},
+    {"from": "split", "to": "analyzer", "color": "#174A75", "thickness": 3},
+    {"from": "analyzer", "to": "layer_a", "color": "#174A75", "thickness": 3},
+    {"from": "layer_a", "to": "layer_b", "color": "#174A75", "thickness": 3},
+    {"from": "layer_b", "to": "active_set", "color": "#174A75", "thickness": 3},
+    {"from": "active_set", "to": "compare", "color": "#A97214", "thickness": 3},
+    {"from": "compare", "to": "winner", "color": "#A97214", "thickness": 3},
+    {"from": "winner", "to": "writer", "color": "#287B62", "thickness": 3},
+    {"from": "active_set", "to": "stored", "label": "保底", "style": "dashed", "color": "#8B98A6", "thickness": 2},
+    {"from": "active_set", "to": "family0", "style": "dashed", "color": "#8B98A6", "thickness": 2},
+    {"from": "active_set", "to": "family3", "label": "8 家族门控（其余连线省略）", "style": "dashed", "color": "#8B98A6", "thickness": 2},
+    {"from": "active_set", "to": "family7", "style": "dashed", "color": "#8B98A6", "thickness": 2},
+    {"from": "stored", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family0", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family1", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family2", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family3", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family4", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family5", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family6", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "family7", "to": "candidate_output", "color": "#526274", "thickness": 2},
+    {"from": "candidate_output", "to": "compare", "label": "候选成本", "color": "#A97214", "thickness": 3, "curve": true},
+
+    {"from": "writer", "to": "archive", "label": "生成", "color": "#287B62", "thickness": 3, "curve": true},
+    {"from": "archive", "to": "block_layout", "color": "#287B62", "thickness": 3},
+    {"from": "block_layout", "to": "contract", "color": "#A97214", "thickness": 3},
+    {"from": "contract", "to": "dispatch", "color": "#174A75", "thickness": 3},
+    {"from": "dispatch", "to": "verify", "color": "#174A75", "thickness": 3},
+    {"from": "verify", "to": "output", "color": "#174A75", "thickness": 3},
+
+    {"from": "input", "to": "hz01", "label": "未指定 --profile=r2", "style": "dashed", "color": "#657181", "thickness": 2, "curve": true},
+    {"from": "writer", "to": "forced", "label": "Auto / forced 输出", "style": "dashed", "color": "#526274", "thickness": 2, "curve": true},
+    {"from": "forced", "to": "metrics", "color": "#A97214", "thickness": 3},
+    {"from": "metrics", "to": "ledger", "label": "全部验证后发布", "color": "#163F66", "thickness": 3}
+  ],
+  "groups": [
+    {"id": "candidate_group", "label": "D40 Auto 可评估的 mode 0–23；forced 实验逐条绕过 Router", "node_ids": ["stored", "family0", "family1", "family2", "family3", "family4", "family5", "family6", "family7", "candidate_output"], "fill": "#F4F7FA", "stroke": "#9AA8B6", "padding": 28},
+    {"id": "decoder_group", "label": "Decoder 不重新运行 Router；完全由 archive 中的 mode / metadata 驱动", "node_ids": ["archive", "block_layout", "contract", "dispatch", "verify", "output"], "fill": "#F4F8F6", "stroke": "#8AA99B", "padding": 28}
+  ]
+}

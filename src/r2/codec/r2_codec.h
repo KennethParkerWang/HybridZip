@@ -21,7 +21,12 @@ struct CompressionStats {
     std::uint64_t input_bytes = 0;
     std::uint64_t archive_bytes = 0;
     std::uint64_t payload_bytes = 0;
-    std::array<std::uint32_t, 14> blocks_by_mode{};
+    std::uint64_t candidates_evaluated = 0;
+    std::uint64_t selected_candidate_bytes = 0;
+    std::uint64_t oracle_candidate_bytes = 0;
+    std::uint64_t oracle_gap_bytes = 0;
+    // BlockMode currently occupies IDs 0..42, including Arrow delta packing.
+    std::array<std::uint32_t, 43> blocks_by_mode{};
 };
 
 CompressionStats compress_file(const std::filesystem::path& input,

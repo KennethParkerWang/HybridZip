@@ -1,0 +1,20 @@
+{
+  "experiment": "r2-auto-neural-portfolio-32k-20260821",
+  "profile": "HZ02",
+  "input": "results/smoke/r2-structure-auto-32k-20260820/dickens-32k.input",
+  "input_bytes": 32768,
+  "archive": "results/smoke/r2-auto-neural-portfolio-32k-20260821/dickens-32k.hz2",
+  "archive_bytes": 10890,
+  "decoded": "results/smoke/r2-auto-neural-portfolio-32k-20260821/dickens-32k.decoded",
+  "selected_mode": 20,
+  "selected_mode_name": "CmixWordDictionaryZstd",
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "0FED9A1AC523CD2BBCFD7397F0E4F05D1FAFF1EBCA51ABF0FA919CA51B629235",
+  "round_trip": "PASS",
+  "notes": [
+    "Auto evaluated rANS, PROFILE_V1 neural, shared neural, and lstm-compress candidates under deterministic gates.",
+    "The complete archive-byte comparison retained cmix WRT Dictionary mode 20.",
+    "This is a 32 KiB integrity probe, not a corpus-level ratio or speed claim."
+  ]
+}

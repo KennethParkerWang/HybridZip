@@ -1,0 +1,15 @@
+{
+  "profile": "HZ02",
+  "mode": "FlacResidual",
+  "input": "input-stereo-s16le-32k.pcm",
+  "input_bytes": 32768,
+  "archive": "archive.hz2",
+  "archive_bytes": 5393,
+  "payload_bytes": 5221,
+  "decoded": "decoded.pcm",
+  "input_sha256": "2F5E4409230A83DBCF0526AEB526F47A4049C5CF70D3B14132D5891E6C388775",
+  "decoded_sha256": "2F5E4409230A83DBCF0526AEB526F47A4049C5CF70D3B14132D5891E6C388775",
+  "archive_sha256": "9393A2A6E4F39B44AC19D1C50349B68158663F9261E06956606CD70600D106CD",
+  "round_trip": "PASS",
+  "scope": "one forced 32 KiB signed-16-bit stereo PCM CLI round trip; not a corpus benchmark"
+}

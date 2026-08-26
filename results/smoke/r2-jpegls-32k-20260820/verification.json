@@ -1,0 +1,23 @@
+{
+  "scope": "minimal single-block CharLS JPEG-LS round trip; not an image compression benchmark",
+  "date": "2026-08-20",
+  "input_bytes": 32768,
+  "archive_bytes": 30616,
+  "payload_bytes": 30548,
+  "mode": "JpegLs",
+  "mode_id": 17,
+  "transform": "JpegLs",
+  "transform_id": 11,
+  "entropy": "JpegLs",
+  "entropy_id": 7,
+  "metadata_bytes": 12,
+  "width": 64,
+  "height": 512,
+  "bits_per_sample": 8,
+  "component_count": 1,
+  "interleave_mode": "none",
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "67F3BAFA1B6314C1661DC0BA8C2E90BFF8FFB2AC44D222742CA2F49C618F0D16",
+  "round_trip_sha256_match": true
+}

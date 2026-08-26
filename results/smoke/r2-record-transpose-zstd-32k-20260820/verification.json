@@ -1,0 +1,19 @@
+{
+  "scope": "minimal single-block fixed-record transpose plus zstd round trip; not a numeric benchmark",
+  "date": "2026-08-20",
+  "input_bytes": 32768,
+  "archive_bytes": 19532,
+  "payload_bytes": 19471,
+  "mode": "RecordTransposeZstd",
+  "mode_id": 16,
+  "transform": "RecordTranspose",
+  "transform_id": 10,
+  "entropy": "ZstdFse",
+  "entropy_id": 2,
+  "metadata_bytes": 5,
+  "record_width": 32,
+  "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "decoded_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+  "archive_sha256": "095EBD3C0DB824A9F47AD4771FDA0F7E95E076E572715A895632C0F604E8691C",
+  "round_trip_sha256_match": true
+}

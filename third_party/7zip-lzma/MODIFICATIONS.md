@@ -28,3 +28,38 @@ only; it neither changes the LZMA encoder nor claims to reproduce its optimal
 parser.
 
 No LGPL-default or unRAR-restricted 7-Zip source was copied or modified.
+
+HybridZip also compiles the unmodified public-domain BCJ2 encoder/decoder
+closure (`Bcj2.c`, `Bcj2.h`, and `Bcj2Enc.c`). The project-owned
+`src/r2/representation/bcj2_transform.cpp` frames the donor's main, call,
+jump, and range substreams. HZ02 metadata retains every substream length;
+the coding path is zstd-backed and requires exact four-stream consumption.
+
+HybridZip additionally compiles the unmodified public-domain PPMd7H closure
+(`Ppmd.h`, `Ppmd7.h`, `Ppmd7.c`, `Ppmd7Enc.c`, and `Ppmd7Dec.c`). The
+project-owned `src/r2/entropy/ppmd7_backend.cpp` adapter:
+
+- calls the donor `Ppmd7_*` model and `Ppmd7z_*` 7z range-coder APIs;
+- uses decoder-visible order 8 and 8 MiB model memory by default;
+- wraps the length-terminated stream in a fixed `HZP7` envelope containing
+  version, order, memory, exact raw/stream lengths, and CRC32 for both;
+- bounds model memory, decoded size, range-stream expansion, and callback
+  reads/writes before allocating or publishing output;
+- rejects truncated input, early PPMd termination, excess trailing range
+  bytes, checksum mismatches, unsupported profiles, and nonzero reserved data.
+
+HybridZip also compiles the unmodified public-domain PPMdI closure
+(`Ppmd8.h`, `Ppmd8.c`, `Ppmd8Enc.c`, and `Ppmd8Dec.c`). The project-owned
+`src/r2/entropy/ppmd8_backend.cpp` adapter:
+
+- calls the donor `Ppmd8_*` model and native carryless range-coder APIs;
+- uses decoder-visible order 8, 8 MiB memory, and CUT_OFF restore method 1;
+- emits and requires the donor end marker, finished range state, and exact
+  compressed-stream consumption;
+- wraps the stream in a fixed `HZP8` envelope containing version, flags,
+  order, restore method, memory, exact raw/stream lengths, and CRC32 for both;
+- bounds model memory, decoded size, range-stream expansion, and callback
+  reads/writes before allocating or publishing output.
+
+The donor files remain byte-identical. HybridZip does not compile
+`Ppmd7aDec.c`, RAR, or any 7-Zip C++ wrapper for either PPMd mode.

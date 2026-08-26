@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "experiment": "r2-postbuild-paq8px-detected-sse-1k-20260826",
+  "mode": 37,
+  "transform": 0,
+  "entropy": 22,
+  "input_bytes": 1024,
+  "archive_bytes": 1110,
+  "decoded_bytes": 1024,
+  "bpb": 8.671875,
+  "input_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+  "archive_sha256": "C2126371CC96205834EDDB65A91C6DCCA92CB9354BE7455A9AC8DC8AEA87EE87",
+  "decoded_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+  "byte_exact": true,
+  "codec_sha256": "FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B",
+  "encode_seconds": 0.870678,
+  "decode_seconds": 0.861729
+}

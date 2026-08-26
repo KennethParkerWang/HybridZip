@@ -103,9 +103,36 @@ void validate_block_header(const BlockHeader& header) {
          header.metadata_size == kR2ShuffleMetadataSize) ||
         (header.transform == TransformKind::Delta &&
          header.metadata_size == kR2ShuffleMetadataSize) ||
+        (header.transform == TransformKind::DeltaOfDelta &&
+         header.metadata_size == kR2DeltaOfDeltaMetadataSize) ||
+        (header.transform == TransformKind::DeltaBinaryPacked &&
+         header.metadata_size == kR2DeltaBinaryPackedMetadataSize) ||
         (header.transform == TransformKind::FastPfor &&
          header.metadata_size >= kR2FastPforMetadataMinimumSize &&
-         header.metadata_size <= kR2FastPforMetadataMinimumSize + 1023U);
+         header.metadata_size <= kR2FastPforMetadataMinimumSize + 1023U) ||
+        (header.transform == TransformKind::Bcj2 &&
+         header.metadata_size == kR2Bcj2MetadataSize) ||
+        (header.transform == TransformKind::RecordTranspose &&
+         header.metadata_size == kR2ShuffleMetadataSize) ||
+        (header.transform == TransformKind::JpegLs &&
+         header.metadata_size == kR2JpegLsMetadataSize) ||
+        (header.transform == TransformKind::FlacResidual &&
+         header.metadata_size >= kR2FlacResidualMetadataMinimumSize &&
+         header.metadata_size <= kR2FlacResidualMetadataMaximumSize) ||
+        (header.transform == TransformKind::BrotliText &&
+         header.metadata_size == kR2BlockChecksumSize) ||
+        (header.transform == TransformKind::CmixWordDictionary &&
+         header.metadata_size == kR2CmixDictionaryMetadataSize) ||
+        (header.transform == TransformKind::NeuralLstm &&
+         header.metadata_size == kR2BlockChecksumSize) ||
+        (header.transform == TransformKind::NeuralShared &&
+         header.metadata_size == kR2SharedNeuralMetadataSize) ||
+        (header.transform == TransformKind::NeuralSharedPrior &&
+         header.metadata_size == kR2BgptSharedPriorMetadataSize) ||
+        (header.transform == TransformKind::NeuralOnlinePortable &&
+         header.metadata_size == kR2JaxCompressPortableMetadataSize) ||
+        (header.transform == TransformKind::NeuralLmicArithmetic &&
+         header.metadata_size == kR2LmicArithmeticMetadataSize);
     if (!valid_transform_metadata || header.flags != kR2BlockFlagCrc32 ||
         header.uncompressed_size == 0 ||
         header.uncompressed_size > kR2MaximumBlockSize ||
@@ -130,6 +157,48 @@ void validate_block_header(const BlockHeader& header) {
         (header.mode == BlockMode::Lzma &&
          raw_transform &&
          header.entropy == EntropyKind::Lzma) ||
+        (header.mode == BlockMode::Ppmd7 &&
+         raw_transform &&
+         header.entropy == EntropyKind::Ppmd7) ||
+        (header.mode == BlockMode::Ppmd8 &&
+         raw_transform &&
+         header.entropy == EntropyKind::Ppmd8) ||
+        (header.mode == BlockMode::Zpaq &&
+         raw_transform &&
+         header.entropy == EntropyKind::Zpaq) ||
+        (header.mode == BlockMode::Ctw &&
+         raw_transform &&
+         header.entropy == EntropyKind::Ctw) ||
+        (header.mode == BlockMode::Paq8pxApmPredictive &&
+         raw_transform &&
+         header.entropy == EntropyKind::Paq8pxApm) ||
+        (header.mode == BlockMode::Paq8pxRecordModel &&
+         raw_transform &&
+         header.entropy == EntropyKind::Paq8pxRecordModel) ||
+        (header.mode == BlockMode::Paq8pxLinearPrediction &&
+         raw_transform &&
+         header.entropy == EntropyKind::Paq8pxLinearPrediction) ||
+        (header.mode == BlockMode::Paq8pxSimilarity &&
+         raw_transform &&
+         header.entropy == EntropyKind::Paq8pxSimilarity) ||
+        (header.mode == BlockMode::Paq8pxSimilaritySse &&
+         raw_transform &&
+         header.entropy == EntropyKind::Paq8pxSimilaritySse) ||
+        (header.mode == BlockMode::Paq8pxGenericSse &&
+         raw_transform &&
+         header.entropy == EntropyKind::Paq8pxGenericSse) ||
+        (header.mode == BlockMode::Paq8pxDetectedSse &&
+          raw_transform &&
+          header.entropy == EntropyKind::Paq8pxDetectedSse) ||
+        (header.mode == BlockMode::Wavpack &&
+         raw_transform &&
+         header.entropy == EntropyKind::Wavpack) ||
+        (header.mode == BlockMode::Lz4 &&
+         raw_transform &&
+         header.entropy == EntropyKind::Lz4) ||
+        (header.mode == BlockMode::KanziAns &&
+         raw_transform &&
+         header.entropy == EntropyKind::KanziAns) ||
         (header.mode == BlockMode::DonorMatchPredictive &&
          raw_transform &&
          header.entropy == EntropyKind::SymbolArithmetic) ||
@@ -154,9 +223,53 @@ void validate_block_header(const BlockHeader& header) {
         (header.mode == BlockMode::DeltaZstd &&
          header.transform == TransformKind::Delta &&
          header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::DeltaOfDeltaZstd &&
+         header.transform == TransformKind::DeltaOfDelta &&
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::DeltaBinaryPackedZstd &&
+         header.transform == TransformKind::DeltaBinaryPacked &&
+         header.entropy == EntropyKind::ZstdFse) ||
         (header.mode == BlockMode::FastPfor &&
          header.transform == TransformKind::FastPfor &&
-         header.entropy == EntropyKind::FastPfor);
+         header.entropy == EntropyKind::FastPfor) ||
+        (header.mode == BlockMode::Rans &&
+         raw_transform &&
+         header.entropy == EntropyKind::Rans) ||
+        (header.mode == BlockMode::Bcj2Zstd &&
+         header.transform == TransformKind::Bcj2 &&
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::RecordTransposeZstd &&
+         header.transform == TransformKind::RecordTranspose &&
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::JpegLs &&
+         header.transform == TransformKind::JpegLs &&
+         header.entropy == EntropyKind::JpegLs) ||
+        (header.mode == BlockMode::FlacResidual &&
+         header.transform == TransformKind::FlacResidual &&
+         header.entropy == EntropyKind::FlacResidual) ||
+        (header.mode == BlockMode::BrotliText &&
+         header.transform == TransformKind::BrotliText &&
+         header.entropy == EntropyKind::BrotliText) ||
+        (header.mode == BlockMode::CmixWordDictionaryZstd &&
+         header.transform == TransformKind::CmixWordDictionary &&
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::NeuralLstm && raw_transform &&
+         header.entropy == EntropyKind::SymbolArithmetic) ||
+        (header.mode == BlockMode::SharedNeuralLstm &&
+         header.transform == TransformKind::NeuralShared &&
+         header.entropy == EntropyKind::SymbolArithmetic) ||
+        (header.mode == BlockMode::LstmCompress &&
+         header.transform == TransformKind::NeuralLstm &&
+         header.entropy == EntropyKind::SymbolArithmetic) ||
+        (header.mode == BlockMode::BgptSharedPrior &&
+         header.transform == TransformKind::NeuralSharedPrior &&
+         header.entropy == EntropyKind::SymbolArithmetic) ||
+        (header.mode == BlockMode::JaxCompressPortable &&
+         header.transform == TransformKind::NeuralOnlinePortable &&
+         header.entropy == EntropyKind::SymbolArithmetic) ||
+        (header.mode == BlockMode::LmicArithmetic &&
+         header.transform == TransformKind::NeuralLmicArithmetic &&
+         header.entropy == EntropyKind::LmicArithmetic);
     if (!valid_pair) {
         throw std::runtime_error("HZ02 block mode and entropy backend disagree");
     }

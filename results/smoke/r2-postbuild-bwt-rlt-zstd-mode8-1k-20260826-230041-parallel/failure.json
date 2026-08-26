@@ -1,0 +1,10 @@
+{
+    "mode":  8,
+    "mode_name":  "bwt-rlt-zstd",
+    "input_path":  "E:\\MIXER\\hybridzip\\results\\smoke\\r2-postbuild-1k-20260826\\input.bin",
+    "input_bytes":  1024,
+    "codec_sha256":  "FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B",
+    "reason":  "encoder exited successfully but produced no archive",
+    "generated_utc":  "2026-08-26T15:00:42.2744740Z",
+    "worker":  "lane-a"
+}

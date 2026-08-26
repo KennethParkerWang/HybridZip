@@ -9,6 +9,8 @@ ryg-rans revision `c9d162d996fd600315af9ae8eb89d832576cb32d`.
 - Imported source: `rans_byte.h`, SHA-256:
   `4965171BE0F0E2277C729A9218BBDB5748208CE45FCBBD580EDB56E3BE9A2AE9`
 
-The donor is header-only. A future HybridZip-owned HZ02 adapter must serialize
-the normalized symbol table and scale parameter as decoder-visible metadata,
-then validate rANS payload consumption before publishing output.
+The donor is header-only. The project-owned HZ02 adapter is
+`src/r2/entropy/rans_backend.{h,cpp}`. It serializes a normalized byte symbol
+table and scale parameter in the payload, then validates decoder-visible model
+data, renormalization bounds, and complete rANS payload consumption before
+publishing output.

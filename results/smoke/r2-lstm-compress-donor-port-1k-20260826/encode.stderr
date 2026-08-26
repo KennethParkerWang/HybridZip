@@ -1,0 +1,5 @@
+Usage:
+
+  hybridzip c <input> <archive>
+  hybridzip c --profile=r2 [--r2-mode=auto|stored|zstd|fse|lzma|lz4|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] [--block-size=BYTES] [--zstd-level=LEVEL] [--lzma-level=LEVEL] [--lzma-dictionary=BYTES] <input> <archive>
+  hybridzip d <archive> <output>

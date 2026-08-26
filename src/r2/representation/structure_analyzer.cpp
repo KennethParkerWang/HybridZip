@@ -34,6 +34,22 @@ double delta_similarity(const ByteView input, const std::size_t width) {
            static_cast<double>(input.size() - width);
 }
 
+double image_gradient_score(const ByteView input, const std::size_t width) {
+    if (input.size() <= width) {
+        return 0.0;
+    }
+    std::uint64_t difference_sum = 0;
+    for (std::size_t index = width; index < input.size(); ++index) {
+        const int difference = static_cast<int>(input[index]) -
+            static_cast<int>(input[index - width]);
+        difference_sum += static_cast<std::uint64_t>(
+            difference < 0 ? -difference : difference);
+    }
+    const double mean_difference = static_cast<double>(difference_sum) /
+        static_cast<double>(input.size() - width);
+    return 1.0 - mean_difference / 255.0;
+}
+
 }  // namespace
 
 StructureFeatures StructureAnalyzer::analyze(const ByteView input) const {
@@ -44,6 +60,8 @@ StructureFeatures StructureAnalyzer::analyze(const ByteView input) const {
 
     std::array<std::size_t, 256> histogram{};
     std::size_t printable = 0;
+    std::size_t whitespace = 0;
+    std::size_t markup_or_code = 0;
     std::size_t zero = 0;
     std::size_t x86_branches = 0;
     for (std::size_t index = 0; index < input.size(); ++index) {
@@ -51,6 +69,13 @@ StructureFeatures StructureAnalyzer::analyze(const ByteView input) const {
         ++histogram[value];
         printable += (value >= 0x20U && value <= 0x7EU) ||
                      value == '\n' || value == '\r' || value == '\t';
+        whitespace += value == ' ' || value == '\n' || value == '\r' ||
+                      value == '\t' || value == '\f' || value == '\v';
+        markup_or_code += value == '<' || value == '>' || value == '{' ||
+                          value == '}' || value == '[' || value == ']' ||
+                          value == '(' || value == ')' || value == ';' ||
+                          value == '=' || value == ':' || value == '/' ||
+                          value == '\\' || value == '#' || value == '*';
         zero += value == 0;
         if ((value == 0xE8U || value == 0xE9U) &&
             index + 4 < input.size()) {
@@ -67,12 +92,21 @@ StructureFeatures StructureAnalyzer::analyze(const ByteView input) const {
         features.entropy_bits -= probability * std::log2(probability);
     }
     features.printable_fraction = static_cast<double>(printable) / size;
+    features.whitespace_fraction = static_cast<double>(whitespace) / size;
+    features.markup_or_code_fraction =
+        static_cast<double>(markup_or_code) / size;
     features.zero_fraction = static_cast<double>(zero) / size;
     features.x86_branch_fraction = static_cast<double>(x86_branches) / size;
     features.delta_similarity_1 = delta_similarity(input, 1);
     features.delta_similarity_2 = delta_similarity(input, 2);
     features.delta_similarity_4 = delta_similarity(input, 4);
     features.delta_similarity_8 = delta_similarity(input, 8);
+    for (const std::size_t width : {32U, 64U, 128U, 256U, 512U, 1024U}) {
+        if (input.size() % width == 0U) {
+            features.image_gradient_score = std::max(
+                features.image_gradient_score, image_gradient_score(input, width));
+        }
+    }
 
     if (input.size() < kWindowSize * 2) {
         return features;

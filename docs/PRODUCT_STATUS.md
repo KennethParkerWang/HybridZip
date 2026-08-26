@@ -1,6 +1,140 @@
 # HybridZip Product Status
 
-Status date: 2026-08-20
+Status date: 2026-08-26
+
+## R2 Current Status
+
+The R2 implementation is active in the same C++17 product and preserves the
+HZ01/PROFILE_V1 decoder path. HZ02 currently exposes block modes `0..42` (43
+candidate paths), including representation transforms, LZ/coding donors,
+specialist PAQ8px graphs, neural profiles, router activation, and multi-coder
+selection. The Release executable and the R2 codec test executable compile and
+link successfully.
+
+Every newly added R2 branch has one deterministic 1 KiB archive/decode smoke
+with byte-exact input/output SHA-256 evidence. These smokes establish
+correctness only; they do not establish corpus-level ratio, speed, or memory
+rankings. The final Auto archive-byte ledger has not yet been regenerated for
+modes `30..42`, and candidate retirement/hot-path selection remains open.
+
+Post-build branch gates on 2026-08-26 used the current Release binary
+(`FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`) and one
+deterministic random 1 KiB input. Forced mode 41 (`lmic-arithmetic`) produced
+a 1768-byte archive and forced mode 42 (`delta-binary-packed-zstd`) produced a
+1131-byte archive; both decoded to 1024 bytes with exact input/output SHA-256
+equality. Evidence is stored in
+`results/smoke/r2-postbuild-1k-20260826/verification.json`. These are branch
+correctness gates only and do not establish Auto ranking or corpus performance.
+
+A static coverage audit found all 43 HZ02 `BlockMode` values in the planner,
+codec, and archive handling paths. This proves decoder-visible source coverage,
+not final runtime or compression-quality completion.
+
+The consolidated metadata-only smoke index at
+`results/analysis/r2-smoke-evidence-index-20260826-parallel` filters for the
+current binary hash and finds unique 1 KiB byte-exact evidence for 42/43 HZ02
+modes. Mode 8 (`bwt-rlt-zstd`) is the only missing mode in this index because
+the random 1 KiB input did not produce a smaller Kanzi RLT representation; the
+forced path therefore emitted no archive. Existing corpus evidence confirms
+that mode 8 is runnable for suitable 32 KiB inputs. Historical smoke records
+use earlier binary hashes and remain provenance, not current-build evidence.
+
+The remaining current-Release gates were executed in three parallel lanes with
+unique output directories, separate stdout/stderr logs, current-hash skipping,
+and a 60-second process timeout. No Auto, D40, CTest, batch, or larger-block
+test was run during this acceleration pass. The detailed mode-8 boundary record
+is `results/smoke/r2-postbuild-bwt-rlt-zstd-mode8-1k-20260826-230041-parallel/failure.json`.
+
+The latest forced mode 29 (`zpaq`) gate produced a 1365-byte archive
+(10.664063 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in `results/smoke/r2-postbuild-zpaq-1k-20260826/verification.json`.
+
+The latest forced mode 25 (`bgpt-shared-prior`) gate produced a 1759-byte
+archive (13.742188 bpb), decoded to 1024 bytes, and matched the input SHA-256
+exactly. Evidence is stored in
+`results/smoke/r2-postbuild-bgpt-shared-prior-1k-20260826/verification.json`.
+
+The latest forced mode 24 (`delta-of-delta-zstd`) gate produced a 1099-byte
+archive (8.585938 bpb), decoded to 1024 bytes, and matched the input SHA-256
+exactly. Evidence is stored in
+`results/smoke/r2-postbuild-delta-of-delta-zstd-1k-20260826/verification.json`.
+
+The latest forced mode 23 (`lstm-compress`) gate produced a 1098-byte archive
+(8.578125 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-lstm-compress-1k-20260826/verification.json`.
+
+The latest forced mode 22 (`shared-neural-lstm`) gate produced a 1099-byte
+archive (8.585938 bpb), decoded to 1024 bytes, and matched the input SHA-256
+exactly. Evidence is stored in
+`results/smoke/r2-postbuild-shared-neural-lstm-1k-20260826/verification.json`.
+
+The latest forced mode 21 (`neural-lstm`) gate produced a 1094-byte archive
+(8.546875 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-neural-lstm-1k-20260826/verification.json`.
+
+The latest forced mode 20 (`cmix-word-zstd`) gate produced a 1403-byte
+archive (10.960938 bpb), decoded to 1024 bytes, and matched the input SHA-256
+exactly. Evidence is stored in
+`results/smoke/r2-postbuild-cmix-word-zstd-1k-20260826/verification.json`.
+
+The latest forced mode 19 (`brotli-text`) gate produced a 1088-byte archive
+(8.5 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-brotli-text-1k-20260826/verification.json`.
+
+The latest forced mode 18 (`flac-residual`) gate produced a 1182-byte archive
+(9.234375 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-flac-residual-1k-20260826/verification.json`.
+
+The latest forced mode 17 (`jpegls`) gate produced a 1333-byte archive
+(10.414063 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-jpegls-1k-20260826/verification.json`.
+
+The latest forced mode 16 (`record-transpose-zstd`) gate produced a 1099-byte
+archive (8.585938 bpb), decoded to 1024 bytes, and matched the input SHA-256
+exactly. Evidence is stored in
+`results/smoke/r2-postbuild-record-transpose-zstd-1k-20260826/verification.json`.
+
+The latest forced mode 15 (`bcj2-zstd`) gate produced a 1119-byte archive
+(8.742188 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-bcj2-zstd-1k-20260826/verification.json`.
+
+The latest forced mode 14 (`rans`) gate produced a 1828-byte archive
+(14.28125 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in
+`results/smoke/r2-postbuild-rans-1k-20260826/verification.json`.
+
+The latest forced mode 13 (`fastpfor`) gate produced a 1106-byte archive
+(8.640625 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Because the conventional output directory was already occupied, evidence is
+stored in `results/smoke/r2-postbuild-fastpfor-mode13-1k-20260826/verification.json`.
+
+The latest forced mode 28 (`ppmd8`) gate produced a 1194-byte archive
+(9.328125 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in `results/smoke/r2-postbuild-ppmd8-1k-20260826/verification.json`.
+
+The latest forced mode 27 (`ppmd7`) gate produced a 1193-byte archive
+(9.320313 bpb), decoded to 1024 bytes, and matched the input SHA-256 exactly.
+Evidence is stored in `results/smoke/r2-postbuild-ppmd7-1k-20260826/verification.json`.
+
+The latest forced mode 26 (`jax-compress-portable`) gate produced a 1141-byte
+archive (8.914063 bpb), decoded to 1024 bytes, and matched the input SHA-256
+exactly. Evidence is stored in
+`results/smoke/r2-postbuild-jax-compress-portable-1k-20260826/verification.json`.
+
+The current continuation record is [hybridzip_r2_task_plan.md](../hybridzip_r2_task_plan.md)
+and the donor audit notes are [notes.md](../notes.md).
+
+Donor warehouse validation passed on 2026-08-26 with 2506 checks: 21 donor
+manifests, 18 port evidence records, 17 Git revisions/origins, one release
+snapshot, three source archives, and 21 license evidence hashes. The audit did
+not identify another complete model-free C++17 decoder closure for immediate
+integration.
 
 HybridZip's first-generation C++17 product path is implemented and verified on
 the current Windows toolchain. The Release executable, four active experts,

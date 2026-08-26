@@ -1,20 +1,44 @@
 [CmdletBinding()]
 param(
-    [string]$CodecPath = (Join-Path $PSScriptRoot '..\build\Release\hybridzip.exe'),
+    [string]$CodecPath = '',
     [string]$DatasetPath = 'F:\paq8px\silesia',
-    [string]$OutputRoot = (Join-Path $PSScriptRoot '..\results\experiments'),
+    [string]$OutputRoot = '',
     [string]$ExperimentId = '',
     [ValidateSet('v1', 'r2')]
     [string]$Profile = 'v1',
-    [ValidateSet('auto', 'stored', 'predictive', 'donor-match', 'zstd', 'fse', 'lzma')]
+    [ValidateSet(
+        'auto', 'stored', 'predictive', 'donor-match', 'zstd', 'fse', 'lzma', 'lz4', 'ppmd7', 'ppmd8', 'zpaq', 'ctw',
+        'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
+        'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'delta-of-delta-zstd', 'fastpfor', 'rans',
+        'bcj2-zstd', 'record-transpose-zstd', 'jpegls', 'flac-residual',
+        'brotli-text', 'cmix-word-zstd', 'neural-lstm',
+        'shared-neural-lstm', 'lstm-compress', 'bgpt-shared-prior',
+        'jax-compress-portable'
+    )]
     [string]$R2Mode = 'auto',
     [switch]$Resume,
     [ValidateRange(1, 604800)]
-    [int]$ProcessTimeoutSeconds = 3600
+    [int]$ProcessTimeoutSeconds = 3600,
+    [ValidateSet(32, 64, 128)]
+    [int[]]$ScopesKiB = @(32, 64, 128),
+    [string[]]$SilesiaFiles = @(),
+    [switch]$ListOnly,
+    [switch]$AllowAllFiles
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ([string]::IsNullOrWhiteSpace($scriptRoot)) {
+    throw 'Unable to resolve the experiment script directory'
+}
+if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
+    $OutputRoot = Join-Path $scriptRoot '..\results\experiments'
+}
+if ([string]::IsNullOrWhiteSpace($CodecPath)) {
+    $CodecPath = Join-Path $scriptRoot '..\build\Release\hybridzip.exe'
+}
 
 # Windows PowerShell 5 can inherit both `Path` and `PATH` from mixed tooling.
 # Start-Process materializes its environment through a case-insensitive map
@@ -36,11 +60,50 @@ if ($pathEnvironmentNames.Count -gt 1) {
     }
 }
 
-$files = @(
+$allFiles = @(
     'dickens', 'mozilla', 'mr', 'nci', 'ooffice', 'osdb',
     'reymont', 'samba', 'sao', 'webster', 'x-ray', 'xml'
 )
-$scopesKiB = @(32, 64, 128)
+if ($SilesiaFiles.Count -eq 0) {
+    $files = @($allFiles)
+}
+else {
+    $requestedFiles = @($SilesiaFiles | ForEach-Object {
+        ([string]$_).Split(',')
+    } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+    $files = @()
+    foreach ($requestedFile in $requestedFiles) {
+        $canonical = @($allFiles | Where-Object {
+            [string]::Equals(
+                $_,
+                [string]$requestedFile,
+                [System.StringComparison]::OrdinalIgnoreCase)
+        })
+        if ($canonical.Count -ne 1) {
+            throw "Unknown Silesia file in -SilesiaFiles: $requestedFile"
+        }
+        if ($files -contains $canonical[0]) {
+            throw "Duplicate Silesia file in -SilesiaFiles: $requestedFile"
+        }
+        $files += $canonical[0]
+    }
+}
+$scopesKiB = @($ScopesKiB | Sort-Object -Unique)
+if ($files.Count -eq 0) {
+    throw 'At least one Silesia file must be selected'
+}
+if ($SilesiaFiles.Count -eq 0 -and -not $AllowAllFiles -and -not $ListOnly) {
+    throw 'Refusing an implicit all-file experiment; specify -SilesiaFiles or -AllowAllFiles'
+}
+if ($ListOnly) {
+    [pscustomobject]@{
+        files = [string]::Join(',', $files)
+        scopes_kib = [string]::Join(',', $scopesKiB)
+        profile = $Profile
+        r2_mode = $R2Mode
+    } | ConvertTo-Json -Compress
+    exit 0
+}
 $zeroHash = '0' * 64
 $stateTesting = -join @([char]0x6D4B, [char]0x8BD5, [char]0x4E2D)
 $stateComplete = -join @([char]0x5B8C, [char]0x6210)
@@ -374,14 +437,24 @@ function Get-RecordedBlockTypes([string]$EncodeStdoutPath) {
         return 'UNKNOWN'
     }
     $stdout = Get-Content -LiteralPath $EncodeStdoutPath -Raw -Encoding UTF8
-    $pattern = 'blocks\(stored/predictive/zstd/fse/lzma/donor-match\)=([0-9]+/[0-9]+/[0-9]+/[0-9]+/[0-9]+/[0-9]+)'
-    if ($stdout -notmatch $pattern) {
+    $pattern = 'blocks\(([^)]+)\)=([0-9]+(?:/[0-9]+)*)'
+    $match = [regex]::Match($stdout, $pattern)
+    if (-not $match.Success) {
         return 'UNKNOWN'
     }
-    $names = @('stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match')
-    $counts = $Matches[1].Split('/')
-    $parts = for ($index = 0; $index -lt $names.Count; ++$index) {
-        '{0}={1}' -f $names[$index], $counts[$index]
+    $names = $match.Groups[1].Value.Split('/')
+    $counts = $match.Groups[2].Value.Split('/')
+    if ($names.Count -ne $counts.Count) {
+        return 'UNKNOWN'
+    }
+    $parts = New-Object System.Collections.Generic.List[string]
+    for ($index = 0; $index -lt $names.Count; ++$index) {
+        if ([int]$counts[$index] -gt 0) {
+            $parts.Add(('{0}={1}' -f $names[$index], $counts[$index]))
+        }
+    }
+    if ($parts.Count -eq 0) {
+        return 'none'
     }
     return [string]::Join(';', $parts)
 }
@@ -471,6 +544,15 @@ function Read-AndValidateResumeMetadata([string]$Path) {
         throw "Resume dataset path mismatch. Expected $($script:DatasetPath), found $metadataDatasetPath"
     }
 
+    $metadataFiles = @((Get-RequiredMetadataValue $metadata 'files') | ForEach-Object { [string]$_ })
+    if (($metadataFiles -join '|') -ne ($files -join '|')) {
+        throw "Resume file selection mismatch. Expected $($files -join ', '), found $($metadataFiles -join ', ')"
+    }
+    $metadataScopes = @((Get-RequiredMetadataValue $metadata 'scopes_kib') | ForEach-Object { [int]$_ })
+    if (($metadataScopes -join '|') -ne ($scopesKiB -join '|')) {
+        throw "Resume scope selection mismatch. Expected $($scopesKiB -join ', '), found $($metadataScopes -join ', ')"
+    }
+
     $metadataCodecHash = [string](Get-RequiredMetadataValue $metadata 'codec_sha256')
     if (-not [string]::Equals(
         $metadataCodecHash,
@@ -539,7 +621,7 @@ function Read-AndValidateResumeRows([string]$Path) {
         }
         $key = '{0}|{1}' -f [string]$row.file, $scope
         if (-not $script:caseByKey.ContainsKey($key)) {
-            throw "Resume row is not one of the 36 expected cases: $key"
+            throw "Resume row is not one of the $($cases.Count) expected cases: $key"
         }
         $expectedCase = $script:caseByKey[$key]
         if (-not (Test-IntegerEquals $row.case_order $expectedCase.Order)) {
@@ -688,7 +770,7 @@ else {
     $rowParameters = $configuration
     $experimentName = "HybridZip R2 $R2Mode Silesia prefix experiment"
     $experimentDescription = "HybridZip HZ02 block portfolio mode $R2Mode on Silesia 32/64/128 KiB prefixes."
-    $modelStructure = 'HZ02 block archive with stored, V1 predictive, donor-Match predictive, zstd, direct FSE, and 7-Zip LZMA candidates.'
+    $modelStructure = 'HZ02 donor-driven block portfolio with representation, specialist, neural, LZ, and multi-coder candidates.'
     $changeFromBaseline = "Uses HZ02 mode $R2Mode instead of the fixed HZ01 PROFILE_V1 full-file path."
     $hypothesis = 'The block portfolio should retain byte-exact reconstruction and choose only payloads smaller than stored in auto mode.'
     $codecVersion = "1.0.0-r2-$R2Mode"
@@ -766,7 +848,7 @@ Assert-CodecUnchanged 'experiment initialization'
 Write-ExperimentJson -State $stateTesting
 
 foreach ($case in $cases) {
-    Assert-CodecUnchanged "before case $($case.Order)/36 ($($case.Key))"
+    Assert-CodecUnchanged "before case $($case.Order)/$($cases.Count) ($($case.Key))"
     foreach ($casePath in @(
         $case.InputPath,
         $case.ArchivePath,
@@ -789,12 +871,12 @@ foreach ($case in $cases) {
             $validationError = "artifact revalidation error: $($_.Exception.Message)"
         }
         if ($null -eq $validationError) {
-            Write-Host ("[{0}/36] {1} {2} KiB: COMPLETE/PASS (resume artifacts revalidated)" -f `
-                $case.Order, $case.File, $case.Scope)
+            Write-Host ("[{0}/{1}] {2} {3} KiB: COMPLETE/PASS (resume artifacts revalidated)" -f `
+                $case.Order, $cases.Count, $case.File, $case.Scope)
             continue
         }
-        Write-Host ("[{0}/36] {1} {2} KiB: rerunning ({3})" -f `
-            $case.Order, $case.File, $case.Scope, $validationError)
+        Write-Host ("[{0}/{1}] {2} {3} KiB: rerunning ({4})" -f `
+            $case.Order, $cases.Count, $case.File, $case.Scope, $validationError)
     }
 
     $startedAt = [DateTimeOffset]::Now.ToString('o')
@@ -814,7 +896,7 @@ foreach ($case in $cases) {
             -Destination $case.InputPath -Bytes $case.InputBytes
         $inputHash = Get-Sha256 $case.InputPath
 
-        Assert-CodecUnchanged "before encode for case $($case.Order)/36 ($($case.Key))"
+        Assert-CodecUnchanged "before encode for case $($case.Order)/$($cases.Count) ($($case.Key))"
         $encode = Invoke-MeasuredCodec -Executable $CodecPath `
             -PrefixArguments $encodeArguments `
             -InputPath $case.InputPath -OutputPath $case.ArchivePath `
@@ -827,7 +909,7 @@ foreach ($case in $cases) {
             throw "Encode exit code $($encode.ExitCode)"
         }
 
-        Assert-CodecUnchanged "before decode for case $($case.Order)/36 ($($case.Key))"
+        Assert-CodecUnchanged "before decode for case $($case.Order)/$($cases.Count) ($($case.Key))"
         $decode = Invoke-MeasuredCodec -Executable $CodecPath `
             -PrefixArguments $decodeArguments `
             -InputPath $case.ArchivePath -OutputPath $case.DecodedPath `
@@ -839,7 +921,7 @@ foreach ($case in $cases) {
         if ($decode.ExitCode -ne 0) {
             throw "Decode exit code $($decode.ExitCode)"
         }
-        Assert-CodecUnchanged "before result commit for case $($case.Order)/36 ($($case.Key))"
+        Assert-CodecUnchanged "before result commit for case $($case.Order)/$($cases.Count) ($($case.Key))"
 
         $decodedHash = Get-Sha256 $case.DecodedPath
         if ((Get-FileLengthOrZero $case.DecodedPath) -ne $case.InputBytes -or
@@ -888,7 +970,9 @@ foreach ($case in $cases) {
         decode_seconds = $decodeSeconds
         encode_peak_ram_mib = $encodePeak
         decode_peak_ram_mib = $decodePeak
-        peak_ram_mib = [Math]::Max($encodePeak, $decodePeak)
+        # Force the floating-point overload; PowerShell can otherwise select
+        # the integer overload when one sampled value is an exact integer.
+        peak_ram_mib = [Math]::Max([double]$encodePeak, [double]$decodePeak)
         codec_sha256 = $codecSha256
         parameters = $rowParameters
         encode_command = Format-RecordedCommand `
@@ -911,13 +995,13 @@ foreach ($case in $cases) {
     }
 
     Write-ResultsCsv
-    Write-Host ("[{0}/36] {1} {2} KiB: {3}/{4}" -f `
-        $case.Order, $case.File, $case.Scope, $status, $roundtrip)
+    Write-Host ("[{0}/{1}] {2} {3} KiB: {4}/{5}" -f `
+        $case.Order, $cases.Count, $case.File, $case.Scope, $status, $roundtrip)
 }
 
 $orderedRows = @(Get-OrderedRows)
-if ($orderedRows.Count -ne 36) {
-    throw "Result row count is $($orderedRows.Count), expected 36"
+if ($orderedRows.Count -ne $cases.Count) {
+    throw "Result row count is $($orderedRows.Count), expected $($cases.Count)"
 }
 $duplicates = $orderedRows |
     Group-Object file, scope_kib, variant, repeat |

@@ -1,0 +1,8 @@
+{
+  "Name": "decode",
+  "ExitCode": 0,
+  "Seconds": 0.7457658,
+  "PeakWorkingSetBytes": 560963584,
+  "Stdout": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-generic-sse-1k-20260821\\decode.stdout.txt",
+  "Stderr": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-generic-sse-1k-20260821\\decode.stderr.txt"
+}

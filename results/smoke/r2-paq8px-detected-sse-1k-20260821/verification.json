@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "timestamp": "2026-08-21T17:38:38.6110613+08:00",
+  "profile": "HZ02",
+  "branch": "paq8px-detected-sse",
+  "scope": "single forced 1 KiB specialist smoke",
+  "input_bytes": 1024,
+  "archive_bytes": 497,
+  "payload_bytes": 437,
+  "metadata_bytes": 4,
+  "decoded_bytes": 1024,
+  "header": {
+    "mode": 37,
+    "transform": 0,
+    "entropy": 20,
+    "flags": 1,
+    "uncompressed_size": 1024
+  },
+  "detected_profile": {
+    "payload_version": 1,
+    "donor_type": 21,
+    "donor_type_name": "TEXT_EOL",
+    "block_info": 0,
+    "specialist_start": 0,
+    "specialist_length": 1024,
+    "generic_prefix_payload_bytes": 0,
+    "specialist_payload_bytes": 415,
+    "generic_suffix_payload_bytes": 0
+  },
+  "roundtrip": "PASS",
+  "byte_exact": true,
+  "input_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "decoded_sha256": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "archive_sha256": "07A7F64D3C615F0A1F29DD09A5B8673BB38B9D4BFFBB249CEEA5F362DFEE06C9",
+  "codec_sha256": "A0EF597696917FE598D53052BA5ECB171B37C23B34E2D9EE5DDC5982648BB1F5",
+  "encode": {
+    "exit_code": 0,
+    "wall_seconds": 0.7958224,
+    "peak_working_set_bytes": null,
+    "peak_working_set_mib": null
+  },
+  "decode": {
+    "exit_code": 0,
+    "wall_seconds": 0.4387993,
+    "peak_working_set_bytes": null,
+    "peak_working_set_mib": null
+  },
+  "constraints": {
+    "encode_runs": 1,
+    "decode_runs": 1,
+    "auto_run": false,
+    "d40_rerun": false,
+    "ctest_run": false,
+    "batch_run": false,
+    "larger_block_run": false,
+    "automatic_retry": false
+  },
+  "limitations": [
+    "The process wrapper returned zero after exit for peak working set, so RAM is recorded as null rather than estimated.",
+    "This smoke proves the TEXT_EOL specialist path only; other stored specialist types are compile-covered but not runtime-tested here."
+  ]
+}

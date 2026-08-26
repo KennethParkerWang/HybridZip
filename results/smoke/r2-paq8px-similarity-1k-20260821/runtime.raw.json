@@ -1,0 +1,18 @@
+{
+  "OutputDirectory": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-paq8px-similarity-1k-20260821",
+  "InputBytes": 1024,
+  "ArchiveBytes": 705,
+  "DecodedBytes": 1024,
+  "EncodeExit": 0,
+  "EncodeWallSeconds": 0.2230943,
+  "EncodeCpuSeconds": 0.015625,
+  "EncodePeakBytes": null,
+  "DecodeExit": 0,
+  "DecodeWallSeconds": 0.0254001,
+  "DecodeCpuSeconds": 0.015625,
+  "DecodePeakBytes": null,
+  "InputSha": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "DecodedSha": "8F19FEF30022BEB9147C82EAF040F387BA833068944AD396B92787518A951B7A",
+  "ArchiveSha": "1E9283AF18C643BA813EFD29886614A3E33BD425A40E80133ECF8D2F40C3597B",
+  "CodecSha": "8A64B0128D53592CAE667F9E215E45746BB44A062493E77665A2162AA3E77A00"
+}

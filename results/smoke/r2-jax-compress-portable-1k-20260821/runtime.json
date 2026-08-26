@@ -1,0 +1,15 @@
+{
+  "input_source": "E:\\MIXER\\hybridzip\\third_party\\jax-compress\\PROVENANCE.md",
+  "input_bytes": 1024,
+  "archive_bytes": 888,
+  "decoded_bytes": 1024,
+  "input_sha256": "5418B7300F24F8847981456F7C41D97AF709388DB21587A18797AC7D95BEC660",
+  "archive_sha256": "40A517965F23549CB28E57885DDDC2F0796C9EDC5692C74D98BEBA3B00B782B8",
+  "decoded_sha256": "5418B7300F24F8847981456F7C41D97AF709388DB21587A18797AC7D95BEC660",
+  "roundtrip": "PASS",
+  "codec_sha256": "67EE6546C82C4D8F7074F514D590D19E054120812BFE5AC40E00D4692545C1C7",
+  "encode_seconds": 0.5127113,
+  "decode_seconds": 0.1988127,
+  "encode_peak_ram_mib": 4.10546875,
+  "decode_peak_ram_mib": 4.07421875
+}

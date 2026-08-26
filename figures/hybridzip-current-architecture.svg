@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <marker id="arrow-current" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#163A5F"/></marker>
+    <marker id="arrow-planned" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#6B7280"/></marker>
+    <style>
+      .title { font: 700 44px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #163A5F; }
+      .section { font: 700 23px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #6B7280; letter-spacing: 0; }
+      .legend { font: 22px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #374151; }
+      .label { font: 700 29px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #111827; text-anchor: middle; }
+      .small { font: 23px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #374151; text-anchor: middle; }
+      .current { fill: #FFFFFF; stroke: #163A5F; stroke-width: 4; }
+      .focus { fill: #F1F5F9; stroke: #163A5F; stroke-width: 5; }
+      .baseline { fill: #FFFFFF; stroke: #6B7280; stroke-width: 3.5; }
+      .planned { fill: #FFFFFF; stroke: #6B7280; stroke-width: 3.5; stroke-dasharray: 12 8; }
+      .edge-current { fill: none; stroke: #163A5F; stroke-width: 4; marker-end: url(#arrow-current); }
+      .edge-planned { fill: none; stroke: #6B7280; stroke-width: 3.5; stroke-dasharray: 12 8; marker-end: url(#arrow-planned); }
+    </style>
+  </defs>
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+  <text x="80" y="82" class="title">HybridZip R2 当前实现</text>
+
+  <rect x="1360" y="45" width="42" height="30" class="current"/>
+  <path d="M1420 60 H1480" class="edge-current"/><text x="1500" y="68" class="legend">已实现</text>
+  <rect x="1650" y="45" width="42" height="30" class="planned"/>
+  <path d="M1710 60 H1770" class="edge-planned"/><text x="1790" y="68" class="legend">未集成</text>
+
+  <text x="80" y="183" class="section">计划能力（虚线）</text>
+  <path d="M780 245 H890" class="edge-planned"/>
+  <path d="M1060 245 H1170" class="edge-planned"/>
+  <rect x="500" y="185" width="280" height="120" class="planned"/>
+  <text x="640" y="231" class="label">算法族</text>
+  <text x="640" y="268" class="small">统计 / LZ / 表示 / 专家 / 神经</text>
+  <rect x="890" y="195" width="170" height="100" class="planned"/>
+  <text x="975" y="237" class="label">Layer B</text>
+  <text x="975" y="270" class="small">族级路由</text>
+  <rect x="1170" y="195" width="200" height="100" class="planned"/>
+  <text x="1270" y="237" class="label">Layer C</text>
+  <text x="1270" y="270" class="small">分支策略</text>
+
+  <text x="80" y="404" class="section">当前 HZ02 主链（实线）</text>
+  <path d="M230 500 H300" class="edge-current"/>
+  <path d="M490 500 H590" class="edge-current"/>
+  <path d="M870 500 H950" class="edge-current"/>
+  <path d="M1190 500 H1270" class="edge-current"/>
+  <path d="M1510 500 H1590" class="edge-current"/>
+  <rect x="60" y="450" width="170" height="100" class="current"/>
+  <text x="145" y="510" class="label">输入</text>
+  <rect x="300" y="450" width="190" height="100" class="current"/>
+  <text x="395" y="510" class="label">分块</text>
+  <rect x="590" y="425" width="280" height="150" class="focus"/>
+  <text x="730" y="483" class="label">HZ02 候选比较</text>
+  <text x="730" y="526" class="small">24 条已实现路径</text>
+  <rect x="950" y="440" width="240" height="120" class="current"/>
+  <text x="1070" y="483" class="label">写入 HZ02</text>
+  <text x="1070" y="526" class="small">模式 / 变换 / CRC</text>
+  <rect x="1270" y="440" width="240" height="120" class="current"/>
+  <text x="1390" y="483" class="label">严格解码</text>
+  <text x="1390" y="526" class="small">边界 / 消耗 / CRC</text>
+  <rect x="1590" y="450" width="230" height="100" class="current"/>
+  <text x="1705" y="510" class="label">逐字节一致</text>
+
+  <path d="M395 450 V345 H640 V305" class="edge-planned"/>
+  <path d="M1270 295 V350 H730 V425" class="edge-planned"/>
+  <path d="M145 550 V760" class="edge-current"/>
+  <path d="M730 575 V760" class="edge-planned"/>
+  <path d="M1070 560 V760" class="edge-planned"/>
+  <path d="M1390 560 V760" class="edge-planned"/>
+
+  <path d="M290 815 H360" class="edge-current"/>
+  <rect x="60" y="760" width="230" height="110" class="baseline"/>
+  <text x="175" y="803" class="label">HZ01 基线</text>
+  <text x="175" y="841" class="small">V1 四专家 mixer</text>
+  <rect x="360" y="775" width="170" height="80" class="baseline"/>
+  <text x="445" y="824" class="label">HZ01 归档</text>
+  <rect x="610" y="760" width="240" height="110" class="planned"/>
+  <text x="730" y="803" class="label">Oracle 观测</text>
+  <text x="730" y="841" class="small">边际贡献</text>
+  <rect x="950" y="760" width="240" height="110" class="planned"/>
+  <text x="1070" y="803" class="label">增强元数据</text>
+  <text x="1070" y="841" class="small">解码身份字段</text>
+  <rect x="1270" y="760" width="240" height="110" class="planned"/>
+  <text x="1390" y="803" class="label">解码器扩展</text>
+  <text x="1390" y="841" class="small">更严格检查</text>
+</svg>
