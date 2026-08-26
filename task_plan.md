@@ -17,6 +17,17 @@ decoder-visible routing, and a final archive-byte experiment ledger.
 - [ ] Phase 6: Regenerate the complete current-hash Auto/archive-byte ledger
   and retire or retain candidates after explicit experiment authorization.
 
+### Phase 6 execution checklist
+
+- [ ] Add a resumable runner manifest for Auto plus all 43 forced R2 modes.
+- [ ] Add a read-only ledger derivation step that validates complete archive
+  bytes, timing, peak memory, and byte-exact hashes before writing outputs.
+- [ ] Run the authorized current-Release corpus experiment and preserve one
+  package per mode without overwriting prior evidence.
+- [ ] Compare Auto/oracle gaps and retain or retire candidates from measured
+  results.
+- [ ] Update the product status and final technical report with the ledger.
+
 ## Constraints
 
 - Preserve HZ01 and PROFILE_V1 behavior.
@@ -262,6 +273,12 @@ The next implementation checkpoint is metadata-only: use the mode registry
 emitted by `tools/index_r2_smoke_evidence.ps1` to keep the 43-mode evidence
 boundary auditable, then wait for authorization before running the final Auto
 archive-byte ledger.
+
+Tooling checkpoint on 2026-08-27: the Silesia runner, family runner, and
+package validator now accept every decoder-visible R2 mode through mode 42,
+including the PAQ8px, WavPack, Kanzi ANS, LMIC, and delta-binary paths. This
+changes no archive bytes and does not count as runtime evidence; Phase 6
+remains pending.
 
 Metadata checkpoint completed on 2026-08-26 without starting the codec. The
 current Release hash index is

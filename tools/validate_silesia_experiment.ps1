@@ -13,7 +13,11 @@ param(
         'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
         'r2-brotli-text', 'r2-cmix-word-zstd', 'r2-neural-lstm',
         'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-bgpt-shared-prior',
-        'r2-jax-compress-portable'
+        'r2-jax-compress-portable', 'r2-paq8px-apm',
+        'r2-paq8px-record-model', 'r2-paq8px-linear-prediction',
+        'r2-paq8px-similarity', 'r2-paq8px-similarity-sse',
+        'r2-paq8px-generic-sse', 'r2-paq8px-detected-sse', 'r2-wavpack',
+        'r2-kanzi-ans', 'r2-lmic-arithmetic', 'r2-delta-binary-packed-zstd'
     )]
     [string]$ExpectedVariant = '',
     [ValidateSet(32, 64, 128)]
@@ -130,7 +134,11 @@ $supportedVariants = @(
     'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
     'r2-brotli-text', 'r2-cmix-word-zstd', 'r2-neural-lstm',
     'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-bgpt-shared-prior',
-    'r2-jax-compress-portable', 'r2-ppmd7', 'r2-ppmd8'
+    'r2-jax-compress-portable', 'r2-paq8px-apm',
+    'r2-paq8px-record-model', 'r2-paq8px-linear-prediction',
+    'r2-paq8px-similarity', 'r2-paq8px-similarity-sse',
+    'r2-paq8px-generic-sse', 'r2-paq8px-detected-sse', 'r2-wavpack',
+    'r2-kanzi-ans', 'r2-lmic-arithmetic', 'r2-delta-binary-packed-zstd'
 )
 $metadataVariants = @($metadata.variants)
 Assert-True ($metadataVariants.Count -eq 1) `

@@ -20,6 +20,11 @@ ratio, speed, or memory rankings. The final Auto archive-byte ledger has not
 yet been regenerated for the current Release hash across all R2 modes, and
 candidate retirement/hot-path selection remains open.
 
+The Silesia experiment runner, family runner, and package validator now expose
+the complete decoder-visible R2 mode set through mode 42. This is a tooling
+capability checkpoint only; it does not claim that the missing final ledger
+has been executed.
+
 Post-build branch gates on 2026-08-26 used the current Release binary
 (`FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`) and one
 deterministic random 1 KiB input. Forced mode 41 (`lmic-arithmetic`) produced
