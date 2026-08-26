@@ -11,13 +11,18 @@ $resultsPath = Join-Path $ExperimentPath 'results.csv'
 if (-not (Test-Path -LiteralPath $resultsPath -PathType Leaf)) {
     throw "results.csv not found: $resultsPath"
 }
-$modeNames = @(
+$canonicalModeNames = @(
     'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
     'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
-    'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'delta-of-delta-zstd', 'fastpfor', 'rans',
+    'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'fastpfor', 'rans',
     'bcj2-zstd', 'record-transpose-zstd', 'jpegls', 'flac-residual',
     'brotli-text', 'cmix-word-zstd', 'neural-lstm', 'shared-neural-lstm',
-    'lstm-compress', 'bgpt-shared-prior'
+    'lstm-compress', 'delta-of-delta-zstd', 'bgpt-shared-prior',
+    'jax-compress-portable', 'ppmd7', 'ppmd8', 'zpaq', 'ctw',
+    'paq8px-apm', 'paq8px-record-model', 'paq8px-linear-prediction',
+    'paq8px-similarity', 'paq8px-similarity-sse', 'paq8px-generic-sse',
+    'paq8px-detected-sse', 'wavpack', 'lz4', 'kanzi-ans',
+    'lmic-arithmetic', 'delta-binary-packed-zstd'
 )
 function Write-NoBom([string]$Path, [string]$Text) {
     [IO.File]::WriteAllText($Path, $Text, (New-Object Text.UTF8Encoding($false)))
@@ -33,8 +38,17 @@ foreach ($row in $rows) {
     $gapMatch = [Regex]::Match($text, 'oracle_gap=(\d+)')
     $blocksMatch = [Regex]::Match($text, 'blocks\(([^)]*)\)=([0-9/]+)')
     if (-not $blocksMatch.Success) { throw "Missing block counts: $($row.id)" }
+    $modeNames = @($blocksMatch.Groups[1].Value.Split('/'))
     $counts = @($blocksMatch.Groups[2].Value.Split('/') | ForEach-Object { [int]$_ })
-    if ($counts.Count -ne $modeNames.Count) { throw "Unexpected block count width: $($row.id)" }
+    if ($counts.Count -ne $modeNames.Count) { throw "Block name/count width mismatch: $($row.id)" }
+    if ($modeNames.Count -gt $canonicalModeNames.Count) {
+        throw "Block count width exceeds canonical mode registry: $($row.id)"
+    }
+    for ($modeIndex = 0; $modeIndex -lt $modeNames.Count; ++$modeIndex) {
+        if ($modeNames[$modeIndex] -cne $canonicalModeNames[$modeIndex]) {
+            throw "Non-canonical block mode order at index ${modeIndex}: $($row.id)"
+        }
+    }
     $winnerIndexes = @()
     for ($i = 0; $i -lt $counts.Count; ++$i) {
         if ($counts[$i] -gt 0) { $winnerIndexes += $i }

@@ -100,6 +100,15 @@ exit codes, malformed codec hashes, and inconsistent peak-memory aggregates
 before deriving any R2 result table. PowerShell parsing passed; no package was
 executed.
 
+Canonical mode-order checkpoint on 2026-08-27: the Silesia runner, family
+runner, Silesia validator, and family analyzer now use the decoder-visible
+`BlockMode` order `0..42`. The analyzer accepts historical prefix logs and
+current 43-mode logs while rejecting mismatched or non-canonical block labels.
+All four scripts passed PowerShell parser checks; the Silesia runner accepted a
+mode-24 `-ListOnly` probe, the complete-ledger runner reported 44 packages with
+`runtime_started=false`, and `git diff --check` passed. No codec process or
+runtime experiment was started.
+
 The next one-mode gate completed for mode 40 (`kanzi-ans`) on the current
 Release binary. The current-hash evidence index now covers 3/43 modes (40..42)
 with byte-exact 1 KiB records.

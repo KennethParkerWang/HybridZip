@@ -4,20 +4,22 @@ param(
     [string]$PackagePath,
     [string]$CodecPath = '',
     [string]$ExpectedDatasetPath = 'F:\paq8px\silesia',
+    # Keep this order equal to the decoder-visible BlockMode IDs.
     [ValidateSet(
-        '', 'profile-v1', 'r2-auto', 'r2-stored', 'r2-predictive',
-        'r2-donor-match', 'r2-zstd', 'r2-fse', 'r2-lzma', 'r2-lz4', 'r2-ppmd7', 'r2-ppmd8', 'r2-zpaq', 'r2-ctw',
-        'r2-bwt-zstd', 'r2-bwt-mtf-zstd', 'r2-bwt-rlt-zstd',
-        'r2-x86-bcj-zstd', 'r2-shuffle-zstd', 'r2-bitshuffle-zstd',
-        'r2-delta-zstd', 'r2-delta-of-delta-zstd', 'r2-fastpfor', 'r2-rans', 'r2-bcj2-zstd',
-        'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
-        'r2-brotli-text', 'r2-cmix-word-zstd', 'r2-neural-lstm',
-        'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-bgpt-shared-prior',
-        'r2-jax-compress-portable', 'r2-paq8px-apm',
-        'r2-paq8px-record-model', 'r2-paq8px-linear-prediction',
+        '', 'profile-v1', 'r2-auto', 'r2-stored', 'r2-predictive', 'r2-zstd',
+        'r2-fse', 'r2-lzma', 'r2-donor-match', 'r2-bwt-zstd',
+        'r2-bwt-mtf-zstd', 'r2-bwt-rlt-zstd', 'r2-x86-bcj-zstd',
+        'r2-shuffle-zstd', 'r2-bitshuffle-zstd', 'r2-delta-zstd',
+        'r2-fastpfor', 'r2-rans', 'r2-bcj2-zstd', 'r2-record-transpose-zstd',
+        'r2-jpegls', 'r2-flac-residual', 'r2-brotli-text', 'r2-cmix-word-zstd',
+        'r2-neural-lstm', 'r2-shared-neural-lstm', 'r2-lstm-compress',
+        'r2-delta-of-delta-zstd', 'r2-bgpt-shared-prior',
+        'r2-jax-compress-portable', 'r2-ppmd7', 'r2-ppmd8', 'r2-zpaq', 'r2-ctw',
+        'r2-paq8px-apm', 'r2-paq8px-record-model', 'r2-paq8px-linear-prediction',
         'r2-paq8px-similarity', 'r2-paq8px-similarity-sse',
         'r2-paq8px-generic-sse', 'r2-paq8px-detected-sse', 'r2-wavpack',
-        'r2-kanzi-ans', 'r2-lmic-arithmetic', 'r2-delta-binary-packed-zstd'
+        'r2-lz4', 'r2-kanzi-ans', 'r2-lmic-arithmetic',
+        'r2-delta-binary-packed-zstd'
     )]
     [string]$ExpectedVariant = '',
     [ValidateSet(32, 64, 128)]
@@ -126,19 +128,19 @@ $metadataText = [System.IO.File]::ReadAllText($metadataPath, $utf8)
 $metadata = $metadataText | ConvertFrom-Json
 $rows = @(Import-Csv -LiteralPath $resultsPath)
 $supportedVariants = @(
-    'profile-v1', 'r2-auto', 'r2-stored', 'r2-predictive',
-    'r2-donor-match', 'r2-zstd', 'r2-fse', 'r2-lzma', 'r2-ppmd7', 'r2-ppmd8', 'r2-zpaq', 'r2-ctw',
-    'r2-bwt-zstd', 'r2-bwt-mtf-zstd', 'r2-bwt-rlt-zstd',
-    'r2-x86-bcj-zstd', 'r2-shuffle-zstd', 'r2-bitshuffle-zstd',
-    'r2-delta-zstd', 'r2-delta-of-delta-zstd', 'r2-fastpfor', 'r2-rans', 'r2-bcj2-zstd',
-    'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
+    'profile-v1', 'r2-auto', 'r2-stored', 'r2-predictive', 'r2-zstd', 'r2-fse',
+    'r2-lzma', 'r2-donor-match', 'r2-bwt-zstd', 'r2-bwt-mtf-zstd',
+    'r2-bwt-rlt-zstd', 'r2-x86-bcj-zstd', 'r2-shuffle-zstd',
+    'r2-bitshuffle-zstd', 'r2-delta-zstd', 'r2-fastpfor', 'r2-rans',
+    'r2-bcj2-zstd', 'r2-record-transpose-zstd', 'r2-jpegls', 'r2-flac-residual',
     'r2-brotli-text', 'r2-cmix-word-zstd', 'r2-neural-lstm',
-    'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-bgpt-shared-prior',
-    'r2-jax-compress-portable', 'r2-paq8px-apm',
-    'r2-paq8px-record-model', 'r2-paq8px-linear-prediction',
-    'r2-paq8px-similarity', 'r2-paq8px-similarity-sse',
-    'r2-paq8px-generic-sse', 'r2-paq8px-detected-sse', 'r2-wavpack',
-    'r2-kanzi-ans', 'r2-lmic-arithmetic', 'r2-delta-binary-packed-zstd'
+    'r2-shared-neural-lstm', 'r2-lstm-compress', 'r2-delta-of-delta-zstd',
+    'r2-bgpt-shared-prior', 'r2-jax-compress-portable', 'r2-ppmd7', 'r2-ppmd8',
+    'r2-zpaq', 'r2-ctw', 'r2-paq8px-apm', 'r2-paq8px-record-model',
+    'r2-paq8px-linear-prediction', 'r2-paq8px-similarity',
+    'r2-paq8px-similarity-sse', 'r2-paq8px-generic-sse',
+    'r2-paq8px-detected-sse', 'r2-wavpack', 'r2-lz4', 'r2-kanzi-ans',
+    'r2-lmic-arithmetic', 'r2-delta-binary-packed-zstd'
 )
 $metadataVariants = @($metadata.variants)
 Assert-True ($metadataVariants.Count -eq 1) `

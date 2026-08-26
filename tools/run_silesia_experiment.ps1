@@ -6,18 +6,19 @@ param(
     [string]$ExperimentId = '',
     [ValidateSet('v1', 'r2')]
     [string]$Profile = 'v1',
+    # Keep this order equal to the decoder-visible BlockMode IDs.
     [ValidateSet(
-        'auto', 'stored', 'predictive', 'donor-match', 'zstd', 'fse', 'lzma', 'lz4', 'ppmd7', 'ppmd8', 'zpaq', 'ctw',
+        'auto', 'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
         'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
-        'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'delta-of-delta-zstd', 'fastpfor', 'rans',
+        'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'fastpfor', 'rans',
         'bcj2-zstd', 'record-transpose-zstd', 'jpegls', 'flac-residual',
-        'brotli-text', 'cmix-word-zstd', 'neural-lstm',
-        'shared-neural-lstm', 'lstm-compress', 'bgpt-shared-prior',
-        'jax-compress-portable',
+        'brotli-text', 'cmix-word-zstd', 'neural-lstm', 'shared-neural-lstm',
+        'lstm-compress', 'delta-of-delta-zstd', 'bgpt-shared-prior',
+        'jax-compress-portable', 'ppmd7', 'ppmd8', 'zpaq', 'ctw',
         'paq8px-apm', 'paq8px-record-model', 'paq8px-linear-prediction',
         'paq8px-similarity', 'paq8px-similarity-sse', 'paq8px-generic-sse',
-        'paq8px-detected-sse', 'wavpack', 'kanzi-ans', 'lmic-arithmetic',
-        'delta-binary-packed-zstd'
+        'paq8px-detected-sse', 'wavpack', 'lz4', 'kanzi-ans',
+        'lmic-arithmetic', 'delta-binary-packed-zstd'
     )]
     [string]$R2Mode = 'auto',
     [switch]$Resume,
