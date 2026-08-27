@@ -709,8 +709,10 @@ Keep compression-ratio and throughput claims on separate evidence tracks.
 - [x] P1: Add shuffle, bitshuffle, delta/XOR, and BCJ Mode-43 choices and
   form the Fast K=4 policy. The 1 KiB gate selected bitshuffle and round-trip
   decoding passed; corpus-level E6 evidence remains pending.
-- [ ] P1: Add the fixed-point 28-feature ranker and no-leakage labels. K=8
-  remains experimental until held-out regret evidence exists.
+- [x] P1: Add the 28-feature integer extractor and 2,644-byte fixed-point
+  bootstrap ranker with CRC validation and hard family gates. It is not
+  trained from forced-mode labels; K=8 remains experimental until E5 supplies
+  no-leakage labels and held-out regret evidence.
 - [ ] P1: Run E5 in a dedicated CPU window. Its known lower-bound cost is
   about 13 hours for full Auto and it needs forced-oracle data for promotion.
 - [ ] P1: Add canonical-order block parallelism and repeat Fast timing.
@@ -746,6 +748,6 @@ v1.5.7 acceptance result.
   policy change; do not reuse the prior mode-2 baseline package.
 - [ ] Keep E5 full-Auto/K=2/K=4/K=8 regret work as a separate PAQ-heavy job;
   no long run is started by this checkpoint.
-- [ ] Continue with the fixed 28-feature ranker, canonical block executor,
-  pinned zstd 1.5.7 production choice, and then GPU LZ-RANS only when their
-  acceptance gates are justified by measured results.
+- [ ] Continue with no-leakage model fitting, canonical block executor, pinned zstd 1.5.7
+  production choice, and then GPU LZ-RANS only when their acceptance gates
+  are justified by measured results.

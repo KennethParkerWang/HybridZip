@@ -838,3 +838,20 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   reported `runtime_started=false`.
 - `docs/R2_FORMAT.md` now documents the Mode-43 table row, descriptor bytes,
   IDs, side-information constraints, zstd frame flags, and CRC/inverse order.
+
+## 2026-08-28: F1 28-feature fixed-point bootstrap
+
+- `BlockFeaturesV1` now has all 28 attachment-defined integer features:
+  entropy, byte classes, run/delta/periodicity, bounded sampled LZ, plausible
+  x86 targets, and packed UTF-8/magic/OOD flags. No runtime float is used.
+- `FixedPointRankerModelV1` has the specified 2,644-byte layout for modes
+  0..42, version `0x00010000`, signed-64 score accumulation, low-ID ties,
+  and a canonical CRC32 validation. Mode 43 remains Fast-only.
+- The weights are hand-set bootstrap values, explicitly not a trained model.
+  No-leakage fitting requires the forced-mode E5 matrix and file-level splits.
+- `hz_structure_routing_tests.exe` passed after exercising model CRC/version,
+  repeatable feature vectors, text/x86/numeric/generic gates, and compressed
+  magic flags.
+- `results/smoke/r2-f1-fixed-ranker-auto-k8-1k-20260828-v1/` records a
+  current-Release 1 KiB byte-exact `auto-k8` gate: 8 candidates
+  (`0,2,3,4,27,28,36,37`), stored selected, archive 1,084 bytes.

@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-08-27T20:29:28.3932117Z",
+  "input_generator": "System.Random(seed=1831565813)",
+  "input_bytes": 1024,
+  "input_sha256": "286E3D6FB8EEE0A141C46B517D604FE176DEC0200149A7DEB77BAC7B2B61A0AC",
+  "codec_sha256": "FFA114903AB712A97798D1F7607DC9D37154D627D20D20C1F30DAAA35813FFC6",
+  "profile": "r2-auto-k8",
+  "ranker_model_version": "0x00010000",
+  "block_size": 1024,
+  "archive_bytes": 1084,
+  "archive_sha256": "239C79E8F7F0AAFF4AA69715E0002FB128144D4BAD03FF671CEDFEF7EFDFA16B",
+  "selected_mode_id": 0,
+  "candidates_evaluated": 8,
+  "candidate_modes": "0:1,2:1,3:1,4:1,27:1,28:1,36:1,37:1",
+  "decoded_sha256": "286E3D6FB8EEE0A141C46B517D604FE176DEC0200149A7DEB77BAC7B2B61A0AC",
+  "byte_exact": true,
+  "encode_stdout": "HZ02 input=1024 archive=1084 payload=1024 candidates=8 selected=1084 oracle=1084 oracle_gap=0 full_oracle=0 candidate_modes=0:1,2:1,3:1,4:1,27:1,28:1,36:1,37:1 blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd/fast-ext)=1/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0"
+}

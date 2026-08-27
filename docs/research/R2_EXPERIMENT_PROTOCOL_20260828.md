@@ -57,7 +57,7 @@ accepted before archive-byte evidence exists.
 | --- | --- | --- | --- |
 | P0 | ID-43 raw zstd extension | Build, forced 1 KiB decode, malformed-metadata rejection, HZ01 smoke | v1.5.7 production acceptance |
 | P1 | Fast transforms and K=4 | Per-transform archive-byte comparison and inverse-tail tests | Corpus-level Fast result |
-| P1 | 28-feature ranker and E5 | Frozen model identity and held-out coverage/regret | K=8 promotion without forced oracle |
+| P1 | 28-feature ranker and E5 | Bootstrap feature/model implementation; then frozen trained model identity and held-out coverage/regret | K=8 promotion without forced oracle |
 | P1 | Block executor | Canonical order, repeatable bytes, Fast timing rerun | GPU target |
 | P2 | `LZ_RANS_V1` GPU | CPU reference plus kernel/end-to-end measurements | 8 MB/s until all size cells pass |
 
