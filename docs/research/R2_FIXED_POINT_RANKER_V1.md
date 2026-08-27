@@ -46,9 +46,14 @@ total                       2,644 bytes
 
 The current bootstrap version is `0x00010000`. The CRC32 is calculated over
 the canonical little-endian weights, biases, shifts, and version at process
-startup, then verified before shortlist construction. Scores accumulate in
-signed 64-bit integers; score ties use lower mode ID. Mode 43 remains a Fast
-policy extension and is intentionally outside this 43-row ratio model.
+startup, then verified before shortlist construction. The canonical image also
+includes that CRC32 as its final four bytes and is SHA-256 identified in every
+R2 encoder telemetry line as `ranker_version`, `ranker_crc32`, and
+`ranker_sha256`. The E5/E6 runner persists these three fields in every matrix
+row and rejects a completed package with more than one model identity. Scores
+accumulate in signed 64-bit integers; score ties use lower mode ID. Mode 43
+remains a Fast policy extension and is intentionally outside this 43-row ratio
+model.
 
 The ranker keeps Stored plus the two observed PAQ8px-SSE winners mandatory.
 The remaining K=8 slots are filled by scored generic-LZ, applicable
@@ -60,7 +65,13 @@ cannot activate a text transform for x86/numeric blocks.
 
 - `hz_structure_routing_tests.exe` checks feature-vector repeatability,
   compressed-signature flags, classifier coverage, model version, model CRC,
-  quota cardinality, and duplicate-free shortlists.
+  the pinned canonical SHA-256, quota cardinality, and duplicate-free
+  shortlists.
+- Frozen bootstrap identity: version `0x00010000`, CRC32 `0x1025B343`,
+  SHA-256 `4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B`.
+- `results/smoke/r2-f1-model-identity-1k-20260828-v2/verification.json`
+  records the identity telemetry and a byte-exact 1,024-byte `auto-k8` round
+  trip with a 1,084-byte complete archive.
 - `results/smoke/r2-f1-fixed-ranker-auto-k8-1k-20260828-v1/verification.json`
   records a current executable 1 KiB byte-exact `auto-k8` round trip: eight
   candidates `0,2,3,4,27,28,36,37`, stored selected.

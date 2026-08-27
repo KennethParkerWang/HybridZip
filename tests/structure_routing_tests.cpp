@@ -74,6 +74,9 @@ int main() {
             "Fixed-point ranker model checksum is invalid");
     require(hz::r2::fixed_point_ranker_model_v1().version == 0x00010000U,
             "Fixed-point ranker model version is not pinned");
+    require(hz::r2::fixed_point_ranker_model_v1_sha256_hex() ==
+                "4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B",
+            "Fixed-point ranker model SHA-256 is not pinned");
     const hz::r2::StructureAnalyzer analyzer;
     const hz::r2::StructureActivationRouter router;
 

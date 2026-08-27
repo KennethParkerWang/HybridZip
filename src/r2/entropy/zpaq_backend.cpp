@@ -106,6 +106,23 @@ void validate_method(const std::uint8_t method_level) {
 
 }  // namespace
 
+std::string zpaq_donor_sha256_hex(const ByteView input) {
+    require_valid_view(input, "libzpaq SHA-256");
+    libzpaq::SHA256 sha256;
+    for (std::size_t index = 0U; index < input.size(); ++index) {
+        sha256.put(input[index]);
+    }
+    const auto* const digest =
+        reinterpret_cast<const unsigned char*>(sha256.result());
+    constexpr char kHex[] = "0123456789ABCDEF";
+    std::string result(64U, '0');
+    for (std::size_t index = 0U; index < 32U; ++index) {
+        result[index * 2U] = kHex[digest[index] >> 4U];
+        result[index * 2U + 1U] = kHex[digest[index] & 0x0FU];
+    }
+    return result;
+}
+
 ZpaqBackend::ZpaqBackend(const std::uint8_t method_level,
                          const std::size_t maximum_output_size)
     : method_level_(method_level), maximum_output_size_(maximum_output_size) {

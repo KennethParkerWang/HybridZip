@@ -34,7 +34,7 @@ policy cannot be used to claim the other policy's target.
 | E3 | PAQ8px v216 `-1` on all 36 frozen inputs | Every row has matching input/decoded SHA-256 and complete archive bytes | Passed |
 | E5 | K=2/K=4/K=8 versus full Auto | Report complete-byte regret and selected-mode coverage; promotion additionally needs a matching forced-mode tie-aware oracle | Queued |
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
-| F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; no-leakage labels and measured router budget remain required | Bootstrap implemented; not promoted |
+| F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; one model identity per matrix package; no-leakage labels and measured router budget remain required | Bootstrap identity telemetry implemented; not promoted |
 | F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | 1 KiB gate passed; corpus rerun pending |
 | F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Fast-only executor/1 KiB gate passed; guarded worker-count matrix preflight passed; post-change timing pending |
 | F4 | GPU `LZ_RANS_V1` | CPU reference decoder; end-to-end >= 8 MB/s at every required size | Blocked by F2/F3 |
@@ -43,8 +43,10 @@ policy cannot be used to claim the other policy's target.
 
 Every accepted row records input identity, executable hash, command, archive
 bytes/hash, decoded hash, byte-exact outcome, block size, candidate telemetry,
-wall time, and sampled RAM. `bpb = 8 * archive_bytes / input_bytes`. Archive
-bytes include HZ02 headers, CRC, metadata, transforms, and payload.
+fixed-point ranker version/CRC32/SHA-256, wall time, and sampled RAM. A package
+is rejected if those ranker fields identify more than one model. `bpb = 8 *
+archive_bytes / input_bytes`. Archive bytes include HZ02 headers, CRC,
+metadata, transforms, and payload.
 
 E3 command and E6 command write unique, non-overwriting packages under
 `results/experiments/`. E6 runs first on an otherwise idle CPU; E3 starts only
@@ -55,8 +57,9 @@ candidates and would likewise invalidate Fast timing.
 `tools/run_r2_e5_e6_matrix.ps1 -Resume` supports an interrupted package only
 when its stage, executable hash, dataset path, files, scopes, block sizes,
 policies, and repeats exactly match the request. A complete package is
-validated without re-running codecs. This makes a multi-hour E5 run
-recoverable without weakening its evidence identity.
+validated without re-running codecs, including its single ranker-model
+identity. This makes a multi-hour E5 run recoverable without weakening its
+evidence identity.
 
 ## Known Gaps
 

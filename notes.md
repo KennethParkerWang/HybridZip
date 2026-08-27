@@ -889,3 +889,23 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   count above one. PowerShell AST parsing passed; E6 one-file/one-cell
   `-ListOnly` preflights passed at one and two workers with
   `runtime_started=false`.
+
+## 2026-08-28: F1 model identity telemetry
+
+- The canonical fixed-point ranker image contains little-endian weights,
+  biases, feature shifts, version, and CRC32, totaling 2,644 bytes. Its frozen
+  bootstrap identity is `0x00010000` / `0x1025B343` /
+  `4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B`.
+- `mode_ranker` reaches the existing libzpaq SHA-256 implementation through
+  the established ZPAQ adapter. This preserves the donor callback linkage and
+  avoids a second hash implementation.
+- R2 CLI telemetry now emits the identity; the E5/E6 matrix runner records it
+  per row, adds it to summaries, and refuses completed packages with a mixed
+  identity set.
+- Release build and `hz_structure_routing_tests.exe` passed. The retained
+  random 1 KiB `auto-k8` smoke produced a 1,084-byte archive and matching
+  input/decoded SHA-256. Evidence:
+  `results/smoke/r2-f1-model-identity-1k-20260828-v2/verification.json`.
+- A first PowerShell xorshift generator overflowed during input creation and
+  never launched the codec. It is excluded; the retained v2 input uses the
+  system random-number source.

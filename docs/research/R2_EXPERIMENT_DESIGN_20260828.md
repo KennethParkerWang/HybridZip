@@ -87,9 +87,12 @@ ratio policy. They reuse the HZ02 container and all decoder-visible IDs.
 | `auto-k4` | Stored, zstd, `paq8px-generic-sse`, `paq8px-detected-sse` |
 | `auto-k8` | The eight candidates specified above |
 
-The CLI now emits `full_oracle=0|1` and `candidate_modes=<id>:<block-count>`
-as encoder telemetry. This telemetry is not archive metadata. It lets E5
-prove exactly which candidates were materialized for a shortlist. A full Auto
+The CLI emits `full_oracle=0|1`, `candidate_modes=<id>:<block-count>`, and
+the fixed-point `ranker_version`, `ranker_crc32`, and `ranker_sha256` as
+encoder telemetry. This telemetry is not archive metadata. It lets E5 prove
+exactly which candidates and which frozen model were materialized for a
+shortlist. The matrix runner writes the model identity to every row and
+rejects a completed package containing more than one identity. A full Auto
 reference can measure archive regret and selected-mode coverage. Tie-aware
 forced-mode-oracle recall remains unavailable until a matching forced-mode
 ledger is completed for the same executable and inputs.

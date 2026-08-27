@@ -2,10 +2,15 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "r2/entropy/entropy_backend.h"
 
 namespace hz::r2 {
+
+// Uses the already-integrated libzpaq SHA-256 implementation at the donor
+// boundary. The returned digest is uppercase hexadecimal.
+std::string zpaq_donor_sha256_hex(ByteView input);
 
 class ZpaqBackend final : public IBlockEntropyBackend {
 public:

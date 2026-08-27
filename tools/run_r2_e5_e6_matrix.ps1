@@ -98,9 +98,14 @@ function Get-R2Telemetry([string]$Path) {
     $candidate = [regex]::Match($text, 'candidates=(?<value>[0-9]+)')
     $workers = [regex]::Match($text, 'workers=(?<value>[1-9][0-9]*)')
     $fullOracle = [regex]::Match($text, 'full_oracle=(?<value>[01])')
+    $rankerVersion = [regex]::Match($text, 'ranker_version=0x(?<value>[0-9A-F]{8})')
+    $rankerCrc32 = [regex]::Match($text, 'ranker_crc32=0x(?<value>[0-9A-F]{8})')
+    $rankerSha256 = [regex]::Match($text, 'ranker_sha256=(?<value>[0-9A-F]{64})')
     $candidateModes = [regex]::Match($text, 'candidate_modes=(?<value>[^\s]+)')
     if (-not $candidate.Success -or -not $workers.Success -or
         -not $fullOracle.Success -or
+        -not $rankerVersion.Success -or -not $rankerCrc32.Success -or
+        -not $rankerSha256.Success -or
         -not $candidateModes.Success) {
         throw "Malformed R2 telemetry: $Path"
     }
@@ -108,6 +113,9 @@ function Get-R2Telemetry([string]$Path) {
         Candidates = [int]$candidate.Groups['value'].Value
         Workers = [int]$workers.Groups['value'].Value
         FullOracle = [int]$fullOracle.Groups['value'].Value
+        RankerVersion = $rankerVersion.Groups['value'].Value
+        RankerCrc32 = $rankerCrc32.Groups['value'].Value
+        RankerSha256 = $rankerSha256.Groups['value'].Value
         CandidateModes = $candidateModes.Groups['value'].Value
     }
 }
@@ -209,6 +217,17 @@ function Assert-CompletedMatrixPackage([string]$PackagePath,
         if ($row.status -cne 'COMPLETE' -or $row.roundtrip -cne 'PASS') {
             throw "Completed package contains a non-passing row: $PackagePath"
         }
+    }
+    $rankerIdentities = @($rows | ForEach-Object {
+        if ([string]::IsNullOrWhiteSpace($_.ranker_version) -or
+            [string]::IsNullOrWhiteSpace($_.ranker_crc32) -or
+            [string]::IsNullOrWhiteSpace($_.ranker_sha256)) {
+            throw "Completed package is missing ranker identity: $PackagePath"
+        }
+        "$($_.ranker_version)|$($_.ranker_crc32)|$($_.ranker_sha256)"
+    } | Sort-Object -Unique)
+    if ($rankerIdentities.Count -ne 1) {
+        throw "Completed package contains multiple ranker identities: $PackagePath"
     }
     $summary = Get-Content -LiteralPath $summaryPath -Raw -Encoding UTF8 |
         ConvertFrom-Json
@@ -421,6 +440,9 @@ try {
                 telemetry_worker_count = $telemetry.Workers
                 candidates_evaluated = $telemetry.Candidates
                 full_oracle_evaluated = $telemetry.FullOracle
+                ranker_version = $telemetry.RankerVersion
+                ranker_crc32 = $telemetry.RankerCrc32
+                ranker_sha256 = $telemetry.RankerSha256
                 candidate_modes = $telemetry.CandidateModes
             }
             foreach ($property in $row.PSObject.Properties) {
@@ -439,6 +461,18 @@ try {
         if ($hashes.Count -ne 1) {
             throw "Same-input SHA-256 mismatch for $($group.Name)"
         }
+    }
+    $rankerIdentities = @($matrixRows | ForEach-Object {
+        "$($_.ranker_version)|$($_.ranker_crc32)|$($_.ranker_sha256)"
+    } | Sort-Object -Unique)
+    if ($rankerIdentities.Count -ne 1) {
+        throw 'Matrix contains multiple fixed-point ranker model identities'
+    }
+    $rankerParts = $rankerIdentities[0].Split('|')
+    $rankerModel = [ordered]@{
+        version = $rankerParts[0]
+        crc32 = $rankerParts[1]
+        sha256 = $rankerParts[2]
     }
 
     $summaryRows = New-Object System.Collections.Generic.List[object]
@@ -469,6 +503,9 @@ try {
                     file = $shortlist[0].file
                     scope_kib = [int]$shortlist[0].scope_kib
                     input_sha256 = $shortlist[0].input_sha256
+                    ranker_version = $shortlist[0].ranker_version
+                    ranker_crc32 = $shortlist[0].ranker_crc32
+                    ranker_sha256 = $shortlist[0].ranker_sha256
                     policy = $policy
                     reference_kind = 'full-auto-reference'
                     full_auto_archive_bytes = [int64]$reference[0].archive_bytes
@@ -495,6 +532,7 @@ try {
                 (@($retained | Where-Object full_auto_selected_mode_covered).Count / $retained.Count)
             }
             aggregate_regret_vs_full_auto_bytes = @($retained | ForEach-Object { [int64]$_.regret_vs_full_auto_bytes } | Measure-Object -Sum).Sum
+            ranker_model = $rankerModel
         }
     }
     else {
@@ -509,6 +547,9 @@ try {
                 block_size_kib = [int]$rows[0].block_size_kib
                 scope_kib = [int]$rows[0].scope_kib
                 fast_thread_count = [int]$rows[0].fast_thread_count
+                ranker_version = $rows[0].ranker_version
+                ranker_crc32 = $rows[0].ranker_crc32
+                ranker_sha256 = $rows[0].ranker_sha256
                 retained_samples = $rows.Count
                 input_bytes = [int64]$inputBytes
                 encode_mb_per_s = if ($encodeSeconds -gt 0) { $inputBytes / $encodeSeconds / 1000000.0 } else { 0 }
@@ -527,6 +568,7 @@ try {
             rows = $summaryRows.Count
             cpu_floor_mb_per_s = 0.16
             all_rows_byte_exact = @($summaryRows | Where-Object byte_exact).Count -eq $summaryRows.Count
+            ranker_model = $rankerModel
         }
     }
     Write-Csv (Join-Path $packagePath 'summary_rows.csv') $summaryRows.ToArray()

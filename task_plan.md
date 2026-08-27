@@ -788,3 +788,28 @@ v1.5.7 acceptance result.
 - [ ] Continue with no-leakage model fitting, post-change Fast timing, pinned
   zstd 1.5.7 production choice, and then GPU LZ-RANS only when their
   acceptance gates are justified by measured results.
+
+## 2026-08-28 F1 Model Identity Telemetry
+
+- [x] Canonically serialize the 2,644-byte ranker model in little-endian
+  field order and derive a SHA-256 through the existing libzpaq donor adapter.
+- [x] Emit ranker version, CRC32, and SHA-256 in every R2 encoder telemetry
+  line; persist them in E5/E6 rows and reject a completed package with mixed
+  identities.
+- [x] Pin the V1 model identity in the routing unit test and run one allowed
+  1 KiB `auto-k8` byte-exact smoke.
+
+### Result
+
+The frozen bootstrap identity is version `0x00010000`, CRC32 `0x1025B343`,
+and SHA-256 `4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B`.
+The current smoke archive is 1,084 bytes for a 1,024-byte random input and
+has matching input/decoded SHA-256. Evidence:
+`results/smoke/r2-f1-model-identity-1k-20260828-v2/verification.json`.
+No corpus matrix was launched.
+
+### Error record
+
+The first input-generator attempt used a PowerShell unsigned-integer cast that
+reported overflow as non-terminating errors. It launched no codec process and
+is excluded; the retained v2 evidence uses the system random-number source.

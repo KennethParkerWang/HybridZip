@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
+#include <string>
+
+#include "r2/entropy/zpaq_backend.h"
 
 namespace hz::r2 {
 namespace {
@@ -44,6 +47,41 @@ void crc32_le(std::uint32_t& crc, Unsigned value) noexcept {
         crc = crc32_byte(crc, static_cast<std::uint8_t>(value & 0xFFU));
         value = static_cast<Unsigned>(value >> 8U);
     }
+}
+
+template <typename Unsigned>
+void append_le(
+    std::array<std::uint8_t, kFixedPointRankerModelV1CanonicalByteCount>& bytes,
+    std::size_t& offset, Unsigned value) noexcept {
+    for (std::size_t index = 0U; index < sizeof(Unsigned); ++index) {
+        bytes[offset++] = static_cast<std::uint8_t>(value & 0xFFU);
+        value = static_cast<Unsigned>(value >> 8U);
+    }
+}
+
+std::array<std::uint8_t, kFixedPointRankerModelV1CanonicalByteCount>
+canonical_model_bytes(const FixedPointRankerModelV1& model) noexcept {
+    std::array<std::uint8_t, kFixedPointRankerModelV1CanonicalByteCount> bytes{};
+    std::size_t offset = 0U;
+    for (const auto& row : model.weights) {
+        for (const std::int16_t weight : row) {
+            append_le(bytes, offset, static_cast<std::uint16_t>(weight));
+        }
+    }
+    for (const std::int32_t bias : model.biases) {
+        append_le(bytes, offset, static_cast<std::uint32_t>(bias));
+    }
+    for (const std::int16_t shift : model.feature_shifts) {
+        append_le(bytes, offset, static_cast<std::uint16_t>(shift));
+    }
+    append_le(bytes, offset, model.version);
+    append_le(bytes, offset, model.crc32);
+    return bytes;
+}
+
+std::string calculate_model_sha256_hex(const FixedPointRankerModelV1& model) {
+    const auto bytes = canonical_model_bytes(model);
+    return zpaq_donor_sha256_hex(ByteView(bytes.data(), bytes.size()));
 }
 
 std::uint32_t calculate_model_crc32(const FixedPointRankerModelV1& model) noexcept {
@@ -181,6 +219,7 @@ FixedPointRankerModelV1 make_model() noexcept {
 }
 
 const FixedPointRankerModelV1 kModel = make_model();
+const std::string kModelSha256 = calculate_model_sha256_hex(kModel);
 
 void append_unique(std::vector<BlockMode>& modes, BlockMode mode) {
     if (!shortlist_contains(modes, mode)) modes.push_back(mode);
@@ -265,6 +304,10 @@ const FixedPointRankerModelV1& fixed_point_ranker_model_v1() noexcept {
 bool fixed_point_ranker_model_v1_valid() noexcept {
     return kModel.version == kFixedPointRankerVersion &&
         kModel.crc32 == calculate_model_crc32(kModel);
+}
+
+const std::string& fixed_point_ranker_model_v1_sha256_hex() noexcept {
+    return kModelSha256;
 }
 
 std::int64_t fixed_point_ranker_score(const BlockFeaturesV1& features,

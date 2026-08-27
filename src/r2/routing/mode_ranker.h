@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "r2/archive/r2_archive.h"
@@ -11,6 +12,7 @@
 namespace hz::r2 {
 
 constexpr std::size_t kFixedPointRankerModeCount = 43U;
+constexpr std::size_t kFixedPointRankerModelV1CanonicalByteCount = 2644U;
 
 struct FixedPointRankerModelV1 {
     std::array<std::array<std::int16_t, kBlockFeatureCount>,
@@ -21,11 +23,15 @@ struct FixedPointRankerModelV1 {
     std::uint32_t crc32 = 0U;
 };
 
-static_assert(sizeof(FixedPointRankerModelV1) == 2644U,
+static_assert(sizeof(FixedPointRankerModelV1) ==
+                  kFixedPointRankerModelV1CanonicalByteCount,
               "R2 V1 fixed-point ranker model layout changed");
 
 const FixedPointRankerModelV1& fixed_point_ranker_model_v1() noexcept;
 bool fixed_point_ranker_model_v1_valid() noexcept;
+// SHA-256 of the canonical little-endian 2,644-byte model image. This is
+// encoder telemetry, not HZ02 archive metadata.
+const std::string& fixed_point_ranker_model_v1_sha256_hex() noexcept;
 std::int64_t fixed_point_ranker_score(const BlockFeaturesV1& features,
                                       BlockMode mode) noexcept;
 

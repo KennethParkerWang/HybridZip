@@ -4,6 +4,7 @@
 #include <charconv>
 #include <cstdint>
 #include <filesystem>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -13,6 +14,7 @@
 #include "codec/decoder.h"
 #include "codec/encoder.h"
 #include "r2/codec/r2_codec.h"
+#include "r2/routing/mode_ranker.h"
 
 namespace hz {
 namespace {
@@ -201,6 +203,8 @@ void print_candidate_modes(
 }
 
 void print_r2_stats(const r2::CompressionStats& stats) {
+    const r2::FixedPointRankerModelV1& ranker =
+        r2::fixed_point_ranker_model_v1();
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
@@ -210,6 +214,12 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << " oracle=" << stats.oracle_candidate_bytes
               << " oracle_gap=" << stats.oracle_gap_bytes
               << " full_oracle=" << (stats.full_oracle_evaluated ? 1 : 0);
+    std::cout << " ranker_version=0x" << std::hex << std::uppercase
+              << std::setfill('0') << std::setw(8) << ranker.version
+              << " ranker_crc32=0x" << std::setw(8) << ranker.crc32
+              << std::dec << std::nouppercase << std::setfill(' ')
+              << " ranker_sha256="
+              << r2::fixed_point_ranker_model_v1_sha256_hex();
     print_candidate_modes(std::cout, stats.candidate_blocks_by_mode);
     std::cout << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd/fast-ext)="
               << stats.blocks_by_mode[0] << '/'
