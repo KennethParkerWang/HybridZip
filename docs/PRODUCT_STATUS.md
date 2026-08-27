@@ -10,7 +10,7 @@ adds append-only `MODE_FAST_EXT_V1` at mode `43`; the current working tree
 therefore has 44 decoder-visible mode IDs. The Release executable and the R2
 codec test executable compile and link successfully. The current working-tree
 Release hash is
-`E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003`.
+`B7B9AB415D5E10A060F563C2E85B5A436D563B10FCAAFE3687BBD69D9D89DB53`.
 The completed current-hash ledger below remains bound to its earlier
 `CC6DA840...` executable and is not silently mixed with this build.
 
@@ -44,6 +44,14 @@ evaluated exactly four candidates, selected Mode 43, and selected extension
 HybridZip decoded it byte-for-byte and external zstd decoded the 94-byte
 extension frame to 1,024 transformed bytes. Evidence is
 `results/smoke/r2-fast-k4-counter-1k-20260828-v1/verification.json`.
+
+F3 adds a bounded, Fast-only independent-block executor. It keeps HZ02 output
+in canonical input order and leaves Auto, ratio shortlists, and forced modes
+serial. A 1 KiB four-block gate produced the same 690-byte archive hash with
+one and two workers, and both decodes matched the input hash. Evidence is
+`results/smoke/r2-f3-fast-executor-1k-20260828-v2/verification.json`. This is
+not a throughput measurement; a new post-change Fast K=4 E6 package remains
+required before asserting the CPU target.
 
 The prior evidence Release
 `FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`

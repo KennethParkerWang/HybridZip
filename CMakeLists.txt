@@ -556,6 +556,7 @@ add_library(hz_r2
     src/r2/representation/blosc_delta_transform.cpp
     src/r2/representation/delta_of_delta_transform.cpp
     src/r2/representation/delta_binary_packed_transform.cpp
+    src/r2/runtime/block_executor.cpp
     src/r2/representation/structure_analyzer.cpp
     src/r2/routing/activation_router.cpp
     src/r2/routing/block_features.cpp

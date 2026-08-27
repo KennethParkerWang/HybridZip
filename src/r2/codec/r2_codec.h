@@ -14,6 +14,7 @@ struct CompressionOptions {
     int zstd_level = 19;
     int lzma_level = 9;
     std::uint32_t lzma_dictionary_size = 0;
+    std::uint32_t thread_count = 1;
     std::uint64_t model_seed = kDefaultModelSeed;
 };
 
@@ -21,6 +22,7 @@ struct CompressionStats {
     std::uint64_t input_bytes = 0;
     std::uint64_t archive_bytes = 0;
     std::uint64_t payload_bytes = 0;
+    std::uint32_t worker_count = 1;
     std::uint64_t candidates_evaluated = 0;
     std::uint64_t selected_candidate_bytes = 0;
     std::uint64_t oracle_candidate_bytes = 0;

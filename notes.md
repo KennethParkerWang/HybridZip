@@ -855,3 +855,29 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
 - `results/smoke/r2-f1-fixed-ranker-auto-k8-1k-20260828-v1/` records a
   current-Release 1 KiB byte-exact `auto-k8` gate: 8 candidates
   (`0,2,3,4,27,28,36,37`), stored selected, archive 1,084 bytes.
+
+## 2026-08-28: F3 implementation boundary
+
+- Attachment source: `C:/Users/Administrator/.codex/attachments/b96760cb-802c-4f54-b886-1fce9454f953/pasted-text.txt`.
+- F3 is applicable now because the pre-change single-thread Fast baseline is
+  already measured. It requires HybridZip-owned block parallelism while zstd
+  remains configured with zero internal workers.
+- `BlockPlanner` has mutable family telemetry for full Auto, so parallelizing
+  arbitrary policies would change semantics. Fast exits before telemetry and
+  can safely use one planner per worker.
+- The executor must cap in-flight raw blocks, retain result indices, and emit
+  headers, CRC, extension metadata, and payload in ascending input block
+  order. It must not add a thread count to HZ02 archive bytes.
+- The only current runtime authorization is a deterministic 1 KiB input split
+  into four 256-byte blocks, comparing one and two Fast workers. The required
+  outcomes are byte-exact decoding and equal archive SHA-256 values. Timing
+  claims remain deferred to a dedicated post-change E6 package.
+- F3.2 passed on the final Release SHA-256
+  `B7B9AB415D5E10A060F563C2E85B5A436D563B10FCAAFE3687BBD69D9D89DB53`.
+  Both one and two workers produced the same 690-byte HZ02 archive SHA-256
+  `1348E55F39324AF742909BF6B662647D20A07B58981DDF8A7BDA70B24CCC6DFD`.
+  Both decoded hashes equal the 1,024-byte input hash
+  `AE3D26437535BB17D778294E8973030B49A7EA5337E3183532FCE00C649EB6D7`.
+  The Fast policy evaluated 16 candidates over four blocks and selected Mode
+  43 on each. Evidence:
+  `results/smoke/r2-f3-fast-executor-1k-20260828-v2/verification.json`.

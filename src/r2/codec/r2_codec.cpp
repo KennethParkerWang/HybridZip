@@ -55,6 +55,7 @@
 #include "r2/representation/blosc_delta_transform.h"
 #include "r2/representation/delta_of_delta_transform.h"
 #include "r2/representation/delta_binary_packed_transform.h"
+#include "r2/runtime/block_executor.h"
 
 namespace hz::r2 {
 namespace {
@@ -470,6 +471,69 @@ std::uint32_t crc32(const ByteView input) noexcept {
     return ~checksum;
 }
 
+bool uses_auto_accounting(const CandidatePolicy policy) noexcept {
+    return policy == CandidatePolicy::Auto ||
+           policy == CandidatePolicy::AutoK2 ||
+           policy == CandidatePolicy::AutoK4 ||
+           policy == CandidatePolicy::AutoK8;
+}
+
+void write_and_account_block(std::ostream& archive,
+                             CompressionStats& stats,
+                             BlockDecision decision,
+                             const CandidatePolicy policy,
+                             const std::uint32_t uncompressed_size,
+                             const std::uint32_t checksum) {
+    if (decision.payload.size() > std::numeric_limits<std::uint32_t>::max()) {
+        throw std::runtime_error("HZ02 block payload is too large");
+    }
+    if (!uses_auto_accounting(policy)) {
+        const std::size_t serialized_block_bytes =
+            kR2BlockHeaderSize + kR2BlockChecksumSize +
+            decision.transform_metadata.size() + decision.payload.size();
+        decision.selected_candidate_bytes = serialized_block_bytes;
+        decision.oracle_candidate_bytes = serialized_block_bytes;
+        decision.oracle_gap_bytes = 0;
+    }
+
+    BlockHeader block_header{};
+    block_header.mode = decision.mode;
+    block_header.transform = decision.transform;
+    block_header.entropy = decision.entropy;
+    block_header.uncompressed_size = uncompressed_size;
+    block_header.payload_size = static_cast<std::uint32_t>(decision.payload.size());
+    block_header.metadata_size = static_cast<std::uint32_t>(
+        kR2BlockChecksumSize + decision.transform_metadata.size());
+    write_block_header(archive, block_header);
+    write_block_crc32(archive, checksum);
+    if (!decision.transform_metadata.empty()) {
+        archive.write(reinterpret_cast<const char*>(
+                          decision.transform_metadata.data()),
+                      static_cast<std::streamsize>(
+                          decision.transform_metadata.size()));
+        if (!archive) {
+            throw std::runtime_error("Failed to write HZ02 transform metadata");
+        }
+    }
+    archive.write(reinterpret_cast<const char*>(decision.payload.data()),
+                  static_cast<std::streamsize>(decision.payload.size()));
+    if (!archive) {
+        throw std::runtime_error("Failed to write HZ02 block payload");
+    }
+
+    ++stats.blocks_by_mode[static_cast<std::size_t>(decision.mode)];
+    for (std::size_t mode = 0; mode < stats.candidate_blocks_by_mode.size();
+         ++mode) {
+        stats.candidate_blocks_by_mode[mode] +=
+            decision.candidate_blocks_by_mode[mode];
+    }
+    stats.payload_bytes += decision.payload.size();
+    stats.candidates_evaluated += decision.candidates_evaluated;
+    stats.selected_candidate_bytes += decision.selected_candidate_bytes;
+    stats.oracle_candidate_bytes += decision.oracle_candidate_bytes;
+    stats.oracle_gap_bytes += decision.oracle_gap_bytes;
+}
+
 std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::Stored) {
         return header.uncompressed_size;
@@ -606,6 +670,14 @@ CompressionStats compress_file(const std::filesystem::path& input,
         options.block_size > kR2MaximumBlockSize) {
         throw std::invalid_argument("Invalid HZ02 block size");
     }
+    if (options.thread_count == 0U) {
+        throw std::invalid_argument("Invalid HZ02 thread count");
+    }
+    if (options.thread_count != 1U &&
+        options.policy != CandidatePolicy::Fast) {
+        throw std::invalid_argument(
+            "HZ02 worker threads are currently supported only for Fast");
+    }
 
     const std::filesystem::path temporary = temporary_path_for(output);
     validate_paths(input, output, temporary);
@@ -616,6 +688,7 @@ CompressionStats compress_file(const std::filesystem::path& input,
 
     CompressionStats stats{};
     stats.full_oracle_evaluated = options.policy == CandidatePolicy::Auto;
+    stats.worker_count = options.thread_count;
     stats.input_bytes = static_cast<std::uint64_t>(reported_size);
     stats.selected_candidate_bytes = kR2ArchiveHeaderSize;
     stats.oracle_candidate_bytes = kR2ArchiveHeaderSize;
@@ -644,73 +717,60 @@ CompressionStats compress_file(const std::filesystem::path& input,
         planner_options.lzma_dictionary_size =
             options.lzma_dictionary_size;
         planner_options.model_seed = options.model_seed;
-        BlockPlanner planner(planner_options);
-
         std::uint64_t remaining = stats.input_bytes;
-        for (std::uint32_t block = 0; block < block_count; ++block) {
-            const std::size_t block_bytes = static_cast<std::size_t>(
-                std::min<std::uint64_t>(remaining, options.block_size));
-            std::vector<std::uint8_t> raw(block_bytes);
-            read_exact(source, raw, "Input shrank during HZ02 compression");
-
-            BlockDecision decision = planner.plan(ByteView(raw));
-            if (decision.payload.size() >
-                std::numeric_limits<std::uint32_t>::max()) {
-                throw std::runtime_error("HZ02 block payload is too large");
-            }
-
-            if (options.policy != CandidatePolicy::Auto &&
-                options.policy != CandidatePolicy::AutoK2 &&
-                options.policy != CandidatePolicy::AutoK4 &&
-                options.policy != CandidatePolicy::AutoK8) {
-                const std::size_t serialized_block_bytes =
-                    kR2BlockHeaderSize + kR2BlockChecksumSize +
-                    decision.transform_metadata.size() + decision.payload.size();
-                decision.selected_candidate_bytes = serialized_block_bytes;
-                decision.oracle_candidate_bytes = serialized_block_bytes;
-                decision.oracle_gap_bytes = 0;
-            }
-
-            BlockHeader block_header{};
-            block_header.mode = decision.mode;
-            block_header.transform = decision.transform;
-            block_header.entropy = decision.entropy;
-            block_header.uncompressed_size =
-                static_cast<std::uint32_t>(block_bytes);
-            block_header.payload_size =
-                static_cast<std::uint32_t>(decision.payload.size());
-            block_header.metadata_size = static_cast<std::uint32_t>(
-                kR2BlockChecksumSize + decision.transform_metadata.size());
-            write_block_header(archive, block_header);
-            write_block_crc32(archive, crc32(ByteView(raw)));
-            if (!decision.transform_metadata.empty()) {
-                archive.write(reinterpret_cast<const char*>(
-                                  decision.transform_metadata.data()),
-                              static_cast<std::streamsize>(
-                                  decision.transform_metadata.size()));
-                if (!archive) {
-                    throw std::runtime_error("Failed to write HZ02 transform metadata");
+        if (options.policy == CandidatePolicy::Fast) {
+            FastBlockExecutor executor(planner_options, options.thread_count);
+            const std::uint64_t in_flight_limit =
+                static_cast<std::uint64_t>(options.thread_count) * 2U;
+            std::uint32_t submitted = 0;
+            std::uint32_t written = 0;
+            while (written < block_count) {
+                while (submitted < block_count &&
+                       static_cast<std::uint64_t>(submitted - written) <
+                           in_flight_limit) {
+                    const std::size_t block_bytes = static_cast<std::size_t>(
+                        std::min<std::uint64_t>(remaining, options.block_size));
+                    FastBlockTask task;
+                    task.index = submitted;
+                    task.raw.resize(block_bytes);
+                    read_exact(source, task.raw,
+                               "Input shrank during HZ02 compression");
+                    task.checksum = crc32(ByteView(task.raw));
+                    executor.submit(std::move(task));
+                    remaining -= block_bytes;
+                    ++submitted;
                 }
+                FastBlockResult result = executor.take(written);
+                const std::uint32_t expected_size = static_cast<std::uint32_t>(
+                    std::min<std::uint64_t>(
+                        options.block_size,
+                        stats.input_bytes -
+                            static_cast<std::uint64_t>(written) *
+                                options.block_size));
+                if (result.index != written ||
+                    result.uncompressed_size != expected_size) {
+                    throw std::runtime_error(
+                        "Fast executor returned an invalid block result");
+                }
+                write_and_account_block(archive, stats, std::move(result.decision),
+                                        options.policy, result.uncompressed_size,
+                                        result.checksum);
+                ++written;
             }
-            archive.write(
-                reinterpret_cast<const char*>(decision.payload.data()),
-                static_cast<std::streamsize>(decision.payload.size()));
-            if (!archive) {
-                throw std::runtime_error("Failed to write HZ02 block payload");
+        } else {
+            BlockPlanner planner(planner_options);
+            for (std::uint32_t block = 0; block < block_count; ++block) {
+                const std::size_t block_bytes = static_cast<std::size_t>(
+                    std::min<std::uint64_t>(remaining, options.block_size));
+                std::vector<std::uint8_t> raw(block_bytes);
+                read_exact(source, raw, "Input shrank during HZ02 compression");
+                BlockDecision decision = planner.plan(ByteView(raw));
+                write_and_account_block(archive, stats, std::move(decision),
+                                        options.policy,
+                                        static_cast<std::uint32_t>(block_bytes),
+                                        crc32(ByteView(raw)));
+                remaining -= block_bytes;
             }
-
-            ++stats.blocks_by_mode[static_cast<std::size_t>(decision.mode)];
-            for (std::size_t mode = 0;
-                 mode < stats.candidate_blocks_by_mode.size(); ++mode) {
-                stats.candidate_blocks_by_mode[mode] +=
-                    decision.candidate_blocks_by_mode[mode];
-            }
-            stats.payload_bytes += decision.payload.size();
-            stats.candidates_evaluated += decision.candidates_evaluated;
-            stats.selected_candidate_bytes += decision.selected_candidate_bytes;
-            stats.oracle_candidate_bytes += decision.oracle_candidate_bytes;
-            stats.oracle_gap_bytes += decision.oracle_gap_bytes;
-            remaining -= block_bytes;
         }
 
         char extra = 0;

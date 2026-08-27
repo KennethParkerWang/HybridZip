@@ -18,6 +18,11 @@ zstd extensions (raw or reversible transform), and LZ4. See
 [docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) for the
 current evidence boundary and known limitations.
 
+Fast alone supports HybridZip-owned block workers through `--threads=COUNT`.
+The encoder serializes completed blocks in original input order, so worker
+count is not part of HZ02 archive bytes. Auto, ratio shortlists, and forced
+policies remain serial in this checkpoint.
+
 R2 follows a donor-first integration rule. Donor revisions, accepted code
 subsets, provenance, and license boundaries are recorded in
 [docs/DONORS.md](docs/DONORS.md) and
@@ -105,6 +110,7 @@ command because the archive header selects the decoder.
 
 ```powershell
 .\build\Release\hybridzip.exe c --profile=r2 --r2-mode=auto .\input.bin .\output.hz
+.\build\Release\hybridzip.exe c --profile=r2 --r2-mode=fast --threads=2 .\input.bin .\output-fast.hz
 .\build\Release\hybridzip.exe c --profile=r2 --r2-mode=zstd .\input.bin .\output-zstd.hz
 .\build\Release\hybridzip.exe d .\output.hz .\restored.bin
 ```

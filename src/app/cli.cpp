@@ -23,6 +23,7 @@ void print_usage(std::ostream& output) {
               "  hybridzip c --profile=r2 "
               "[--r2-mode=auto|auto-k2|auto-k4|auto-k8|fast|fast-ext|stored|zstd|fse|lzma|lz4|kanzi-ans|lmic-arithmetic|delta-binary-packed-zstd|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
+              "[--threads=COUNT] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
               "  hybridzip d <archive> <output>\n";
@@ -203,6 +204,7 @@ void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
               << " payload=" << stats.payload_bytes
+              << " workers=" << stats.worker_count
               << " candidates=" << stats.candidates_evaluated
               << " selected=" << stats.selected_candidate_bytes
               << " oracle=" << stats.oracle_candidate_bytes
@@ -279,6 +281,7 @@ int run_cli(const int argc, char* argv[]) {
     constexpr std::string_view kModePrefix = "--r2-mode=";
     constexpr std::string_view kBlockSizePrefix = "--block-size=";
     constexpr std::string_view kZstdLevelPrefix = "--zstd-level=";
+    constexpr std::string_view kThreadsPrefix = "--threads=";
     constexpr std::string_view kLzmaLevelPrefix = "--lzma-level=";
     constexpr std::string_view kLzmaDictionaryPrefix =
         "--lzma-dictionary=";
@@ -305,6 +308,11 @@ int run_cli(const int argc, char* argv[]) {
                                     kZstdLevelPrefix) == 0) {
             r2_options.zstd_level = parse_int(
                 argument.substr(kZstdLevelPrefix.size()), "--zstd-level");
+            has_r2_options = true;
+        } else if (argument.compare(0, kThreadsPrefix.size(),
+                                    kThreadsPrefix) == 0) {
+            r2_options.thread_count = parse_u32(
+                argument.substr(kThreadsPrefix.size()), "--threads");
             has_r2_options = true;
         } else if (argument.compare(0, kLzmaLevelPrefix.size(),
                                     kLzmaLevelPrefix) == 0) {

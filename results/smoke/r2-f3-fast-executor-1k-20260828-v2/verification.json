@@ -1,0 +1,41 @@
+{
+  "generated_at_utc": "2026-08-27T20:44:46.5637900Z",
+  "gate": "R2 F3.2 fast canonical-order executor",
+  "input_bytes": 1024,
+  "input_sha256": "AE3D26437535BB17D778294E8973030B49A7EA5337E3183532FCE00C649EB6D7",
+  "block_size_bytes": 256,
+  "block_count": 4,
+  "policy": "Fast K=4",
+  "codec_sha256": "B7B9AB415D5E10A060F563C2E85B5A436D563B10FCAAFE3687BBD69D9D89DB53",
+  "runs": [
+    {
+      "worker_count": 1,
+      "archive_bytes": 690,
+      "archive_sha256": "1348E55F39324AF742909BF6B662647D20A07B58981DDF8A7BDA70B24CCC6DFD",
+      "decoded_bytes": 1024,
+      "decoded_sha256": "AE3D26437535BB17D778294E8973030B49A7EA5337E3183532FCE00C649EB6D7",
+      "encode_exit_code": 0,
+      "decode_exit_code": 0,
+      "byte_exact": true,
+      "candidates_evaluated": 16,
+      "candidate_blocks_by_mode": { "0": 4, "39": 4, "43": 8 },
+      "selected_blocks_by_mode": { "43": 4 }
+    },
+    {
+      "worker_count": 2,
+      "archive_bytes": 690,
+      "archive_sha256": "1348E55F39324AF742909BF6B662647D20A07B58981DDF8A7BDA70B24CCC6DFD",
+      "decoded_bytes": 1024,
+      "decoded_sha256": "AE3D26437535BB17D778294E8973030B49A7EA5337E3183532FCE00C649EB6D7",
+      "encode_exit_code": 0,
+      "decode_exit_code": 0,
+      "byte_exact": true,
+      "candidates_evaluated": 16,
+      "candidate_blocks_by_mode": { "0": 4, "39": 4, "43": 8 },
+      "selected_blocks_by_mode": { "43": 4 }
+    }
+  ],
+  "canonical_archive_order": true,
+  "archive_hash_equal_across_worker_counts": true,
+  "throughput_claim": false
+}

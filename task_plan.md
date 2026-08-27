@@ -184,6 +184,38 @@ second codec run.
 - [ ] E7: obtain explicit owner approval before materializing OASum or making
   a Tencent-dataset coverage claim.
 
+## 2026-08-28 F3 Fast Block Executor
+
+### Objective
+
+Implement the attachment's independent-block execution boundary for
+`ENC_FAST_V1` without changing any HZ02 bytes, mode IDs, or non-Fast encoder
+policy. Archive serialization must remain in canonical input block order even
+when compression decisions finish in another order.
+
+### Work items
+
+- [x] F3.0: freeze the small-scope experiment design in
+  `docs/research/R2_F3_BLOCK_EXECUTOR_EXPERIMENT_DESIGN_20260828.md`.
+- [x] F3.1: add a bounded Fast-only worker executor and `--threads` option.
+- [x] F3.2: run the permitted 1 KiB / four-block lossless and deterministic
+  archive gate at one and two workers.
+- [ ] F3.3: commit and push the implementation/evidence milestone.
+- [ ] F3.4: only after F3.2, schedule the separate post-change E6 Fast K=4
+  32/64/128 KiB timing matrix.
+
+### Decision
+
+Only `CandidatePolicy::Fast` may use worker threads in this checkpoint.
+`auto` owns mutable family telemetry and stays serial; the K=2/K=4/K=8
+policies and every forced mode also retain their existing serial behavior.
+
+### Status
+
+**Currently in F3.3** - recording the 1 KiB evidence and preparing the
+incremental GitHub milestone. No corpus benchmark is running or authorized by
+this work item.
+
 ## 2026-08-28 attachment-driven target execution
 
 ### Decision
@@ -715,7 +747,8 @@ Keep compression-ratio and throughput claims on separate evidence tracks.
   no-leakage labels and held-out regret evidence.
 - [ ] P1: Run E5 in a dedicated CPU window. Its known lower-bound cost is
   about 13 hours for full Auto and it needs forced-oracle data for promotion.
-- [ ] P1: Add canonical-order block parallelism and repeat Fast timing.
+- [x] P1: Add canonical-order Fast-only block parallelism and pass its 1 KiB
+  deterministic archive gate. Post-change Fast timing remains pending.
 - [ ] P2: Start GPU `LZ_RANS_V1` only after Fast extension/block-executor
   evidence exists.
 
@@ -748,6 +781,6 @@ v1.5.7 acceptance result.
   policy change; do not reuse the prior mode-2 baseline package.
 - [ ] Keep E5 full-Auto/K=2/K=4/K=8 regret work as a separate PAQ-heavy job;
   no long run is started by this checkpoint.
-- [ ] Continue with no-leakage model fitting, canonical block executor, pinned zstd 1.5.7
-  production choice, and then GPU LZ-RANS only when their acceptance gates
-  are justified by measured results.
+- [ ] Continue with no-leakage model fitting, post-change Fast timing, pinned
+  zstd 1.5.7 production choice, and then GPU LZ-RANS only when their
+  acceptance gates are justified by measured results.

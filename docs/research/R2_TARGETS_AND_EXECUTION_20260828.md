@@ -36,7 +36,7 @@ policy cannot be used to claim the other policy's target.
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
 | F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; no-leakage labels and measured router budget remain required | Bootstrap implemented; not promoted |
 | F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | 1 KiB gate passed; corpus rerun pending |
-| F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Queued |
+| F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Fast-only executor and 1 KiB gate passed; post-change timing matrix pending |
 | F4 | GPU `LZ_RANS_V1` | CPU reference decoder; end-to-end >= 8 MB/s at every required size | Blocked by F2/F3 |
 
 ## Runtime Protocol
@@ -65,7 +65,8 @@ a versioned 2,644-byte fixed-point bootstrap model with hard family gates.
 It has not been fit from a forced-mode matrix, so no-leakage labels, router
 budget timing, and held-out regret remain F1 acceptance requirements. Fast K=4
 and the append-only Mode-43 extension are implemented, but their corpus-level
-throughput matrix is pending. There is no independent-block thread pool or GPU
+throughput matrix is pending. Fast now has a bounded independent-block thread
+pool; Auto, shortlists, and forced modes remain serial. There is no GPU
 backend.
 
 `third_party/zstd` identifies as 1.6.0. The decision requests zstd 1.5.7,
