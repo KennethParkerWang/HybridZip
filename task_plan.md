@@ -865,3 +865,18 @@ committed and pushed as `996d59d`.
   v1.5.7 is required over the current vendored 1.6.0. That change requires
   independent frame vectors, HZ01/HZ02 decode gates, and new Fast evidence;
   staging provenance alone is not an encoder acceptance result.
+
+## 2026-08-28 K=8 No-Leakage Training Data Interface
+
+- [x] Add `hz_r2_feature_dump`, a read-only build target linked to the exact
+  C++ `BlockFeaturesV1` and fixed-point ranker. It emits all 28 features,
+  classification, K=8 modes, and model identity without archive construction.
+- [x] Add `export_r2_ranker_training_set.ps1`, which joins a complete 32 KiB
+  forced-oracle package to source prefixes after SHA-256 validation and enforces
+  an explicit file-level training/validation split.
+- [x] Build the exporter and pass its two-file synthetic test: 28 features per
+  row, one training file, one validation file, zero codec invocations, and no
+  archive encode/decode.
+- [ ] Run the completed forced ledger through the exporter, fit a frozen model
+  without validation leakage, then measure held-out E5 recall/regret before
+  changing K=8 from experimental.

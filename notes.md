@@ -956,3 +956,18 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
 - The durable repository record is `docs/provenance/zstd-v1.5.7.json`. It
   explicitly marks the donor staged, not imported: production still compiles
   the separately recorded vendored zstd 1.6.0.
+
+## 2026-08-28: K=8 no-leakage training data interface
+
+- `hz_r2_feature_dump.exe` is a read-only target linked to the production C++
+  `BlockFeaturesV1` extractor and ranker. On the retained random 1 KiB input it
+  emitted 28 values, eight K=8 mode IDs, and the pinned model SHA-256
+  `4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B`.
+- `export_r2_ranker_training_set.ps1` accepts only a `COMPLETE`, 32 KiB
+  forced-oracle package. It verifies every source-prefix SHA-256, requires an
+  explicit non-empty file-level holdout, and writes source hashes, tied winner
+  labels, 28 exact C++ features, K=8 candidate IDs, and model identity.
+- `test_r2_ranker_training_set.ps1` passed with two synthetic 32 KiB sources:
+  the preview launched no feature dump or codec, the completed export invoked
+  only the feature tool, and its single validation file was absent from
+  training. No HybridZip archive was encoded or decoded.

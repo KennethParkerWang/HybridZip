@@ -90,3 +90,10 @@ only permitted promotion path is:
    K thresholds, and exact train/validation membership before held-out E5.
 5. Require the protocol's K=8 recall/regret gates before changing the policy
    status from experimental.
+
+`tools/r2_feature_dump.cpp` builds `hz_r2_feature_dump.exe`, a read-only
+exporter linked to the exact C++ extractor and ranker. After a forced oracle is
+complete, `tools/export_r2_ranker_training_set.ps1` writes a file-level
+training/validation package with the C++ feature vector and tied labels; see
+`docs/research/R2_RANKER_TRAINING_DATA_PROTOCOL_20260828.md`. This interface
+does not fit or install model weights.

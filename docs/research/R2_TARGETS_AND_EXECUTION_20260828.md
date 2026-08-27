@@ -35,7 +35,7 @@ policy cannot be used to claim the other policy's target.
 | E3 | PAQ8px v216 `-1` on all 36 frozen inputs | Every row has matching input/decoded SHA-256 and complete archive bytes | Passed |
 | E5 | K=2/K=4/K=8 versus full Auto | Report complete-byte regret, selected-mode coverage, and a matching 32 KiB forced-mode tie-aware oracle | Forced-ledger/E5 evidence binding and self-test complete; runtime queued |
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
-| F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; one model identity per matrix package; no-leakage labels and measured router budget remain required | Bootstrap identity telemetry implemented; not promoted |
+| F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; one model identity per matrix package; no-leakage labels and measured router budget remain required | C++ feature exporter and file-level split tooling complete; forced labels and fitted-model evaluation pending |
 | F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | v1.5.7 donor staged and verified; current production source remains 1.6.0; corpus rerun pending |
 | F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Fast-only executor/1 KiB gate passed; guarded worker-count matrix preflight passed; post-change timing pending |
 | F4 | GPU `LZ_RANS_V1` | CPU reference decoder; end-to-end >= 8 MB/s at every required size | Blocked by F2/F3 |
@@ -69,8 +69,11 @@ multi-hour E5 run recoverable without weakening its evidence identity.
 
 `BlockFeaturesV1` now exposes the specified 28 integer features and K=8 uses
 a versioned 2,644-byte fixed-point bootstrap model with hard family gates.
-It has not been fit from a forced-mode matrix, so no-leakage labels, router
-budget timing, and held-out regret remain F1 acceptance requirements. Fast K=4
+It has not been fit from a forced-mode matrix. The new
+`hz_r2_feature_dump`/`export_r2_ranker_training_set.ps1` path exports exact
+C++ features with file-level training/validation isolation once the forced
+labels exist, but does not fit or install weights. Router-budget timing and
+held-out regret remain F1 acceptance requirements. Fast K=4
 and the append-only Mode-43 extension are implemented, but their corpus-level
 throughput matrix is pending. Fast now has a bounded independent-block thread
 pool; Auto, shortlists, and forced modes remain serial. There is no GPU

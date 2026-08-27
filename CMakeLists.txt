@@ -596,6 +596,18 @@ set_target_properties(hybridzip PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release"
 )
 
+# This read-only tool is the canonical feature exporter for offline R2 router
+# fitting. It links the same extractor and ranker code as the encoder, so
+# training data cannot silently diverge from the fixed-point feature contract.
+add_executable(hz_r2_feature_dump tools/r2_feature_dump.cpp)
+target_link_libraries(hz_r2_feature_dump PRIVATE hz_r2)
+hz_enable_warnings(hz_r2_feature_dump)
+hz_enable_portable_runtime(hz_r2_feature_dump)
+set_target_properties(hz_r2_feature_dump PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Release"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release"
+)
+
 add_executable(hybridzip_oracle
     src/app/oracle_cli.cpp
 )
