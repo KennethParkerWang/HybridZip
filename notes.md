@@ -998,3 +998,9 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   Both decoded hashes matched input SHA-256
   `E051D1007607DE494C073DA3C29903D6C0ABFEE7A4C0609F560A340A1947B470`;
   each run emitted four paired timing samples. No throughput claim is made.
+- The E6 telemetry parser now recomputes nearest-rank P50/P95 from the raw
+  samples before retaining a row. It rejects mismatched percentiles, unequal
+  paired sample counts, nonzero percentiles for empty samples, and any
+  queue-plus-service sample below its paired service-only value. PowerShell AST
+  parsing passed; the retained 1 KiB log passed and a P50-tampered copy was
+  rejected without launching the codec.

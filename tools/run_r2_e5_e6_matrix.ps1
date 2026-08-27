@@ -91,6 +91,15 @@ function Write-Csv([string]$Path, [object[]]$Rows) {
     [System.IO.File]::WriteAllText($Path, $content, $encoding)
 }
 
+function Get-NearestRankNs([uint64[]]$Values, [double]$Quantile) {
+    if ($Values.Count -eq 0) {
+        return [uint64]0
+    }
+    $ordered = @($Values | Sort-Object)
+    $index = [int][Math]::Ceiling($Quantile * $ordered.Count) - 1
+    return [uint64]$ordered[[Math]::Max(0, [Math]::Min($index, $ordered.Count - 1))]
+}
+
 function Get-R2Telemetry([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
         throw "Encode telemetry is missing: $Path"
@@ -134,6 +143,29 @@ function Get-R2Telemetry([string]$Path) {
         $queueValues.Count -ne [int]$latencySamples.Groups['value'].Value) {
         throw "Malformed Fast block latency telemetry: $Path"
     }
+    $reportedQueueP50 = [uint64]$queueP50.Groups['value'].Value
+    $reportedQueueP95 = [uint64]$queueP95.Groups['value'].Value
+    $reportedServiceP50 = [uint64]$serviceP50.Groups['value'].Value
+    $reportedServiceP95 = [uint64]$serviceP95.Groups['value'].Value
+    if ($queueValues.Count -eq 0) {
+        if ($reportedQueueP50 -ne 0 -or $reportedQueueP95 -ne 0 -or
+            $reportedServiceP50 -ne 0 -or $reportedServiceP95 -ne 0) {
+            throw "Empty Fast latency telemetry has nonzero percentiles: $Path"
+        }
+    }
+    else {
+        for ($index = 0; $index -lt $queueValues.Count; ++$index) {
+            if ($queueValues[$index] -lt $serviceValues[$index]) {
+                throw "Fast queue-plus-service latency is below service latency: $Path"
+            }
+        }
+        if ($reportedQueueP50 -ne (Get-NearestRankNs $queueValues 0.50) -or
+            $reportedQueueP95 -ne (Get-NearestRankNs $queueValues 0.95) -or
+            $reportedServiceP50 -ne (Get-NearestRankNs $serviceValues 0.50) -or
+            $reportedServiceP95 -ne (Get-NearestRankNs $serviceValues 0.95)) {
+            throw "Fast latency percentiles do not match raw samples: $Path"
+        }
+    }
     [pscustomobject]@{
         Candidates = [int]$candidate.Groups['value'].Value
         Workers = [int]$workers.Groups['value'].Value
@@ -143,10 +175,10 @@ function Get-R2Telemetry([string]$Path) {
         RankerSha256 = $rankerSha256.Groups['value'].Value
         CandidateModes = $candidateModes.Groups['value'].Value
         FastLatencySamples = $queueValues.Count
-        FastQueuePlusServiceP50Ns = [uint64]$queueP50.Groups['value'].Value
-        FastQueuePlusServiceP95Ns = [uint64]$queueP95.Groups['value'].Value
-        FastServiceP50Ns = [uint64]$serviceP50.Groups['value'].Value
-        FastServiceP95Ns = [uint64]$serviceP95.Groups['value'].Value
+        FastQueuePlusServiceP50Ns = $reportedQueueP50
+        FastQueuePlusServiceP95Ns = $reportedQueueP95
+        FastServiceP50Ns = $reportedServiceP50
+        FastServiceP95Ns = $reportedServiceP95
         FastQueuePlusServiceNs = $queueValues
         FastServiceNs = $serviceValues
     }

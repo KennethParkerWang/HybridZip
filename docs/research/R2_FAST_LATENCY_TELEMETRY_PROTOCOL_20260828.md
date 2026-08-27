@@ -20,7 +20,10 @@ nanoseconds:
 The CLI emits each raw sample list plus nearest-rank P50/P95. The E6 matrix
 persists raw lists in `matrix_rows.csv`, combines all retained block samples
 in a summary cell, and calculates exact nearest-rank P50/P95. Warmup rows are
-kept in the matrix but excluded from the E6 summaries.
+kept in the matrix but excluded from the E6 summaries. The parser rejects a
+row when its reported P50/P95 does not reproduce from its raw samples, when
+the paired sample counts differ, or when queue-plus-service is below
+service-only.
 
 ## Target and gates
 

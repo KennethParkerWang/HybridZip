@@ -902,6 +902,9 @@ are computed from blocks rather than from file-level wall-clock proxies.
 - [x] L4: commit and push the telemetry checkpoint as `f94dc29`.
   Post-change E6 remains a
   separately authorized corpus runtime experiment.
+- [x] L5: make the E6 telemetry parser recompute P50/P95 from raw samples and
+  reject mismatched percentiles, unequal paired counts, or a queue-plus-service
+  sample below its service-only counterpart.
 
 ### Status
 
