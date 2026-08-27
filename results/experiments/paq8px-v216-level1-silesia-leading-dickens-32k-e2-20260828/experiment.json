@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "experiment_id": "paq8px-v216-level1-silesia-leading-dickens-32k-e2-20260828",
+  "name": "PAQ8px v216 -1 Silesia leading-prefix baseline",
+  "state": "测试中",
+  "description": "PAQ8px v216 level -1 on the frozen Silesia leading-prefix matrix.",
+  "model_structure": "PAQ8px context mixing and arithmetic coding with automatic detection.",
+  "change_from_baseline": "Creates the same-input PAQ8px reference required for R2 comparison.",
+  "hypothesis": "This package establishes a valid same-input reference; it does not by itself prove HybridZip superiority.",
+  "baseline_description": "HybridZip R2 current-hash leading-prefix ledger uses the same Silesia files and prefix policy at 32 KiB.",
+  "research_line": "HybridZip R2 fair baseline",
+  "created_at": "2026-08-28T00:50:28.8232776+08:00",
+  "dataset_name": "Silesia",
+  "dataset_path": "F:\\paq8px\\silesia",
+  "files": [
+    "dickens",
+    "mozilla",
+    "mr",
+    "nci",
+    "ooffice",
+    "osdb",
+    "reymont",
+    "samba",
+    "sao",
+    "webster",
+    "x-ray",
+    "xml"
+  ],
+  "scopes_kib": [
+    32,
+    64,
+    128
+  ],
+  "variants": [
+    "level-1"
+  ],
+  "repeat_count": 1,
+  "codec_name": "PAQ8px",
+  "codec_version": "v216",
+  "codec_path": "F:\\paq8px\\experiment\\build\\paq8px.exe",
+  "codec_sha256": "F79343702F596A4FA6C7CC3E25F2FA9C05199EAF11F06655B065F687E5F42533",
+  "source_revision": "local v216 Release snapshot; source Git metadata unavailable",
+  "command_template": "paq8px.exe -1 <input> <archive>; paq8px.exe -d <archive> <decoded>",
+  "configuration": "level=-1; automatic-detection=on; sequential; prefix-policy=leading-prefix-v1",
+  "environment": "Windows 10.0.19045.0; CPU=12th Gen Intel(R) Core(TM) i7-12650H; sequential execution",
+  "notes": "Partial smoke package. Unselected canonical rows remain PENDING and must not be imported as a completed benchmark."
+}

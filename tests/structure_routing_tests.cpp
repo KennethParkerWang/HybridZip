@@ -1,9 +1,12 @@
 #include <cstdint>
+#include <cstddef>
 #include <stdexcept>
 #include <vector>
 
 #include "r2/representation/structure_analyzer.h"
 #include "r2/routing/activation_router.h"
+#include "r2/routing/block_features.h"
+#include "r2/routing/mode_ranker.h"
 
 namespace {
 
@@ -11,6 +14,49 @@ void require(const bool condition, const char* message) {
     if (!condition) {
         throw std::runtime_error(message);
     }
+}
+
+void require_k8(const hz::r2::BlockFeaturesV1& features,
+                const hz::r2::BlockClass expected_class,
+                const hz::r2::BlockMode expected_extra) {
+    const std::vector<hz::r2::BlockMode> modes = hz::r2::rank_modes_k8(features);
+    require(features.classify() == expected_class,
+            "K=8 feature class was not deterministic");
+    require(modes.size() == 8U, "K=8 ranker did not return eight modes");
+    for (std::size_t index = 0; index < modes.size(); ++index) {
+        for (std::size_t peer = index + 1; peer < modes.size(); ++peer) {
+            require(modes[index] != modes[peer], "K=8 ranker returned a duplicate mode");
+        }
+    }
+    require(hz::r2::shortlist_contains(modes, hz::r2::BlockMode::Stored) &&
+                hz::r2::shortlist_contains(modes, hz::r2::BlockMode::Zstd) &&
+                hz::r2::shortlist_contains(
+                    modes, hz::r2::BlockMode::Paq8pxGenericSse) &&
+                hz::r2::shortlist_contains(
+                    modes, hz::r2::BlockMode::Paq8pxDetectedSse) &&
+                hz::r2::shortlist_contains(modes, expected_extra),
+            "K=8 ranker omitted a mandatory or class-specific mode");
+}
+
+void require_ablation_shortlists(const hz::r2::BlockFeaturesV1& features) {
+    const std::vector<hz::r2::BlockMode> k2 =
+        hz::r2::rank_modes_k2(features);
+    require(k2.size() == 2U &&
+                hz::r2::shortlist_contains(k2, hz::r2::BlockMode::Stored) &&
+                hz::r2::shortlist_contains(
+                    k2, hz::r2::BlockMode::Paq8pxGenericSse),
+            "K=2 ablation shortlist is not canonical");
+
+    const std::vector<hz::r2::BlockMode> k4 =
+        hz::r2::rank_modes_k4(features);
+    require(k4.size() == 4U &&
+                hz::r2::shortlist_contains(k4, hz::r2::BlockMode::Stored) &&
+                hz::r2::shortlist_contains(k4, hz::r2::BlockMode::Zstd) &&
+                hz::r2::shortlist_contains(
+                    k4, hz::r2::BlockMode::Paq8pxGenericSse) &&
+                hz::r2::shortlist_contains(
+                    k4, hz::r2::BlockMode::Paq8pxDetectedSse),
+            "K=4 ablation shortlist is not canonical");
 }
 
 }  // namespace
@@ -80,5 +126,35 @@ int main() {
     telemetry[2].age = 8192;
     require(!hierarchical.active_experts(text_structure, telemetry)[2],
             "Stale high-loss neural family was not put to sleep");
+
+    const hz::r2::BlockFeaturesV1 text_k8 =
+        hz::r2::extract_block_features(hz::r2::ByteView(text));
+    const hz::r2::BlockFeaturesV1 text_k8_repeat =
+        hz::r2::extract_block_features(hz::r2::ByteView(text));
+    require(text_k8.byte_count == text_k8_repeat.byte_count &&
+                text_k8.printable_per_mille == text_k8_repeat.printable_per_mille &&
+                text_k8.equal_lag4_per_mille == text_k8_repeat.equal_lag4_per_mille &&
+                text_k8.unique_bytes == text_k8_repeat.unique_bytes &&
+                hz::r2::rank_modes_k8(text_k8) ==
+                    hz::r2::rank_modes_k8(text_k8_repeat),
+            "K=8 features changed between identical inputs");
+    require_k8(text_k8, hz::r2::BlockClass::Text,
+               hz::r2::BlockMode::BrotliText);
+    require_ablation_shortlists(text_k8);
+
+    const hz::r2::BlockFeaturesV1 x86_k8 =
+        hz::r2::extract_block_features(hz::r2::ByteView(x86));
+    require_k8(x86_k8, hz::r2::BlockClass::X86,
+               hz::r2::BlockMode::Bcj2Zstd);
+
+    const hz::r2::BlockFeaturesV1 numeric_k8 =
+        hz::r2::extract_block_features(hz::r2::ByteView(correlated));
+    require_k8(numeric_k8, hz::r2::BlockClass::Numeric,
+               hz::r2::BlockMode::ShuffleZstd);
+
+    const hz::r2::BlockFeaturesV1 generic_k8 =
+        hz::r2::extract_block_features(hz::r2::ByteView(noisy));
+    require_k8(generic_k8, hz::r2::BlockClass::Generic,
+               hz::r2::BlockMode::Ppmd8);
     return 0;
 }

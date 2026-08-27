@@ -557,6 +557,8 @@ add_library(hz_r2
     src/r2/representation/delta_binary_packed_transform.cpp
     src/r2/representation/structure_analyzer.cpp
     src/r2/routing/activation_router.cpp
+    src/r2/routing/block_features.cpp
+    src/r2/routing/mode_ranker.cpp
     third_party/lstm-compress/port/lstm_compress_donor_port.cpp
 )
 target_include_directories(hz_r2 PUBLIC src)

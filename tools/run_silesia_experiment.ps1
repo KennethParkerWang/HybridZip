@@ -8,7 +8,7 @@ param(
     [string]$Profile = 'v1',
     # Keep this order equal to the decoder-visible BlockMode IDs.
     [ValidateSet(
-        'auto', 'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
+        'auto', 'auto-k2', 'auto-k4', 'auto-k8', 'fast', 'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
         'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
         'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'fastpfor', 'rans',
         'bcj2-zstd', 'record-transpose-zstd', 'jpegls', 'flac-residual',
@@ -26,6 +26,8 @@ param(
     [int]$ProcessTimeoutSeconds = 3600,
     [ValidateSet(32, 64, 128)]
     [int[]]$ScopesKiB = @(32, 64, 128),
+    [ValidateSet(32, 64, 128)]
+    [int]$BlockSizeKiB = 64,
     [string[]]$SilesiaFiles = @(),
     [switch]$ListOnly,
     [switch]$AllowAllFiles
@@ -118,6 +120,7 @@ if ($ListOnly) {
     [pscustomobject]@{
         files = [string]::Join(',', $files)
         scopes_kib = [string]::Join(',', $scopesKiB)
+        block_size_kib = $BlockSizeKiB
         profile = $Profile
         r2_mode = $R2Mode
     } | ConvertTo-Json -Compress
@@ -484,6 +487,7 @@ function Get-RecordedBlockTypes([string]$EncodeStdoutPath) {
 function Assert-R2BlockTypes([string]$RequestedMode,
                              [string]$BlockTypes,
                              [int64]$InputBytes,
+                             [int64]$BlockSizeBytes,
                              [string]$Description) {
     if ([string]::IsNullOrWhiteSpace($BlockTypes) -or
         $BlockTypes -eq 'none' -or $BlockTypes -eq 'UNKNOWN') {
@@ -527,13 +531,15 @@ function Assert-R2BlockTypes([string]$RequestedMode,
         }
         $total += $count
     }
-    $expectedBlocks = [int64][Math]::Ceiling([double]$InputBytes / 65536.0)
+    $expectedBlocks = [int64][Math]::Ceiling(
+        [double]$InputBytes / [double]$BlockSizeBytes)
     if ($total -ne $expectedBlocks) {
         throw "HZ02 block count mismatch for ${Description}: recorded=$total expected=$expectedBlocks"
     }
-    if ($RequestedMode -ne 'auto' -and
-        ($counts.Count -ne 1 -or -not $counts.ContainsKey($RequestedMode) -or
-         $counts[$RequestedMode] -ne $expectedBlocks)) {
+    $expectedMode = if ($RequestedMode -eq 'fast') { 'zstd' } else { $RequestedMode }
+    if ($RequestedMode -notin @('auto', 'auto-k2', 'auto-k4', 'auto-k8') -and
+        ($counts.Count -ne 1 -or -not $counts.ContainsKey($expectedMode) -or
+         $counts[$expectedMode] -ne $expectedBlocks)) {
         throw "Forced HZ02 mode mismatch for ${Description}: requested=$RequestedMode recorded=$BlockTypes"
     }
 }
@@ -843,9 +849,17 @@ if ($Profile -eq 'v1') {
 else {
     $variant = "r2-$R2Mode"
     $archiveExtension = '.hz2'
-    $encodeArguments = @('c', '--profile=r2', "--r2-mode=$R2Mode")
+    $blockSizeBytes = [int64]$BlockSizeKiB * 1024L
+    $zstdLevel = if ($R2Mode -eq 'fast') { 3 } else { 19 }
+    $encodeArguments = @(
+        'c', '--profile=r2', "--r2-mode=$R2Mode",
+        "--block-size=$blockSizeBytes"
+    )
+    if ($R2Mode -eq 'fast') {
+        $encodeArguments += '--zstd-level=3'
+    }
     $decodeArguments = @('d')
-    $configuration = "profile_id=2;mode=$R2Mode;block_size=65536;zstd_level=19;lzma_level=9;threads=1;process_timeout_seconds=$ProcessTimeoutSeconds"
+    $configuration = "profile_id=2;mode=$R2Mode;block_size=$blockSizeBytes;zstd_level=$zstdLevel;lzma_level=9;threads=1;process_timeout_seconds=$ProcessTimeoutSeconds"
     $rowParameters = $configuration
     $experimentName = "HybridZip R2 $R2Mode Silesia prefix experiment"
     $experimentDescription = "HybridZip HZ02 block portfolio mode $R2Mode on Silesia 32/64/128 KiB prefixes."
@@ -997,6 +1011,7 @@ foreach ($case in $cases) {
         if ($Profile -eq 'r2') {
             $recordedBlockTypes = Get-RecordedBlockTypes $encode.StdoutPath
             Assert-R2BlockTypes $R2Mode $recordedBlockTypes $case.InputBytes `
+                $blockSizeBytes `
                 "case $($case.Order)/$($cases.Count) ($($case.Key))"
         }
 

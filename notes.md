@@ -27,6 +27,46 @@
   shortlist. This explains why Auto reaches the measured oracle but has poor
   encode throughput.
 
+## R2 Research Execution Start - 2026-08-28
+
+- User authorized execution of the external research decision after the
+  `baseline-r2-20260828` GitHub tag was pushed.
+- The external response correctly identifies same-input PAQ8px baselining and
+  a shortlist router as P0, but its proposed zstd integration is already
+  represented locally: `third_party/zstd` is vendored, HZ02 exposes mode 2
+  (`zstd`), and the CLI already accepts `--zstd-level` and `--block-size`.
+  The first fast-policy evidence should therefore measure existing zstd and
+  transform paths rather than create a duplicate extension mode.
+- Local PAQ8px v216 is available at
+  `F:/paq8px/experiment/build/paq8px.exe` and
+  `F:/paq8px/PaqBenchStudio/staging-v1.1.0/paq8px.exe`; both are 1,383,936
+  bytes with SHA-256
+  `F79343702F596A4FA6C7CC3E25F2FA9C05199EAF11F06655B065F687E5F42533`.
+- The first implementation artifact is a manifest-driven PAQ8px runner. It
+  will default to no-runtime listing and require explicit authorization before
+  it creates an experimental package or launches PAQ8px.
+- E1 completed without a codec process. The frozen leading-prefix manifest is
+  `bench/manifests/silesia-leading-32-64-128.tsv`: 36 canonical rows, 12
+  files, 32/64/128 KiB, and SHA-256
+  `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`.
+  Both new PowerShell tools passed AST parsing. The PAQ runner `-ListOnly`
+  preflight selected `dickens-leading-32k`, reported no runtime start, and
+  recorded the expected v216 binary SHA-256.
+- E2 same-input smoke passed. The PAQ package is
+  `results/experiments/paq8px-v216-level1-silesia-leading-dickens-32k-e2-20260828`.
+  It retains 36 canonical CSV rows: 1 `COMPLETE/PASS` and 35 `PENDING` rows,
+  so it is a smoke-evidence package and not an importable completed benchmark.
+  The PAQ archive is 9,502 bytes (2.319824 bpb), encode/decode each took about
+  3.53 seconds with a 372 MiB peak, and all input/decoded bytes matched SHA-256
+  `FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31`.
+  The pre-existing current-hash HybridZip Auto row has the exact same input
+  identity and a 9,598-byte archive (2.343262 bpb). PAQ is smaller by 96 bytes
+  on this one case only; no Silesia aggregate conclusion is valid yet.
+- The historical, non-comparable PAQ centred-slice level-1 matrix had 36 PASS
+  rows, 351.238 encode seconds, and 348.938 decode seconds. It provides only a
+  serial full-matrix planning estimate of roughly 12 minutes typical / 30
+  minutes conservative for E3; leading-prefix content can change this runtime.
+
 ## 2026-08-26 donor audit
 
 - Audited `E:/MIXER/KU/hybridzip-r2` and its provenance inventory.
@@ -548,3 +588,109 @@ their no-win status is limited to this one prefix matrix.
 Derived files, strict analysis, figures, and the round-review report are under
 `results/analysis/r2-complete-ledger/hybridzip-r2-currenthash-cc6d-20260827-r2/`.
 The separate segment-oracle runtime experiment remains unrun by design.
+
+## 2026-08-28 R2 experiment design and execution boundary
+
+- The uploaded R2 decision is now the active implementation specification. Tier
+  A uses the frozen 12 Silesia files at leading 32/64/128 KiB; Tier B is
+  complete Silesia plus an owner-approved Tencent/OASum corpus.
+- Ratio evidence uses complete archive bytes, identical input SHA-256 values,
+  byte-exact decoded SHA-256 values, and explicit block size/codec hashes.
+  `bpb = 8 * archive_bytes / input_bytes`; shortlist regret is measured against
+  the full 43-mode oracle, not against a single forced donor.
+- E3 (36 serial PAQ8px cases) remains pending. This turn does not launch E3,
+  OASum download, D40, Auto sweeps, CTest, or larger runtime matrices.
+- E4 starts with an encoder-only `auto-k8` policy. It preserves all 43 HZ02
+  decoder IDs and the existing full `auto` policy. K=8 is a measured
+  shortlist, not a product claim: promote it only if E5 held-out recall and
+  regret gates pass.
+- K=8 mandatory modes are Stored, Zstd, Paq8pxGenericSse, and
+  Paq8pxDetectedSse. The four additional slots are selected from text
+  (Ppmd7/Ppmd8/BrotliText/BwtZstd), x86
+  (Fse/Lzma/X86BcjZstd/Bcj2Zstd), numeric
+  (Fse/Lzma/DeltaZstd/ShuffleZstd), or generic
+  (Fse/Lzma/Ppmd7/Ppmd8).
+
+## 2026-08-28 E4 auto-k8 implementation result
+
+- Added `BlockFeaturesV1` and `mode_ranker` under `src/r2/routing/`. The
+  extractor uses integer per-mille statistics and four deterministic classes;
+  the ranker always retains Stored, Zstd, Paq8pxGenericSse, and
+  Paq8pxDetectedSse, then adds four class-specific modes.
+- Added `CandidatePolicy::AutoK8` and CLI spelling `--r2-mode=auto-k8`.
+  The policy is encoder-only; HZ02 IDs 0..42 and HZ01 decoding are unchanged.
+- Focused tests passed: `hz_structure_routing_tests`; Release builds passed for
+  `hybridzip`, `hz_structure_routing_tests`, and `hz_r2_codec_tests`.
+- The latest 1 KiB smoke passed with eight candidates, a 463-byte archive, mode
+  37 (`paq8px-detected-sse`) selected, and equal input/decoded SHA-256. Full
+  codec tests and corpus matrices were intentionally not run.
+- Evidence: `results/smoke/r2-auto-k8-1k-20260828-v3/verification.json`.
+- The current executable hash is
+  `C3831DA767B75F06039C52BEA936D8F4DF633E8CB383DE6ECF11D5E8953A9D31` and
+  represents the current uncommitted working tree, not the baseline tag.
+
+## 2026-08-28 E6 fast-policy implementation
+
+- Added `CandidatePolicy::Fast` and CLI spelling `--r2-mode=fast`. It executes
+  the existing zstd backend at level 3 (or lower if explicitly requested),
+  serializes existing HZ02 mode 2, and keeps forced-policy archive telemetry.
+- The fast policy is separate from full Auto and K=8 ratio routing. It is an
+  encoder policy for the 0.16-0.20 MB/s CPU target; its ratio must not be mixed
+  with the PAQ8px ratio claim.
+- The focused codec test now covers a 1 KiB Fast round trip. The required
+  32/64/128 KiB throughput and P50/P95 latency measurements are still pending.
+
+The focused Fast smoke passed with 1,024 input bytes, a 662-byte mode-2 HZ02
+archive, and byte-exact decode. Evidence is
+`results/smoke/r2-fast-1k-20260828/verification.json`; the rebuilt executable
+hash is `7B8388DB81FCA3994BCE112B7AA712B224CBBCF4C034DDA3765505113334C4FE`.
+
+The guarded `tools/run_silesia_experiment.ps1` now supports `auto-k8` and
+`fast`, passes `--block-size` for 32/64/128 KiB experiments, clamps Fast to
+zstd level 3, and checks Fast's actual serialized mode as `zstd`. Fast/32 KiB
+and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
+
+## 2026-08-28 target execution order
+
+- E5 is the next ratio-router proof: a held-out K=2/K=4/K=8 archive ledger
+  against full Auto, with tie-aware winner recall and complete-archive regret.
+  The current offline 32 KiB derivation is only a preview: 12/12 recalled
+  winners and 0-byte regret on the existing matrix, not held-out evidence.
+- E6 is the next fast-path proof: three warm timing repeats at 32, 64, and
+  128 KiB, reporting byte-exact decode, encode/decode MB/s, P50/P95 latency,
+  RAM, and complete archive bytes. The CPU target is >=0.16 MB/s in both
+  directions for every block size.
+- E3 is held separate: all 36 frozen Silesia prefixes must be processed by
+  PAQ8px v216 `-1` before an aggregate same-input ratio comparison exists.
+- OASum remains unmaterialized pending approval of its 1.065 GB test artifact
+  and CC-BY-SA-3.0 treatment; no Tencent coverage has been claimed.
+
+## 2026-08-28 E5 ablation and matrix tooling
+
+- Added encoder-only `auto-k2` and `auto-k4` policies. K=2 is Stored plus
+  generic PAQ8px SSE; K=4 adds zstd and detected PAQ8px SSE; K=8 remains the
+  class-conditioned policy. These are experiment cardinalities, not archive
+  modes and not promotion claims.
+- Added `candidate_modes=<mode-id>:<block-count>` and `full_oracle=0|1` to
+  HZ02 CLI statistics. Both are encoder telemetry only and are excluded from
+  HZ02 archive bytes.
+- The first new 1 KiB package failed before archive publication because its
+  telemetry assertion treated the planner's backend-order candidate array as
+  a BlockMode-ID array. The explicit mapping repair did not alter archive or
+  decoder code. The retained v2 smoke passed K=2/K=4/K=8 with candidate counts
+  2/4/8, identical 463-byte archives, and byte-exact SHA-256 reconstruction.
+  Evidence: `results/smoke/r2-shortlist-ablation-1k-20260828-v2/`.
+- Added `tools/run_r2_e5_e6_matrix.ps1`. Its AST parse and default list-only
+  plans passed. E5 plans 12 child packages and E6 plans 12; each full-scope
+  matrix would make 864 codec invocations. Runtime requires both
+  `-ListOnly:$false` and `-AuthorizeRuntimeExperiment` and is still unrun.
+- Current-build 1 KiB compatibility evidence also passed for Fast and HZ01:
+  Fast uses mode 2/zstd and a 662-byte HZ02 archive; HZ01 uses a 537-byte
+  archive. Both decoded SHA-256 values equal the shared input. The initial
+  recorder wrote the Fast record then stopped on HZ01's intentionally empty
+  encode stdout; the retained archive hashes are documented in
+  `results/smoke/r2-e5-e6-compat-1k-20260828-v1/verification-recovery.json`.
+- `docs/research/R2_IMPLEMENTATION_AUDIT_20260828.md` now provides a
+  requirement-to-evidence matrix. It makes no PAQ-ratio, CPU-throughput,
+  Tencent, GPU, or K=8-promotion claim until the corresponding runtime gates
+  are completed.

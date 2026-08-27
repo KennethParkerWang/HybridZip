@@ -456,6 +456,52 @@ void test_auto_selection(const std::filesystem::path& directory) {
             "Auto mode did not select stored for high-entropy data");
 }
 
+void test_auto_shortlist_selection(const std::filesystem::path& directory) {
+    struct ShortlistCase {
+        const char* name;
+        hz::r2::CandidatePolicy policy;
+        std::uint64_t candidate_count;
+    };
+    const std::array<ShortlistCase, 3> cases{{
+        {"auto-k2", hz::r2::CandidatePolicy::AutoK2, 2U},
+        {"auto-k4", hz::r2::CandidatePolicy::AutoK4, 4U},
+        {"auto-k8", hz::r2::CandidatePolicy::AutoK8, 8U},
+    }};
+    for (const ShortlistCase& shortlist : cases) {
+        hz::r2::CompressionOptions options{};
+        options.policy = shortlist.policy;
+        options.zstd_level = 3;
+        const auto result = round_trip(
+            directory, shortlist.name, pseudo_random_bytes(1024), options);
+        require(!result.full_oracle_evaluated,
+                "Shortlist was reported as a full oracle");
+        require(result.candidates_evaluated == shortlist.candidate_count,
+                "Shortlist did not materialize its configured candidate count");
+        const std::uint32_t recorded_candidates = std::accumulate(
+            result.candidate_blocks_by_mode.begin(),
+            result.candidate_blocks_by_mode.end(), 0U);
+        require(recorded_candidates == shortlist.candidate_count,
+                "Shortlist candidate telemetry has the wrong cardinality");
+        require(result.selected_candidate_bytes == result.archive_bytes,
+                "Shortlist selected-byte telemetry does not equal archive bytes");
+        require(result.oracle_candidate_bytes <= result.selected_candidate_bytes,
+                "Shortlist oracle exceeds selected archive bytes");
+    }
+}
+
+void test_fast_policy(const std::filesystem::path& directory) {
+    hz::r2::CompressionOptions options{};
+    options.policy = hz::r2::CandidatePolicy::Fast;
+    options.zstd_level = 19;
+
+    const auto fast = round_trip(
+        directory, "fast-policy", pseudo_random_bytes(1024), options);
+    require(fast.blocks_by_mode[2] == 1U,
+            "Fast policy did not serialize the existing zstd mode");
+    require(fast.selected_candidate_bytes == fast.archive_bytes,
+            "Fast selected-byte telemetry does not equal archive bytes");
+}
+
 void test_corrupt_archives(const std::filesystem::path& directory) {
     const std::vector<std::uint8_t> source_bytes =
         pseudo_random_bytes(128);
@@ -544,6 +590,8 @@ int main() {
         const TemporaryDirectory temporary;
         test_empty_and_forced_modes(temporary.path());
         test_auto_selection(temporary.path());
+        test_auto_shortlist_selection(temporary.path());
+        test_fast_policy(temporary.path());
         test_corrupt_archives(temporary.path());
         test_hz01_regression(temporary.path());
         std::cout << "r2_codec_tests: PASS\n";

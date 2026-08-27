@@ -1,5 +1,6 @@
 #include "app/cli.h"
 
+#include <array>
 #include <charconv>
 #include <cstdint>
 #include <filesystem>
@@ -20,7 +21,7 @@ void print_usage(std::ostream& output) {
     output << "Usage:\n\n"
               "  hybridzip c <input> <archive>\n"
               "  hybridzip c --profile=r2 "
-              "[--r2-mode=auto|stored|zstd|fse|lzma|lz4|kanzi-ans|lmic-arithmetic|delta-binary-packed-zstd|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] "
+              "[--r2-mode=auto|auto-k2|auto-k4|auto-k8|fast|stored|zstd|fse|lzma|lz4|kanzi-ans|lmic-arithmetic|delta-binary-packed-zstd|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
@@ -52,6 +53,18 @@ int parse_int(const std::string_view value, const char* option) {
 r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     if (value == "auto") {
         return r2::CandidatePolicy::Auto;
+    }
+    if (value == "auto-k2") {
+        return r2::CandidatePolicy::AutoK2;
+    }
+    if (value == "auto-k4") {
+        return r2::CandidatePolicy::AutoK4;
+    }
+    if (value == "auto-k8") {
+        return r2::CandidatePolicy::AutoK8;
+    }
+    if (value == "fast") {
+        return r2::CandidatePolicy::Fast;
     }
     if (value == "stored") {
         return r2::CandidatePolicy::StoredOnly;
@@ -163,6 +176,26 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     throw std::invalid_argument("Invalid --r2-mode");
 }
 
+void print_candidate_modes(
+    std::ostream& output,
+    const std::array<std::uint32_t, 43>& candidate_blocks_by_mode) {
+    output << " candidate_modes=";
+    bool first = true;
+    for (std::size_t mode = 0; mode < candidate_blocks_by_mode.size(); ++mode) {
+        if (candidate_blocks_by_mode[mode] == 0U) {
+            continue;
+        }
+        if (!first) {
+            output << ',';
+        }
+        output << mode << ':' << candidate_blocks_by_mode[mode];
+        first = false;
+    }
+    if (first) {
+        output << "none";
+    }
+}
+
 void print_r2_stats(const r2::CompressionStats& stats) {
     std::cout << "HZ02 input=" << stats.input_bytes
               << " archive=" << stats.archive_bytes
@@ -171,7 +204,9 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << " selected=" << stats.selected_candidate_bytes
               << " oracle=" << stats.oracle_candidate_bytes
               << " oracle_gap=" << stats.oracle_gap_bytes
-              << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd)="
+              << " full_oracle=" << (stats.full_oracle_evaluated ? 1 : 0);
+    print_candidate_modes(std::cout, stats.candidate_blocks_by_mode);
+    std::cout << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'

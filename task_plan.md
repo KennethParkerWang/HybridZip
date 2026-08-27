@@ -23,6 +23,167 @@ Status: research packet complete. No codec implementation or runtime
 experiment was started. The next implementation decision awaits the external
 research result and a fixed Tencent dataset identity/hardware target.
 
+## R2 Evidence-Gated Execution (2026-08-28)
+
+### Objective
+
+Turn the external research decision into measured R2 work without weakening
+HZ01 compatibility or confusing a router proposal with a demonstrated ratio or
+throughput result.
+
+### Targets
+
+- R0 - reproducibility: one frozen leading-prefix Silesia manifest covering
+  12 files x 32/64/128 KiB, with source and prefix SHA-256 identities.
+- R1 - fair ratio baseline: PAQ8px v216 `-1` and HybridZip consume exactly the
+  same manifest inputs. Complete archive bytes and byte-exact decoded hashes
+  are required before any comparison is made.
+- R2 - ratio router: K=8 candidate shortlist retains stored plus both observed
+  PAQ8px-SSE winners; it is compared with the 43-mode oracle on held-out
+  inputs using tie-aware winner recall and complete-archive regret.
+- R3 - CPU fast policy: use the existing zstd and reversible fast paths first,
+  then measure 32/64/128 KiB throughput and latency against the 0.16 MB/s CPU
+  floor. A fast result is not treated as a PAQ-ratio result.
+- R4 - Tencent/OASum acceptance: deferred until the owner explicitly approves
+  the 1.065 GB `test.jsonl` download and CC-BY-SA-3.0 handling.
+- R5 - GPU: deferred until a CPU reference fast path passes byte-exact gates or
+  is shown to miss the CPU target.
+
+### Execution Phases
+
+- [x] E0: Tag and push the pre-research implementation baseline as
+  `baseline-r2-20260828`.
+- [x] E1: Generate and validate the Silesia leading-prefix input manifest; add
+  a guarded PAQ8px runner that consumes only that manifest. The frozen manifest
+  is `bench/manifests/silesia-leading-32-64-128.tsv` (36 rows; SHA-256
+  `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`).
+- [x] E2: Execute one 32 KiB same-input HybridZip/PAQ8px smoke pair, then
+  inspect hashes and complete archive accounting before expanding coverage.
+  `dickens-leading-32k` used input SHA-256
+  `FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31`.
+  PAQ8px `-1` produced a 9,502-byte archive (2.319824 bpb) with a byte-exact
+  round-trip; the existing same-input current-hash HybridZip Auto archive is
+  9,598 bytes (2.343262 bpb). This is one smoke case only, not a corpus claim.
+- [ ] E3: Complete the authorized 36-case same-input Silesia baseline only
+  after E2 passes and its expected runtime is reported. Historical centred
+  `-1` runs took 700.176 codec seconds for 36 cases; this supports a 30-minute
+  leading-prefix runtime reservation but is not a ratio comparison.
+- [x] E4: Implement deterministic `BlockFeaturesV1` and a rule-only K=8
+  shortlist while retaining current full Auto as the oracle path.
+- [ ] E5: Measure K=2/K=4/K=8 recall, regret, candidate count, latency, and
+  memory on frozen inputs; only promote a shortlist that passes the gates.
+- [ ] E6: Establish `ENC_FAST_V1` from existing zstd/transform paths and
+  evaluate block-size and throughput targets.
+- [ ] E7: Stage OASum provenance and data only after explicit data/license
+  authorization; run the separate complete-corpus acceptance tier afterward.
+- [ ] E8: Consider block executor and GPU `LZ_RANS_V1` only after measured E6
+  results justify them.
+
+### Decisions
+
+- The external report proposed a new zstd donor/extension mode, but the local
+  source already vendors zstd and exposes raw/transform zstd HZ02 modes. E6
+  therefore begins with the current paths and `--zstd-level`, not a duplicate
+  donor import or a new archive mode.
+- No runtime corpus sweep is implicitly authorized by this plan. Each runner
+  defaults to a no-runtime listing and requires an explicit authorization
+  switch.
+- OASum is a prospective Tencent text/records corpus, not a downloaded or
+  accepted product corpus yet.
+
+### Status
+
+E1 and E2 are complete. The manifest/runner infrastructure passed PowerShell
+AST checks and a no-runtime `-ListOnly` preflight. E2 ran only PAQ8px encode
+and decode because the current-hash HybridZip Auto ledger already contains the
+same frozen 32 KiB bytes. E3 remains intentionally pending rather than
+starting a 36-case serial PAQ8px run without a dedicated authorization.
+
+## 2026-08-28 implementation checkpoint
+
+- [x] Freeze the external R2 experiment design and acceptance gates in
+  `docs/research/R2_EXPERIMENT_DESIGN_20260828.md`.
+- [x] E4 implementation: add encoder-only `auto-k8` policy with deterministic
+  integer byte features and a fixed eight-mode shortlist. HZ02 decoder-visible
+  mode IDs remain unchanged.
+- [x] E4 verification: build `hybridzip`, `hz_structure_routing_tests`, and
+  `hz_r2_codec_tests`; run only focused unit/smoke checks, including one 1 KiB
+  `auto-k8` round trip. No corpus sweep is authorized by this checkpoint.
+
+### E4 acceptance gates
+
+1. `auto` behavior and HZ01 decode remain unchanged.
+2. `auto-k8` exposes exactly eight requested modes for a nonempty block:
+   Stored, Zstd, both observed PAQ8px SSE modes, and four class-specific modes.
+3. The shortlist is deterministic and integer-feature based.
+4. A 1 KiB `auto-k8` archive decodes byte-for-byte.
+5. Full-43 recall/regret is not claimed until E5 is run on held-out inputs.
+
+E4 completed on 2026-08-28. `hz_structure_routing_tests` passed; the affected
+Release targets compiled and linked. The latest focused `auto-k8` smoke passed
+with a 1,024-byte input, 463-byte archive, eight materialized candidates, mode
+37 as winner, and byte-exact decode. Evidence is in
+`results/smoke/r2-auto-k8-1k-20260828-v3/verification.json`. The full
+`hz_r2_codec_tests` binary was rebuilt but not executed to respect the minimal
+runtime boundary.
+
+E6 implementation started on 2026-08-28: the encoder exposes `--r2-mode=fast`
+and reuses HZ02 zstd mode 2 with a level-3 cap. Its 1 KiB correctness gate is
+covered in `hz_r2_codec_tests` and the target has been rebuilt; the 32/64/128
+KiB throughput ledger remains pending.
+
+The 1 KiB Fast correctness gate also passed: 662-byte archive, mode 2
+(`zstd`), and byte-exact SHA-256 decode. Evidence is in
+`results/smoke/r2-fast-1k-20260828/verification.json`. No throughput claim is
+made from this small smoke.
+
+The guarded Silesia runner now accepts `auto-k8` and `fast`, records the
+selected internal block size, and validates 32/64/128 KiB block-count and
+forced-mode attribution. `-ListOnly` probes for Fast/32 KiB and Auto-K8/128
+KiB passed without starting a codec process.
+
+E5 ablation implementation completed on 2026-08-28. The encoder now accepts
+`auto-k2` and `auto-k4` alongside `auto-k8`, and stdout records
+`candidate_modes` plus the full-Auto indicator. The shared 1 KiB smoke passed
+with exactly 2/4/8 materialized modes, 463-byte archives, and byte-exact
+decode in `results/smoke/r2-shortlist-ablation-1k-20260828-v2/`.
+
+The first ablation smoke package (`...-v1`) was retained after a new telemetry
+assertion exposed an incorrect assumption: the planner's candidate-byte array
+uses backend construction order rather than BlockMode-ID order. The mapping is
+now explicit in `block_planner.cpp`; the non-overwriting v2 package passed.
+No archive-format or decoder behavior was changed by this repair.
+
+`tools/run_r2_e5_e6_matrix.ps1` now provides a guarded, non-overwriting E5/E6
+orchestrator. PowerShell AST and both full-scope `-ListOnly` plans passed with
+`runtime_started=false`; no corpus codec process was launched.
+
+- [x] Audit the current working tree against the evidence-gated objective in
+  `docs/research/R2_IMPLEMENTATION_AUDIT_20260828.md`. It confirms the exact
+  implementation boundary and keeps E3/E5/E6 acceptance claims pending.
+
+The current executable also passed the focused Fast and HZ01 compatibility
+smokes on the shared 1 KiB input. Fast retained mode 2 and a 662-byte archive;
+HZ01 retained a 537-byte archive; both decoded hashes equal the input. The
+first recorder stopped only because HZ01 intentionally emits no encode stdout.
+`verification-recovery.json` records the retained artifact hashes without a
+second codec run.
+
+### Next execution checkpoint
+
+- [ ] Commit and push the R2 K=8/Fast implementation milestone with its
+  source, frozen manifest, experiment design, and small metadata-only evidence.
+- [ ] E5: run the non-overwriting held-out K=2/K=4/K=8 ledger, comparing each
+  shortlist with the full Auto archive-byte oracle. Promotion requires at
+  least 99.5% tie-aware winner recall and at most 0.02% aggregate regret.
+- [ ] E6: run three retained Fast-policy timing repeats at each frozen block
+  size after warmup; require byte-exact decode, report P50/P95 and peak RAM,
+  and test the 0.16 MB/s CPU floor independently for encode and decode.
+- [ ] E3: complete the independent 36-case same-input PAQ8px v216 `-1`
+  baseline before calculating any aggregate HybridZip/PAQ ratio comparison.
+- [ ] E7: obtain explicit owner approval before materializing OASum or making
+  a Tencent-dataset coverage claim.
+
 ## Phases
 
 - [x] Phase 1: Record current state and preserve the existing R2 plan.

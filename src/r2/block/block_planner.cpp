@@ -50,6 +50,7 @@
 #include "r2/representation/blosc_delta_transform.h"
 #include "r2/representation/delta_of_delta_transform.h"
 #include "r2/representation/delta_binary_packed_transform.h"
+#include "r2/routing/mode_ranker.h"
 
 namespace hz::r2 {
 namespace {
@@ -60,6 +61,7 @@ void consider(BlockDecision& decision,
               const EntropyKind entropy,
               std::vector<std::uint8_t> payload,
               std::vector<std::uint8_t> transform_metadata = {}) {
+    ++decision.candidate_blocks_by_mode[static_cast<std::size_t>(mode)];
     if (payload.size() + transform_metadata.size() <
         decision.payload.size() + decision.transform_metadata.size()) {
         decision.mode = mode;
@@ -181,6 +183,16 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     const bool automatic = options_.policy == CandidatePolicy::Auto;
+    const bool shortlisted = options_.policy == CandidatePolicy::AutoK2 ||
+        options_.policy == CandidatePolicy::AutoK4 ||
+        options_.policy == CandidatePolicy::AutoK8;
+    const std::uint8_t shortlist_size =
+        options_.policy == CandidatePolicy::AutoK2 ? 2U :
+        options_.policy == CandidatePolicy::AutoK4 ? 4U : 8U;
+    if (automatic || shortlisted) {
+        decision.candidate_blocks_by_mode[
+            static_cast<std::size_t>(BlockMode::Stored)] = 1U;
+    }
     StructureFeatures structure{};
     RepresentationActivation activation{};
     std::vector<bool> family_active;
@@ -223,6 +235,12 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
         activation.delta_binary_packed_zstd =
             activation.delta_binary_packed_zstd && family_active[4];
     }
+
+    const std::vector<BlockMode> shortlist_modes = shortlisted
+        ? rank_modes(input, shortlist_size) : std::vector<BlockMode>{};
+    const auto shortlist_has = [&](const BlockMode mode) noexcept {
+        return shortlisted && shortlist_contains(shortlist_modes, mode);
+    };
 
     const bool auto_statistical = automatic && family_active[0];
     const bool auto_match = automatic && family_active[1];
@@ -323,7 +341,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::Paq8pxSimilaritySseOnly ||
-        auto_match) {
+        auto_match || shortlist_has(BlockMode::Paq8pxSimilaritySse)) {
         const Paq8pxSimilaritySseBackend similarity_sse;
         std::vector<std::uint8_t> payload = similarity_sse.encode(input);
         decision.paq8px_similarity_sse_candidate_bytes = payload.size();
@@ -339,7 +357,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::Paq8pxGenericSseOnly ||
-        auto_match) {
+        auto_match || shortlist_has(BlockMode::Paq8pxGenericSse)) {
         const Paq8pxGenericSseBackend generic_sse;
         std::vector<std::uint8_t> payload = generic_sse.encode(input);
         decision.paq8px_generic_sse_candidate_bytes = payload.size();
@@ -355,7 +373,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::Paq8pxDetectedSseOnly ||
-        auto_match) {
+        auto_match || shortlist_has(BlockMode::Paq8pxDetectedSse)) {
         const Paq8pxDetectedSseBackend detected_sse;
         std::vector<std::uint8_t> payload = detected_sse.encode(input);
         decision.paq8px_detected_sse_candidate_bytes = payload.size();
@@ -371,11 +389,15 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::ZstdOnly ||
-        auto_lz) {
-        const ZstdBackend zstd(options_.zstd_level);
+        options_.policy == CandidatePolicy::Fast || auto_lz ||
+        shortlist_has(BlockMode::Zstd)) {
+        const int zstd_level = options_.policy == CandidatePolicy::Fast
+            ? std::min(options_.zstd_level, 3) : options_.zstd_level;
+        const ZstdBackend zstd(zstd_level);
         std::vector<std::uint8_t> payload = zstd.encode(input);
         decision.zstd_candidate_bytes = payload.size();
-        if (options_.policy == CandidatePolicy::ZstdOnly) {
+        if (options_.policy == CandidatePolicy::ZstdOnly ||
+            options_.policy == CandidatePolicy::Fast) {
             decision.mode = BlockMode::Zstd;
             decision.entropy = EntropyKind::ZstdFse;
             decision.payload = std::move(payload);
@@ -386,8 +408,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
                  std::move(payload));
     }
 
-    if (options_.policy == CandidatePolicy::FseOnly ||
-        auto_lz) {
+    if (options_.policy == CandidatePolicy::FseOnly || auto_lz ||
+        shortlist_has(BlockMode::Fse)) {
         const FseBackend fse;
         std::vector<std::uint8_t> payload = fse.encode(input);
         decision.fse_candidate_bytes = payload.size();
@@ -401,8 +423,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
                  std::move(payload));
     }
 
-    if (options_.policy == CandidatePolicy::LzmaOnly ||
-        auto_lz) {
+    if (options_.policy == CandidatePolicy::LzmaOnly || auto_lz ||
+        shortlist_has(BlockMode::Lzma)) {
         const LzmaBackend lzma(options_.lzma_level,
                                options_.lzma_dictionary_size);
         std::vector<std::uint8_t> payload = lzma.encode(input);
@@ -444,7 +466,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
                  EntropyKind::KanziAns, std::move(payload));
     }
 
-    if (options_.policy == CandidatePolicy::Ppmd7Only || auto_lz) {
+    if (options_.policy == CandidatePolicy::Ppmd7Only || auto_lz ||
+        shortlist_has(BlockMode::Ppmd7)) {
         const Ppmd7Backend ppmd7;
         std::vector<std::uint8_t> payload = ppmd7.encode(input);
         decision.ppmd7_candidate_bytes = payload.size();
@@ -458,7 +481,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
                  EntropyKind::Ppmd7, std::move(payload));
     }
 
-    if (options_.policy == CandidatePolicy::Ppmd8Only || auto_lz) {
+    if (options_.policy == CandidatePolicy::Ppmd8Only || auto_lz ||
+        shortlist_has(BlockMode::Ppmd8)) {
         const Ppmd8Backend ppmd8;
         std::vector<std::uint8_t> payload = ppmd8.encode(input);
         decision.ppmd8_candidate_bytes = payload.size();
@@ -502,7 +526,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::BwtZstdOnly ||
-        (automatic && activation.bwt_zstd)) {
+        (automatic && activation.bwt_zstd) || shortlist_has(BlockMode::BwtZstd)) {
         const BwtTransform bwt;
         const TransformResult transformed = bwt.forward(input);
         const ZstdBackend zstd(options_.zstd_level);
@@ -574,7 +598,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::X86BcjZstdOnly ||
-        (automatic && activation.x86_bcj_zstd)) {
+        (automatic && activation.x86_bcj_zstd) ||
+        shortlist_has(BlockMode::X86BcjZstd)) {
         const TransformResult bcj = XzX86BcjTransform().forward(input);
         std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(ByteView(bcj.bytes));
         decision.x86_bcj_zstd_candidate_bytes = payload.size();
@@ -590,7 +615,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::ShuffleZstdOnly ||
-        (automatic && activation.shuffle_zstd)) {
+        (automatic && activation.shuffle_zstd) ||
+        shortlist_has(BlockMode::ShuffleZstd)) {
         std::vector<std::uint8_t> best_payload;
         std::vector<std::uint8_t> best_transformed;
         std::uint8_t best_width = 0;
@@ -645,7 +671,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::DeltaZstdOnly ||
-        (automatic && activation.delta_zstd)) {
+        (automatic && activation.delta_zstd) || shortlist_has(BlockMode::DeltaZstd)) {
         std::vector<std::uint8_t> best_payload;
         std::uint8_t best_width = 0;
         const BloscDeltaTransform delta;
@@ -796,7 +822,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::BrotliTextOnly ||
-        (automatic && activation.brotli_text)) {
+        (automatic && activation.brotli_text) ||
+        shortlist_has(BlockMode::BrotliText)) {
         const BrotliTextTransform brotli;
         TransformResult encoded = brotli.forward(input);
         decision.brotli_text_candidate_bytes = encoded.bytes.size();
@@ -964,7 +991,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     }
 
     if (options_.policy == CandidatePolicy::Bcj2ZstdOnly ||
-        (automatic && activation.x86_bcj_zstd)) {
+        (automatic && activation.x86_bcj_zstd) ||
+        shortlist_has(BlockMode::Bcj2Zstd)) {
         const TransformResult transformed = Bcj2Transform().forward(input);
         std::vector<std::uint8_t> payload = ZstdBackend(options_.zstd_level).encode(
             ByteView(transformed.bytes));
@@ -1147,11 +1175,67 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
         decision.lz4_candidate_bytes,
         decision.kanzi_ans_candidate_bytes,
         decision.delta_binary_packed_zstd_candidate_bytes};
+    // Candidate byte fields are grouped by backend construction order, not by
+    // decoder-visible BlockMode ID. Keep this mapping explicit so encoder
+    // telemetry cannot silently relabel a materialized candidate.
+    const std::array<BlockMode, 43> candidate_mode_ids{
+        BlockMode::Stored,
+        BlockMode::PredictiveV1,
+        BlockMode::Zstd,
+        BlockMode::Fse,
+        BlockMode::Lzma,
+        BlockMode::DonorMatchPredictive,
+        BlockMode::Paq8pxApmPredictive,
+        BlockMode::Paq8pxRecordModel,
+        BlockMode::Paq8pxLinearPrediction,
+        BlockMode::BwtZstd,
+        BlockMode::BwtMtfZstd,
+        BlockMode::BwtRltZstd,
+        BlockMode::X86BcjZstd,
+        BlockMode::ShuffleZstd,
+        BlockMode::BitshuffleZstd,
+        BlockMode::DeltaZstd,
+        BlockMode::DeltaOfDeltaZstd,
+        BlockMode::FastPfor,
+        BlockMode::Rans,
+        BlockMode::Bcj2Zstd,
+        BlockMode::RecordTransposeZstd,
+        BlockMode::JpegLs,
+        BlockMode::FlacResidual,
+        BlockMode::BrotliText,
+        BlockMode::CmixWordDictionaryZstd,
+        BlockMode::NeuralLstm,
+        BlockMode::SharedNeuralLstm,
+        BlockMode::LstmCompress,
+        BlockMode::BgptSharedPrior,
+        BlockMode::JaxCompressPortable,
+        BlockMode::LmicArithmetic,
+        BlockMode::Ppmd7,
+        BlockMode::Ppmd8,
+        BlockMode::Zpaq,
+        BlockMode::Ctw,
+        BlockMode::Paq8pxSimilarity,
+        BlockMode::Paq8pxSimilaritySse,
+        BlockMode::Paq8pxGenericSse,
+        BlockMode::Paq8pxDetectedSse,
+        BlockMode::Wavpack,
+        BlockMode::Lz4,
+        BlockMode::KanziAns,
+        BlockMode::DeltaBinaryPackedZstd};
     std::size_t oracle = std::numeric_limits<std::size_t>::max();
-    for (const auto& candidate : candidates) {
+    for (std::size_t mode_index = 0; mode_index < candidates.size();
+         ++mode_index) {
+        const auto& candidate = candidates[mode_index];
         if (candidate.has_value()) {
             ++decision.candidates_evaluated;
             oracle = std::min(oracle, *candidate);
+            const std::size_t candidate_mode_index = static_cast<std::size_t>(
+                candidate_mode_ids[mode_index]);
+            if ((automatic || shortlisted) &&
+                decision.candidate_blocks_by_mode[candidate_mode_index] != 1U) {
+                throw std::logic_error(
+                    "R2 shortlist candidate accounting mismatch");
+            }
         }
     }
     constexpr std::size_t kBlockArchiveOverhead =

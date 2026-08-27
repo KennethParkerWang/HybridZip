@@ -585,6 +585,7 @@ CompressionStats compress_file(const std::filesystem::path& input,
     }
 
     CompressionStats stats{};
+    stats.full_oracle_evaluated = options.policy == CandidatePolicy::Auto;
     stats.input_bytes = static_cast<std::uint64_t>(reported_size);
     stats.selected_candidate_bytes = kR2ArchiveHeaderSize;
     stats.oracle_candidate_bytes = kR2ArchiveHeaderSize;
@@ -628,7 +629,10 @@ CompressionStats compress_file(const std::filesystem::path& input,
                 throw std::runtime_error("HZ02 block payload is too large");
             }
 
-            if (options.policy != CandidatePolicy::Auto) {
+            if (options.policy != CandidatePolicy::Auto &&
+                options.policy != CandidatePolicy::AutoK2 &&
+                options.policy != CandidatePolicy::AutoK4 &&
+                options.policy != CandidatePolicy::AutoK8) {
                 const std::size_t serialized_block_bytes =
                     kR2BlockHeaderSize + kR2BlockChecksumSize +
                     decision.transform_metadata.size() + decision.payload.size();
@@ -666,6 +670,11 @@ CompressionStats compress_file(const std::filesystem::path& input,
             }
 
             ++stats.blocks_by_mode[static_cast<std::size_t>(decision.mode)];
+            for (std::size_t mode = 0;
+                 mode < stats.candidate_blocks_by_mode.size(); ++mode) {
+                stats.candidate_blocks_by_mode[mode] +=
+                    decision.candidate_blocks_by_mode[mode];
+            }
             stats.payload_bytes += decision.payload.size();
             stats.candidates_evaluated += decision.candidates_evaluated;
             stats.selected_candidate_bytes += decision.selected_candidate_bytes;

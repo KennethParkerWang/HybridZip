@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -13,6 +14,10 @@ namespace hz::r2 {
 
 enum class CandidatePolicy {
     Auto,
+    AutoK2,
+    AutoK4,
+    AutoK8,
+    Fast,
     StoredOnly,
     PredictiveV1Only,
     ZstdOnly,
@@ -119,6 +124,8 @@ struct BlockDecision {
     // candidate and the evaluated oracle; forced modes are filled from the
     // final block framing by the codec.
     std::uint32_t candidates_evaluated = 0;
+    // Encoder telemetry only. It is not serialized into HZ02 archives.
+    std::array<std::uint32_t, 43> candidate_blocks_by_mode{};
     std::size_t selected_candidate_bytes = 0;
     std::size_t oracle_candidate_bytes = 0;
     std::size_t oracle_gap_bytes = 0;

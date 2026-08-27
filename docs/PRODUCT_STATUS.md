@@ -1,6 +1,6 @@
 # HybridZip Product Status
 
-Status date: 2026-08-27
+Status date: 2026-08-28
 
 ## R2 Current Status
 
@@ -9,8 +9,30 @@ HZ01/PROFILE_V1 decoder path. HZ02 currently exposes block modes `0..42` (43
 candidate paths), including representation transforms, LZ/coding donors,
 specialist PAQ8px graphs, neural profiles, router activation, and multi-coder
 selection. The Release executable and the R2 codec test executable compile and
-link successfully. The active rebuilt Release hash is
-`CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191`.
+link successfully. The current working-tree Release hash is
+`E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003`.
+The completed current-hash ledger below remains bound to its earlier
+`CC6DA840...` executable and is not silently mixed with this build.
+
+The encoder now also exposes the experimental `--r2-mode=auto-k2`,
+`auto-k4`, and `auto-k8` policies. They use deterministic integer byte
+features while leaving full `auto`, the archive format, and decoder mode IDs
+unchanged. A shared random 1 KiB smoke materialized exactly 2/4/8 candidates,
+respectively; every policy selected the 463-byte mode-36
+`paq8px-generic-sse` archive and decoded byte-exactly. This is an
+implementation gate, not a held-out recall/regret or corpus-level ratio
+result; those remain pending E5.
+
+An experimental `--r2-mode=fast` policy is also available for E6 throughput
+work. It reuses HZ02 mode 2 with zstd level 3 and is not a ratio-oracle claim.
+`tools/run_r2_e5_e6_matrix.ps1` supplies guarded non-overwriting E5/E6 matrix
+execution; its list-only plans pass, while full runtime remains unstarted.
+
+On the current working-tree executable, a separate shared random 1 KiB smoke
+also preserved both contracts: Fast serialized existing mode 2 (`zstd`) into
+662 bytes, and HZ01 produced a 537-byte archive. Both decoded SHA-256 values
+equal the 1 KiB input. Evidence is
+`results/smoke/r2-e5-e6-compat-1k-20260828-v1/verification-recovery.json`.
 
 The prior evidence Release
 `FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`

@@ -1,0 +1,27 @@
+{
+  "experiment": "R2-E5-E6-compatibility-1k-v1",
+  "status": "COMPLETE_WITH_RECOVERED_HZ01_RECORD",
+  "input_path": "results/smoke/r2-auto-router-mr-1k-20260821/mr-1k.bin",
+  "input_bytes": 1024,
+  "input_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+  "codec_path": "build/Release/hybridzip.exe",
+  "codec_sha256": "E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003",
+  "fast": {
+    "archive_path": "results/smoke/r2-e5-e6-compat-1k-20260828-v1/fast.hz2",
+    "archive_bytes": 662,
+    "archive_sha256": "4BCF9CC6DB28F3548380C49F6CAC30FA04FC246E444BB9EFC9F61ADFE8304A58",
+    "selected_mode_id": 2,
+    "selected_mode": "zstd",
+    "decoded_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+    "byte_exact": true
+  },
+  "hz01": {
+    "archive_path": "results/smoke/r2-e5-e6-compat-1k-20260828-v1/hz01.hz",
+    "archive_bytes": 537,
+    "archive_sha256": "4D6623E1EFD3BEAC815882A64D900D5C528469E534641F36DDD63116128D6CAA",
+    "decoded_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+    "byte_exact": true
+  },
+  "recovery_note": "The original recorder stopped after Fast because HZ01 encode stdout is intentionally empty and the recorder called Trim() on a null value. Both codec commands had already exited successfully; this record was rebuilt from the retained archive and decoded-file hashes without rerunning either codec command.",
+  "scope_boundary": "Focused 1 KiB compatibility smoke; not a throughput, corpus, or router-regret result."
+}

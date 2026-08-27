@@ -1,0 +1,9 @@
+{
+  "profile": "fast",
+  "archive_bytes": 662,
+  "archive_sha256": "4BCF9CC6DB28F3548380C49F6CAC30FA04FC246E444BB9EFC9F61ADFE8304A58",
+  "decoded_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+  "byte_exact": true,
+  "codec_sha256": "E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003",
+  "encode_stdout": "HZ02 input=1024 archive=662 payload=602 candidates=0 selected=662 oracle=662 oracle_gap=0 full_oracle=0 candidate_modes=none blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd)=0/0/1/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0"
+}
