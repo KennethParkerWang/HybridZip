@@ -820,7 +820,7 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   exit code 0 and recovered 1,024 transformed bytes. Its transformed-byte
   SHA-256 is `816CCD294309C281D0BD6D1772284E08FE28F6F26F1ABB6B7FE64A33D27D7924`.
 - Evidence is retained under
-  `results/smoke/r2-fast-k4-xordelta-1k-20260828-v1/verification.json`.
+  `results/smoke/r2-fast-k4-counter-1k-20260828-v1/verification.json`.
 - This is a correctness/dispatch gate only. The previous 432-row E6 package
   remains the mode-2 Fast baseline; no post-change corpus throughput claim is
   made until a new E6 matrix is run.

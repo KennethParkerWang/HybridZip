@@ -43,7 +43,7 @@ evaluated exactly four candidates, selected Mode 43, and selected extension
 `transform_id=2` (bitshuffle, width 2). The complete archive is 159 bytes;
 HybridZip decoded it byte-for-byte and external zstd decoded the 94-byte
 extension frame to 1,024 transformed bytes. Evidence is
-`results/smoke/r2-fast-k4-xordelta-1k-20260828-v1/verification.json`.
+`results/smoke/r2-fast-k4-counter-1k-20260828-v1/verification.json`.
 
 The prior evidence Release
 `FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`
