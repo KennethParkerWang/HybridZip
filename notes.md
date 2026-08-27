@@ -694,3 +694,78 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   requirement-to-evidence matrix. It makes no PAQ-ratio, CPU-throughput,
   Tencent, GPU, or K=8-promotion claim until the corresponding runtime gates
   are completed.
+
+## 2026-08-28 attachment-driven execution record
+
+### Source read
+
+- User-provided decision text:
+  `C:/Users/Administrator/.codex/attachments/b96760cb-802c-4f54-b886-1fce9454f953/pasted-text.txt`
+  (1,053 lines) was read in full.
+- Its fixed direction is one HZ02 archive contract with `ENC_RATIO_V1`,
+  `ENC_FAST_V1`, and oracle-only full portfolio evaluation. It explicitly
+  rejects treating a PAQ-heavy ratio policy as evidence of the CPU target.
+
+### Current implementation versus decision
+
+- Implemented now: one HZ02 container; HZ01 compatibility; 43 existing HZ02
+  modes; full Auto; encoder-only K=2/K=4/K=8 policies; Fast policy using
+  existing zstd mode 2; guarded E3/E5/E6 runners.
+- Not yet implemented: the specified 28-feature fixed-point ranker and frozen
+  2,644-byte model; `MODE_FAST_EXT_V1`; transform selection within Fast;
+  independent-block executor; CPU reference `LZ_RANS_V1`; GPU path.
+- Current zstd provenance is version 1.6.0 under `third_party/zstd`; it is
+  not the decision's requested v1.5.7 pin. Keep measured Fast data labelled
+  with the current executable hash and do not call it v1.5.7 acceptance.
+
+### Measurement decisions
+
+- E3 and E6 are allowed to run on the frozen Tier-A Silesia inputs. E3 uses
+  PAQ8px v216 `-1` on all 36 leading prefixes. E6 uses one warmup plus three
+  retained repeats for the existing Fast policy at every 32/64/128 KiB
+  input/block-size pair.
+- E5 is intentionally sequenced after E3/E6. Its 864 encode/decode
+  invocations include full Auto and therefore repeatedly materialize PAQ
+  candidates; co-running it would confound both timing and machine load.
+- OASum remains unmaterialized. The decision's 1.065 GB test artifact and
+  CC-BY-SA-3.0 redistribution boundary require a separate owner approval.
+
+### E6 result
+
+- Completed package:
+  `results/experiments/hybridzip-r2-e6-fast-full-20260828-retry1/`.
+- Current executable SHA-256:
+  `E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003`.
+- 432/432 rows are `COMPLETE/PASS`: 108 warmups and 324 retained timing
+  measurements. All nine input-scope/internal-block-size cells meet the
+  0.16 MB/s CPU floor; minimum encode/decode rates are 0.6977/0.6476 MB/s.
+- This is a mode-2 zstd 1.6.0 Fast baseline. It does not establish the
+  attachment's Fast K=4, extension-mode, transform, block-executor, or GPU
+  requirements.
+
+### E3 result
+
+- Completed package:
+  `results/experiments/paq8px-v216-level1-silesia-leading-e3-20260828/`.
+- 36/36 rows are COMPLETE/PASS. All manifest prefix/input/decoded identities
+  match; all codec exit codes are zero. E3 exactly reproduced the E2 Dickens
+  32 KiB archive (9,502 bytes and its SHA-256).
+- Aggregate PAQ complete archive bytes are 97,555 / 182,710 / 342,298 at
+  32/64/128 KiB input scopes, or 1.984762 / 1.858622 / 1.741018 bpb.
+- Across all 36 inputs, PAQ produced 622,563 archive bytes from 2,752,512
+  input bytes (1.809440 bpb). Its total encode/decode time was 323.025 /
+  323.464 seconds and maximum sampled RAM was 1,147.49 MiB.
+- The historical current-hash HybridZip 32 KiB Auto ledger is 99,720 bytes
+  on the same 393,216 input bytes. PAQ's current same-input total is 97,555,
+  a 2,165-byte (2.1711%) advantage. This is a ratio gap, not a claim about
+  the new working-tree executable or 64/128 KiB HybridZip until E5 runs.
+
+### Matrix recovery
+
+- `tools/run_r2_e5_e6_matrix.ps1` now accepts `-Resume`. It validates the
+  experiment ID, stage, codec path/hash, dataset path, files, scopes, block
+  sizes, policies, and repeats before it resumes any child package.
+- A complete package is read-only validated and returned without invoking a
+  codec. The completed E6 package passed this check while its
+  `matrix_rows.csv` SHA-256 remained
+  `671E3C42E8C678FB2D05E94030C6CA626AEC6BD7848AF76765DD0D3D86462D0C`.

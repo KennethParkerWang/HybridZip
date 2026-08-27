@@ -1,0 +1,11 @@
+{
+  "acceptance_claim": false,
+  "boundary": "Offline derivation; not held-out runtime evidence.",
+  "cases": 12,
+  "regret_percent": 0.20056157240272765,
+  "scope": "existing current-hash 12-file leading 32 KiB ledger",
+  "status": "PREVIEW",
+  "total_oracle_bytes": 99720,
+  "total_regret_bytes": 200,
+  "winner_recall": 0.4166666666666667
+}

@@ -10,14 +10,14 @@ passing 1 KiB smoke proves only the named path can round-trip that input.
 
 | Requirement | Current state | Authoritative evidence | What remains |
 | --- | --- | --- | --- |
-| Same-input Silesia protocol | Implemented | `bench/manifests/silesia-leading-32-64-128.tsv`: 36 prefixes, SHA-256 `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D` | Execute the remaining cases for each planned comparator. |
-| PAQ8px v216 `-1` baseline | Runner and one case complete | `tools/run_paq8px_manifest_experiment.ps1`; E2 `dickens-leading-32k`: 9,502 bytes, exact round-trip | E3: 36 same-input cases before an aggregate PAQ comparison. |
+| Same-input Silesia protocol | Implemented and exercised | `bench/manifests/silesia-leading-32-64-128.tsv`: 36 prefixes, SHA-256 `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`; E3 package has all 36 matching input/decoded hashes | Execute the corresponding current HybridZip ratio cases. |
+| PAQ8px v216 `-1` baseline | Complete | `results/experiments/paq8px-v216-level1-silesia-leading-e3-20260828/`: 36/36 COMPLETE/PASS, 622,563 archive bytes / 2,752,512 input bytes | Current HybridZip comparisons at all three scopes remain pending. |
 | K=8 ratio router | Implemented | `src/r2/routing/block_features.*`, `mode_ranker.*`, `block_planner.cpp`; CLI `auto-k8` | E5 held-out archive/regret measurements. |
 | K=2/K=4 ablations | Implemented, ablation only | CLI `auto-k2`/`auto-k4`; current 1 KiB telemetry shows 2/4/8 materialized modes | No policy promotion from this smoke. |
 | Candidate accounting | Implemented and guarded | `candidate_modes=<id>:<count>` telemetry; explicit backend-order to BlockMode mapping in `block_planner.cpp` | E5 runtime rows and a matching forced-mode oracle are needed for tie-aware recall. |
-| CPU Fast policy | Implemented | CLI `fast`, existing HZ02 mode 2, zstd level 3 cap | E6 warmup plus 3 retained repeats at 32/64/128 KiB. |
+| CPU Fast policy | Measured current-build baseline | `results/experiments/hybridzip-r2-e6-fast-full-20260828-retry1/`: 432/432 byte-exact rows, 324 retained rows, all nine cells above 0.16 MB/s | Fast K=4/extension, transforms, and block parallelism remain unimplemented. |
 | HZ01 compatibility | Current-build 1 KiB byte-exact gate | `results/smoke/r2-e5-e6-compat-1k-20260828-v1/verification-recovery.json`: 537-byte archive, exact decoded SHA-256 | Larger compatibility regression remains outside the current minimal-test boundary. |
-| E5/E6 runtime protocol | Implemented, unrun | `tools/run_r2_e5_e6_matrix.ps1`; AST and list-only plans pass | Explicit runtime authorization is required. |
+| E5/E6 runtime protocol | E6 complete; E5 pending | `tools/run_r2_e5_e6_matrix.ps1`; E6 package and summary; runner supports non-overwriting recovery | E5 full Auto versus K=2/K=4/K=8 measurement and forced-oracle recall evidence. |
 
 ## Current Small-Input Gates
 
@@ -62,14 +62,20 @@ its throughput and percentile summary.
 ## Conclusions Not Yet Supported
 
 - HybridZip does not yet have a complete same-input aggregate comparison with
-  PAQ8px v216 `-1`.
+  PAQ8px v216 `-1` on the current executable at all three scopes. The
+  historical 32 KiB Auto ledger is 2,165 bytes larger than E3 PAQ, but it is
+  not a current-build 64/128 KiB comparison.
 - K=8 has not passed its held-out 99.5% recall and 0.02% regret gates.
-- The CPU 0.16 MB/s target has not been measured at 32/64/128 KiB.
+- The current Fast baseline meets the CPU 0.16 MB/s floor at all measured
+  32/64/128 KiB input/block-size cells, but this does not prove the requested
+  extension-mode or GPU targets.
 - Tencent/OASum coverage, GPU throughput, and final dual-corpus claims remain
   unproven.
 
-## Next Authorized Work
+## Next Work
 
-After the staged implementation is committed, the next runtime action is E5
-or E6 only when explicitly authorized. E3 remains an independent serial PAQ
-baseline and must not be folded into router or Fast results.
+E5 is the remaining current-router runtime gate. It must run in a dedicated
+window because full Auto materializes PAQ candidates. The matrix runner now
+resumes compatible incomplete packages and validates completed packages
+without re-running codecs. E3 remains an independent PAQ baseline and must
+not be folded into router or Fast results.

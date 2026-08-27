@@ -1,0 +1,132 @@
+[1/44] auto: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-auto)
+警告: [1/44] auto: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[2/44] stored: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-stored)
+警告: [2/44] stored: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[3/44] predictive: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-predictive)
+警告: [3/44] predictive: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[4/44] zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-zstd)
+警告: [4/44] zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[5/44] fse: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-fse)
+警告: [5/44] fse: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[6/44] lzma: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-lzma)
+警告: [6/44] lzma: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[7/44] donor-match: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-donor-match)
+警告: [7/44] donor-match: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[8/44] bwt-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-bwt-zstd)
+警告: [8/44] bwt-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[9/44] bwt-mtf-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-bwt-mtf-zstd)
+警告: [9/44] bwt-mtf-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[10/44] bwt-rlt-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-bwt-rlt-zstd)
+警告: [10/44] bwt-rlt-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[11/44] x86-bcj-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-x86-bcj-zstd)
+警告: [11/44] x86-bcj-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[12/44] shuffle-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-shuffle-zstd)
+警告: [12/44] shuffle-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[13/44] bitshuffle-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-bitshuffle-zstd)
+警告: [13/44] bitshuffle-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[14/44] delta-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-delta-zstd)
+警告: [14/44] delta-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[15/44] fastpfor: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-fastpfor)
+警告: [15/44] fastpfor: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[16/44] rans: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-rans)
+警告: [16/44] rans: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[17/44] bcj2-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-bcj2-zstd)
+警告: [17/44] bcj2-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[18/44] record-transpose-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-record-transpose-zstd)
+警告: [18/44] record-transpose-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[19/44] jpegls: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-jpegls)
+警告: [19/44] jpegls: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[20/44] flac-residual: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-flac-residual)
+警告: [20/44] flac-residual: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[21/44] brotli-text: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-brotli-text)
+警告: [21/44] brotli-text: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[22/44] cmix-word-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-cmix-word-zstd)
+警告: [22/44] cmix-word-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[23/44] neural-lstm: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-neural-lstm)
+警告: [23/44] neural-lstm: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[24/44] shared-neural-lstm: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-shared-neural-lstm)
+警告: [24/44] shared-neural-lstm: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[25/44] lstm-compress: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-lstm-compress)
+警告: [25/44] lstm-compress: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[26/44] delta-of-delta-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-delta-of-delta-zstd)
+警告: [26/44] delta-of-delta-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[27/44] bgpt-shared-prior: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-bgpt-shared-prior)
+警告: [27/44] bgpt-shared-prior: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[28/44] jax-compress-portable: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-jax-compress-portable)
+警告: [28/44] jax-compress-portable: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[29/44] ppmd7: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-ppmd7)
+警告: [29/44] ppmd7: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[30/44] ppmd8: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-ppmd8)
+警告: [30/44] ppmd8: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[31/44] zpaq: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-zpaq)
+警告: [31/44] zpaq: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[32/44] ctw: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-ctw)
+警告: [32/44] ctw: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[33/44] paq8px-apm: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-apm)
+警告: [33/44] paq8px-apm: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[34/44] paq8px-record-model: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-record-model)
+警告: [34/44] paq8px-record-model: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[35/44] paq8px-linear-prediction: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-linear-prediction)
+警告: [35/44] paq8px-linear-prediction: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[36/44] paq8px-similarity: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-similarity)
+警告: [36/44] paq8px-similarity: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[37/44] paq8px-similarity-sse: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-similarity-sse)
+警告: [37/44] paq8px-similarity-sse: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[38/44] paq8px-generic-sse: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-generic-sse)
+警告: [38/44] paq8px-generic-sse: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[39/44] paq8px-detected-sse: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-paq8px-detected-sse)
+警告: [39/44] paq8px-detected-sse: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[40/44] wavpack: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-wavpack)
+警告: [40/44] wavpack: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[41/44] lz4: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-lz4)
+警告: [41/44] lz4: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[42/44] kanzi-ans: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-kanzi-ans)
+警告: [42/44] kanzi-ans: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[43/44] lmic-arithmetic: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-lmic-arithmetic)
+警告: [43/44] lmic-arithmetic: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+[44/44] delta-binary-packed-zstd: starting (hybridzip-r2-currenthash-cc6d-20260827-r2-delta-binary-packed-zstd)
+警告: [44/44] delta-binary-packed-zstd: failed: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。

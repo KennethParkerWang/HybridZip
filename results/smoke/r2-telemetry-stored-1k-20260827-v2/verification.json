@@ -1,0 +1,11 @@
+{
+  "input_bytes": 1024,
+  "archive_bytes": 1084,
+  "selected_candidate_bytes": 1084,
+  "oracle_candidate_bytes": 1084,
+  "input_sha256": "65595B20B33A5D88051C9B005D647D87D5FE0A715C5985ADD8FD5405EEA87F21",
+  "decoded_sha256": "65595B20B33A5D88051C9B005D647D87D5FE0A715C5985ADD8FD5405EEA87F21",
+  "roundtrip": true,
+  "encode_stdout": "HZ02 input=1024 archive=1084 payload=1024 candidates=0 selected=1084 oracle=1084 oracle_gap=0 blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd)=1/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0",
+  "codec_sha256": "CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191"
+}

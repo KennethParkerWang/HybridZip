@@ -1,0 +1,45 @@
+{
+  "experiment_id": "hybridzip-r2-e6-fast-full-20260828-retry1",
+  "stage": "e6-fast",
+  "runtime_started": true,
+  "files": [
+    "dickens",
+    "mozilla",
+    "mr",
+    "nci",
+    "ooffice",
+    "osdb",
+    "reymont",
+    "samba",
+    "sao",
+    "webster",
+    "x-ray",
+    "xml"
+  ],
+  "scopes_kib": [
+    32,
+    64,
+    128
+  ],
+  "block_sizes_kib": [
+    32,
+    64,
+    128
+  ],
+  "policies": "fast",
+  "timing_repeats": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "child_packages": 12,
+  "cases_per_child": 36,
+  "codec_invocations": 864,
+  "runtime_authorization_required": true,
+  "command": "& E:\\MIXER\\hybridzip\\tools\\run_r2_e5_e6_matrix.ps1 -Stage e6-fast -ListOnly:$false -AuthorizeRuntimeExperiment ...",
+  "codec_path": "E:\\MIXER\\hybridzip\\build\\Release\\hybridzip.exe",
+  "codec_sha256": "E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003",
+  "dataset_path": "F:\\paq8px\\silesia",
+  "status": "COMPLETE"
+}

@@ -1,0 +1,121 @@
+Complete ledger runner finished with failures: auto: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序
+的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; stored: 无法将“Get-FileHash”项识别为 cmdlet、
+函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; predictive: 无法将“G
+et-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再
+试一次。; zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径
+，请确保路径正确，然后再试一次。; fse: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查
+名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; lzma: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或
+可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; donor-match: 无法将“Get-FileHash”项
+识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; bwt-zs
+td: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径
+正确，然后再试一次。; bwt-mtf-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。; bwt-rlt-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文
+件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; x86-bcj-zstd: 无法将“Get-FileHas
+h”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; s
+huffle-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，
+请确保路径正确，然后再试一次。; bitshuffle-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; delta-zstd: 无法将“Get-FileHash”项识别为 cmdlet、
+函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; fastpfor: 无法将“Get
+-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试
+一次。; rans: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，
+请确保路径正确，然后再试一次。; bcj2-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请
+检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; record-transpose-zstd: 无法将“Get-FileHash”项识别为 cmd
+let、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; jpegls: 无法将“
+Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再
+试一次。; flac-residual: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如
+果包括路径，请确保路径正确，然后再试一次。; brotli-text: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行
+程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; cmix-word-zstd: 无法将“Get-FileHash”项识
+别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; neural-l
+stm: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路
+径正确，然后再试一次。; shared-neural-lstm: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请
+检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; lstm-compress: 无法将“Get-FileHash”项识别为 cmdlet、函
+数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; delta-of-delta-zstd: 无
+法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。; bgpt-shared-prior: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。; jax-compress-portable: 无法将“Get-FileHash”项识别为 cmdlet、函
+数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; ppmd7: 无法将“Get-File
+Hash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+; ppmd8: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确
+保路径正确，然后再试一次。; zpaq: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的
+拼写，如果包括路径，请确保路径正确，然后再试一次。; ctw: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行
+程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-apm: 无法将“Get-FileHash”项识别为 
+cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-record
+-model: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保
+路径正确，然后再试一次。; paq8px-linear-prediction: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的
+名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-similarity: 无法将“Get-FileHash”项识别为
+ cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-simil
+arity-sse: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。; paq8px-generic-sse: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名
+称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-detected-sse: 无法将“Get-FileHash”项识别为
+ cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; wavpack: 无
+法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，
+然后再试一次。; lz4: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包
+括路径，请确保路径正确，然后再试一次。; kanzi-ans: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的
+名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; lmic-arithmetic: 无法将“Get-FileHash”项识别为 c
+mdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; delta-binary-p
+acked-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。
+所在位置 E:\MIXER\hybridzip\tools\run_r2_complete_ledger.ps1:226 字符: 5
++     throw ("Complete ledger runner finished with failures: " + [strin ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Complete ledger...请确保路径正确，然后再试一次。:String) [], RuntimeEx
+ception
+    + FullyQualifiedErrorId : Complete ledger runner finished with failures: auto: 无法将“Get-FileHash”项识别为 cmdle
+t、函数、脚本文    件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; stored: 无法将
+“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，    请确保路径正确，
+然后再试一次。; predictive: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，
+如果包括路径，请确保路径正确，然后再试一次。; zstd:     无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程
+序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; fse: 无法将“Get-FileHash”项识别为 cmdlet、
+函    数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; lzma: 无法将“Get
+-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括    路径，请确保路径正确，然后
+再试一次。; donor-match: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如
+果包括路径，请确保路径正确，然后再试一次。; bw    t-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行
+程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; bwt-mtf-zstd: 无法将“Get-FileH    ash”项
+识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; bwt-rl
+t-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本    文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请
+确保路径正确，然后再试一次。; x86-bcj-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请
+检查名称的拼写，    如果包括路径，请确保路径正确，然后再试一次。; shuffle-zstd: 无法将“Get-FileHash”项识别为 cmdlet、
+函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次    。; bitshuffle-zstd: 
+无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确
+，然后再试一次。; delta-zstd: 无法将    “Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的
+拼写，如果包括路径，请确保路径正确，然后再试一次。; fastpfor: 无法将“Get-FileHash”项识别为 cmdlet    、函数、脚本文件
+或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; rans: 无法将“Get-FileHash”项识别
+为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果    包括路径，请确保路径正确，然后再试一次。; bcj2-z
+std: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路
+径正确，然后再试一次。; re    cord-transpose-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的
+名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; jpegls: 无法将“Ge    t-FileHash”项识别为 cmdlet
+、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; flac-residual: 无法
+将“Get-FileHash”项识别为 cmdl    et、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确
+，然后再试一次。; brotli-text: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检    查名称
+的拼写，如果包括路径，请确保路径正确，然后再试一次。; cmix-word-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本
+文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径    正确，然后再试一次。; neural-lstm: 无法将“Get-Fi
+leHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次
+。; shared-neu    ral-lstm: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，
+如果包括路径，请确保路径正确，然后再试一次。; lstm-compress: 无法将“Get-Fi    leHash”项识别为 cmdlet、函数、脚本文件
+或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; delta-of-delta-zstd: 无法将“Get-Fi
+leHash”项识别为 cm    dlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试
+一次。; bgpt-shared-prior: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行    程序的名称。请检查名称的拼
+写，如果包括路径，请确保路径正确，然后再试一次。; jax-compress-portable: 无法将“Get-FileHash”项识别为 cmdlet、函数、
+脚本文件或可运行程序的名称。请检查名称的    拼写，如果包括路径，请确保路径正确，然后再试一次。; ppmd7: 无法将“Get-File
+Hash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+; p    pmd8: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，
+请确保路径正确，然后再试一次。; zpaq: 无法将“Get-FileHash”项识别为 c    mdlet、函数、脚本文件或可运行程序的名称。请检
+查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; ctw: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件
+或可运行程序的名称。请检查名称的拼    写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-apm: 无法将“Get-FileHas
+h”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次    
+。; paq8px-record-model: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如
+果包括路径，请确保路径正确，然后再试一次。; paq8px-line    ar-prediction: 无法将“Get-FileHash”项识别为 cmdlet、函数、
+脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-similarity: 无    法
+将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然
+后再试一次。; paq8px-similarity-sse: 无法将“Get-FileH    ash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检
+查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-generic-sse: 无法将“Get-FileHash”项识别为 cmdlet  
+  、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; paq8px-detected-s
+se: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序    的名称。请检查名称的拼写，如果包括路径，请确保
+路径正确，然后再试一次。; wavpack: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称
+的拼写，如果包括路径，请确保路径正    确，然后再试一次。; lz4: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文件或
+可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; kanzi-ans: 无法将“Get-    FileHash”
+项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。; lmic
+-arithmetic: 无法将“Get-FileHash”项识别为 cmdl    et、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路
+径，请确保路径正确，然后再试一次。; delta-binary-packed-zstd: 无法将“Get-FileHash”项识别为 cmdlet、函数、脚本文    件
+或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+ 

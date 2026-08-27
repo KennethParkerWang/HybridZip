@@ -1,0 +1,7 @@
+{
+  "status": "COMPLETE",
+  "evidence_boundary": "Fast-policy warmup repeat 0 is retained in matrix_rows.csv and excluded from timing summaries.",
+  "rows": 9,
+  "cpu_floor_mb_per_s": 0.16,
+  "all_rows_byte_exact": true
+}

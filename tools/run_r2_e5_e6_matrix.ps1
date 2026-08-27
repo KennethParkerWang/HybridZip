@@ -15,7 +15,8 @@ param(
     [ValidateRange(1, 604800)]
     [int]$ProcessTimeoutSeconds = 3600,
     [switch]$ListOnly = $true,
-    [switch]$AuthorizeRuntimeExperiment
+    [switch]$AuthorizeRuntimeExperiment,
+    [switch]$Resume
 )
 
 Set-StrictMode -Version Latest
@@ -145,6 +146,68 @@ function Get-Quantile([double[]]$Values, [double]$Quantile) {
     return $ordered[[Math]::Max(0, [Math]::Min($index, $ordered.Count - 1))]
 }
 
+function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
+                           [string]$ExpectedStage, [string]$ExpectedCodecPath,
+                           [string]$ExpectedCodecHash, [string]$ExpectedDatasetPath,
+                           [string[]]$ExpectedFiles, [int[]]$ExpectedScopes,
+                           [int[]]$ExpectedBlockSizes, [string[]]$ExpectedPolicies,
+                           [int[]]$ExpectedRepeats) {
+    if ([string]$Existing.experiment_id -cne $ExpectedId -or
+        [string]$Existing.stage -cne $ExpectedStage) {
+        throw "Resume metadata does not match requested experiment: $ExpectedId"
+    }
+    if (-not [string]::Equals([string]$Existing.codec_path, $ExpectedCodecPath,
+                               [StringComparison]::OrdinalIgnoreCase) -or
+        [string]$Existing.codec_sha256 -cne $ExpectedCodecHash -or
+        -not [string]::Equals([string]$Existing.dataset_path, $ExpectedDatasetPath,
+                               [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Resume codec or dataset identity differs from the existing package'
+    }
+    $pairs = @(
+        @(@($Existing.files), @($ExpectedFiles)),
+        @(@($Existing.scopes_kib | ForEach-Object { [int]$_ }), @($ExpectedScopes)),
+        @(@($Existing.block_sizes_kib | ForEach-Object { [int]$_ }), @($ExpectedBlockSizes)),
+        @(@($Existing.policies), @($ExpectedPolicies)),
+        @(@($Existing.timing_repeats | ForEach-Object { [int]$_ }), @($ExpectedRepeats))
+    )
+    foreach ($pair in $pairs) {
+        $actual = @($pair[0])
+        $expected = @($pair[1])
+        if ($actual.Count -ne $expected.Count) {
+            throw 'Resume matrix dimensions differ from the existing package'
+        }
+        for ($index = 0; $index -lt $actual.Count; ++$index) {
+            if ([string]$actual[$index] -cne [string]$expected[$index]) {
+                throw 'Resume matrix dimensions differ from the existing package'
+            }
+        }
+    }
+}
+
+function Assert-CompletedMatrixPackage([string]$PackagePath,
+                                       [int]$ExpectedRows) {
+    $matrixPath = Join-Path $PackagePath 'matrix_rows.csv'
+    $summaryPath = Join-Path $PackagePath 'summary.json'
+    if (-not (Test-Path -LiteralPath $matrixPath -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $summaryPath -PathType Leaf)) {
+        throw "Completed package is missing matrix evidence: $PackagePath"
+    }
+    $rows = @(Import-Csv -LiteralPath $matrixPath -Encoding UTF8)
+    if ($rows.Count -ne $ExpectedRows) {
+        throw "Completed package has unexpected matrix row count: $PackagePath"
+    }
+    foreach ($row in $rows) {
+        if ($row.status -cne 'COMPLETE' -or $row.roundtrip -cne 'PASS') {
+            throw "Completed package contains a non-passing row: $PackagePath"
+        }
+    }
+    $summary = Get-Content -LiteralPath $summaryPath -Raw -Encoding UTF8 |
+        ConvertFrom-Json
+    if ([string]$summary.status -cne 'COMPLETE') {
+        throw "Completed package summary is not COMPLETE: $PackagePath"
+    }
+}
+
 $requestedFiles = @()
 foreach ($entry in $SilesiaFiles) {
     $requestedFiles += ([string]$entry).Split(',') |
@@ -218,6 +281,7 @@ $plan = [ordered]@{
     cases_per_child = $files.Count * $scopes.Count
     codec_invocations = $jobs.Count * $files.Count * $scopes.Count * 2
     runtime_authorization_required = $true
+    resume_requested = [bool]$Resume
     command = "& $($MyInvocation.MyCommand.Path) -Stage $Stage -ListOnly:`$false -AuthorizeRuntimeExperiment ..."
 }
 if ($ListOnly) {
@@ -243,17 +307,48 @@ foreach ($file in $files) {
         throw "Missing or too-short Silesia source: $source"
     }
 }
-if (Test-Path -LiteralPath $packagePath) {
-    throw "Refusing to overwrite matrix package: $packagePath"
-}
-
-New-Item -ItemType Directory -Path $packagePath | Out-Null
+$codecHash = Get-Sha256 $CodecPath
 $childRoot = Join-Path $packagePath 'children'
-New-Item -ItemType Directory -Path $childRoot | Out-Null
-$plan.codec_path = $CodecPath
-$plan.codec_sha256 = Get-Sha256 $CodecPath
-$plan.dataset_path = $DatasetPath
-$plan.runtime_started = $true
+if (Test-Path -LiteralPath $packagePath) {
+    if (-not $Resume) {
+        throw "Refusing to overwrite matrix package: $packagePath"
+    }
+    $metadataPath = Join-Path $packagePath 'experiment.json'
+    if (-not (Test-Path -LiteralPath $metadataPath -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $childRoot -PathType Container)) {
+        throw "Resume package is missing required metadata: $packagePath"
+    }
+    $plan = Get-Content -LiteralPath $metadataPath -Raw -Encoding UTF8 |
+        ConvertFrom-Json
+    Assert-ResumePlan -Existing $plan -ExpectedId $ExperimentId `
+        -ExpectedStage $Stage -ExpectedCodecPath $CodecPath `
+        -ExpectedCodecHash $codecHash -ExpectedDatasetPath $DatasetPath `
+        -ExpectedFiles $files -ExpectedScopes $scopes -ExpectedBlockSizes $blockSizes `
+        -ExpectedPolicies $policies -ExpectedRepeats $timingRepeats
+    if ([string]$plan.status -ceq 'COMPLETE') {
+        Assert-CompletedMatrixPackage -PackagePath $packagePath `
+            -ExpectedRows ($jobs.Count * $files.Count * $scopes.Count)
+        Write-Host "Experiment already complete: $packagePath"
+        return
+    }
+    if ($null -eq $plan.PSObject.Properties['resume_count']) {
+        $plan | Add-Member -NotePropertyName resume_count -NotePropertyValue 0
+    }
+    $plan.resume_count = [int]$plan.resume_count + 1
+    if ($null -eq $plan.PSObject.Properties['resumed_at']) {
+        $plan | Add-Member -NotePropertyName resumed_at -NotePropertyValue ''
+    }
+    $plan.resumed_at = [DateTime]::UtcNow.ToString('o')
+    $plan.status = 'RUNNING'
+}
+else {
+    New-Item -ItemType Directory -Path $packagePath | Out-Null
+    New-Item -ItemType Directory -Path $childRoot | Out-Null
+    $plan.codec_path = $CodecPath
+    $plan.codec_sha256 = $codecHash
+    $plan.dataset_path = $DatasetPath
+    $plan.runtime_started = $true
+}
 Write-Utf8Json (Join-Path $packagePath 'experiment.json') $plan
 
 $matrixRows = New-Object System.Collections.Generic.List[object]
@@ -277,12 +372,15 @@ try {
         if ($AllowAllFiles) {
             $arguments.AllowAllFiles = $true
         }
+        $childPath = Join-Path $childRoot $childId
+        if ($Resume -and (Test-Path -LiteralPath $childPath -PathType Container)) {
+            $arguments.Resume = $true
+        }
         & $childRunner @arguments
-        if ($LASTEXITCODE -ne 0) {
-            throw "Child runner exited ${LASTEXITCODE}: $childId"
+        if (-not $?) {
+            throw "Child runner failed: $childId"
         }
 
-        $childPath = Join-Path $childRoot $childId
         $childRows = @(Import-Csv -LiteralPath (Join-Path $childPath 'results.csv') -Encoding UTF8)
         if ($childRows.Count -ne ($files.Count * $scopes.Count)) {
             throw "Unexpected child row count for $childId"

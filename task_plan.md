@@ -184,6 +184,83 @@ second codec run.
 - [ ] E7: obtain explicit owner approval before materializing OASum or making
   a Tencent-dataset coverage claim.
 
+## 2026-08-28 attachment-driven target execution
+
+### Decision
+
+The uploaded R2 decision is the execution reference for this phase. It is
+applied to the checked-in HZ02 implementation, not treated as permission to
+rewrite the existing container or renumber its decoder-visible modes.
+
+- [x] Commit and push the E4/E5/E6 tooling milestone as
+  `439e948 feat(r2): add shortlist ablations and E5/E6 matrix`.
+- [x] Freeze the implementation objectives, experiment scopes, acceptance
+  metrics, and current/report gap analysis in
+  `docs/research/R2_TARGETS_AND_EXECUTION_20260828.md`.
+- [x] E3: produce the same-input PAQ8px v216 `-1` rows for the 36-row frozen
+  Silesia manifest. All rows are COMPLETE/PASS, their manifest input and
+  decoded SHA-256 values match, and output is preserved in
+  `results/experiments/paq8px-v216-level1-silesia-leading-e3-20260828/`.
+  The PAQ total is 622,563 bytes / 2,752,512 input bytes (1.809440 bpb).
+- [x] E6: measure the current Fast policy with one warmup and three retained
+  repeats at all frozen 32/64/128 KiB input and block-size combinations.
+  All 432 rows passed byte-exactly; the 324 retained rows pass the >= 0.16
+  MB/s encode/decode floor in all nine cells. Evidence:
+  `results/experiments/hybridzip-r2-e6-fast-full-20260828-retry1/` and
+  `docs/research/R2_E6_FAST_RESULTS_20260828.md`.
+- [ ] E5: after E3/E6 packages are reviewed, run the full-Auto versus
+  K=2/K=4/K=8 regret matrix as a separate long-running job. It is deliberately
+  not co-scheduled with E3 because full Auto materializes PAQ candidates.
+  The current historical Auto rate gives a 12.99-hour encode-only lower bound
+  for the three-block-size full-Auto rows, excluding shortlist encodes and all
+  decodes.
+- [x] Make E5/E6 recovery safe: the parent matrix runner resumes only a
+  package with matching stage, codec SHA-256, dataset, matrix dimensions, and
+  policies. Completed packages are checked without launching the codec.
+- [ ] F1: expand the rule-only feature extractor into the attachment's frozen
+  28-feature, integer-only ranker after its no-leakage label source exists.
+- [ ] F2: add the one-ID `MODE_FAST_EXT_V1` only after a pinned zstd source
+  and independent standard-frame vectors are available.
+- [ ] F3: add canonical-order independent-block execution only after the
+  single-thread Fast baseline is measured.
+- [ ] F4: do not begin GPU `LZ_RANS_V1` before F2/F3 and measured Fast results.
+
+### Constraints and recorded gaps
+
+- HZ01 and HZ02 modes `0..42` remain compatibility gates.
+- Existing `third_party/zstd` is version 1.6.0. The attachment names 1.5.7;
+  current Fast results are therefore an accurately identified baseline, not
+  donor-version acceptance evidence. The 2.43 MiB BSD-3-Clause 1.5.7 source
+  has not been downloaded or imported.
+- OASum is blocked pending an owner decision on the 1.065 GB `test.jsonl` and
+  CC-BY-SA-3.0 treatment. No Tencent coverage is claimed.
+- A K=8 promotion requires a forced-mode, tie-aware oracle in addition to
+  the current E5 full-Auto reference. Current E5 tooling must state that
+  limitation in every resulting report.
+
+### Errors encountered
+
+- The first E6 launch used nested `powershell -File` and passed
+  `-ListOnly:$false` as a string. Parameter binding rejected it before the
+  script created an output directory or launched the codec. The retry uses
+  direct invocation from the current PowerShell session so the switch remains
+  a Boolean value.
+- The direct E6 retry completed its first 36-row child package, then the
+  parent matrix runner read an undefined `$LASTEXITCODE` after invoking a
+  PowerShell child script. The failed parent package is preserved. The runner
+  now checks `$?`, and the full matrix will be restarted under a new ID rather
+  than overwriting partial evidence.
+
+### Status
+
+E3 and E6 have been authorized for the frozen Tier-A runtime. E6 ran first on
+an otherwise idle CPU and passed its current-build baseline gate. E3 also
+completed successfully. Their output directories are unique and
+non-overwriting. E5 remains queued as the next PAQ-heavy workload; it must not
+be started concurrently with another timing experiment. Its resume protocol
+was verified against the completed E6 package without altering the recorded
+matrix hash.
+
 ## Phases
 
 - [x] Phase 1: Record current state and preserve the existing R2 plan.

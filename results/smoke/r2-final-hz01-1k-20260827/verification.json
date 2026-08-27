@@ -1,0 +1,15 @@
+{
+  "source": "E:\\MIXER\\hybridzip\\results\\smoke\\r2-bcj2-zstd-router-mr-1k-20260821\\input.bin",
+  "input_bytes": 1024,
+  "archive_bytes": 537,
+  "decoded_bytes": 1024,
+  "input_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+  "archive_sha256": "4D6623E1EFD3BEAC815882A64D900D5C528469E534641F36DDD63116128D6CAA",
+  "decoded_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+  "encode_seconds": 0.7175001,
+  "decode_seconds": 0.7151418,
+  "encode_exit_code": 0,
+  "decode_exit_code": 0,
+  "roundtrip": "PASS",
+  "codec_sha256": "CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191"
+}
