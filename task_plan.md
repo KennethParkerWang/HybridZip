@@ -850,4 +850,5 @@ codec process was launched for this checkpoint.
 
 The attachment's tie-aware router measurement now has a recoverable evidence
 path in the runner. No corpus encode, decode, or PAQ-heavy E5 job was started
-by this implementation checkpoint.
+by this implementation checkpoint. The implementation and documentation are
+committed and pushed as `996d59d`.

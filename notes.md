@@ -940,3 +940,5 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   `tools/test_r2_forced_oracle.ps1` passed its synthetic `zstd,fse` tie; an E5
   one-file/32 KiB `-ListOnly` plan reported four child packages and eight
   planned codec invocations with `runtime_started=false`.
+- The implementation and updated execution design are committed and pushed as
+  `996d59d` (`feat(r2): bind forced oracle to E5`).

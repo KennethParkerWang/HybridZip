@@ -17,7 +17,8 @@ policy cannot be used to claim the other policy's target.
 
 ## Current Baseline
 
-- Committed source milestone: `439e948`.
+- Baseline source milestone: `439e948`.
+- Current E5 forced-oracle evidence-binding milestone: `996d59d`.
 - Frozen Tier-A inputs: 12 Silesia files with leading 32/64/128 KiB prefixes,
   `bench/manifests/silesia-leading-32-64-128.tsv` (36 rows; SHA-256
   `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`).
