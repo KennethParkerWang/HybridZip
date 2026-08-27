@@ -9,21 +9,47 @@ HZ01/PROFILE_V1 decoder path. HZ02 currently exposes block modes `0..42` (43
 candidate paths), including representation transforms, LZ/coding donors,
 specialist PAQ8px graphs, neural profiles, router activation, and multi-coder
 selection. The Release executable and the R2 codec test executable compile and
-link successfully.
+link successfully. The active rebuilt Release hash is
+`CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191`.
 
-Forty-two of the 43 R2 branches have one deterministic 1 KiB archive/decode
-smoke with byte-exact input/output SHA-256 evidence. Mode 8
-(`bwt-rlt-zstd`) is the documented exception: random 1 KiB input did not
-produce a smaller RLT representation, while suitable 32 KiB evidence exists.
-These smokes establish correctness only; they do not establish corpus-level
-ratio, speed, or memory rankings. The final Auto archive-byte ledger has not
-yet been regenerated for the current Release hash across all R2 modes, and
-candidate retirement/hot-path selection remains open.
+The prior evidence Release
+`FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`
+has deterministic 1 KiB archive/decode evidence for 42 of the 43 R2 branches.
+Mode 8 (`bwt-rlt-zstd`) is the documented exception: random 1 KiB input did
+not produce a smaller RLT representation, while suitable 32 KiB evidence
+exists. These smokes establish historical branch correctness only; they do not
+establish corpus-level ratio, speed, or memory rankings. The active Release has
+one new forced-stored random 1 KiB telemetry gate: its 1,084-byte archive
+decoded to the exact input SHA-256, and its `selected` and `oracle` CLI values
+both equal the complete archive length.
 
-The Silesia experiment runner, family runner, and package validator now expose
-the complete decoder-visible R2 mode set through mode 42. This is a tooling
-capability checkpoint only; it does not claim that the missing final ledger
-has been executed.
+### Current-Hash R2 Ledger
+
+The authorized current-hash ledger is complete at
+`results/analysis/r2-complete-ledger/hybridzip-r2-currenthash-cc6d-20260827-r2/`.
+It contains Auto plus all 43 forced modes (44 packages), 12 Silesia files at a
+32 KiB leading prefix, and 528/528 `COMPLETE/PASS` rows. Every row uses the
+active Release hash
+`CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191` and
+passed complete-archive length, timing, peak-memory, block-attribution, and
+byte-exact SHA-256 validation.
+
+The same current Release also passed a separate HZ01 compatibility smoke on a
+deterministic 1 KiB input: 537-byte HZ01 archive, 1,024 decoded bytes, and
+exact input/decoded SHA-256 equality. Evidence is in
+`results/smoke/r2-final-hz01-1k-20260827/verification.json`.
+
+The derived result is 99,720 Auto archive bytes over 393,216 input bytes
+(2.028809 bpb). The complete forced-mode oracle is identical: 0 bytes of
+aggregate gap and 0 bytes on each of 12 cases. Auto selected
+`paq8px-detected-sse` five times and `paq8px-generic-sse` seven times; these
+are the only forced modes with an oracle win in this matrix. The strict
+analysis bundle and round-review report are in the same ledger directory.
+
+The Silesia experiment runner, family runner, and package validator expose the
+complete decoder-visible R2 mode set through mode 42. Their current-hash
+execution is covered by the ledger above; the separate segment-oracle runtime
+package remains intentionally unrun.
 
 The complete-ledger tooling is now present. `tools/run_r2_complete_ledger.ps1`
 creates a non-overwriting manifest for Auto plus all 43 forced R2 paths (44
@@ -31,11 +57,29 @@ packages for 43 decoder-visible modes), supports resume by ledger ID, and refuse
 start codec processes unless `-AuthorizeRuntimeExperiment` is supplied.
 `tools/derive_r2_complete_ledger.ps1` then validates every declared package,
 complete archive length, encode/decode timing and peak memory fields, and input,
-archive, and decoded SHA-256 values before writing the Auto/oracle ledger. The
-tools have passed PowerShell parse and `-ListOnly` checks; no final runtime
-ledger has been run yet.
+archive, and decoded SHA-256 values before writing the Auto/oracle ledger. It
+also verifies that each forced package actually emitted its requested HZ02 block
+mode for every block, rather than trusting the package name. The tools have
+passed PowerShell parse, block-mode negative checks, `-ListOnly`, and the
+complete current-hash runtime ledger.
 
-Post-build branch gates on 2026-08-26 used the current Release binary
+The Silesia runner enforces the same condition immediately after each R2
+encode. A successful process that emits an unexpected, malformed, or
+wrong-count block record is marked failed before decode, so a long 44-package
+run cannot silently attribute a fallback archive to the requested donor.
+
+The intra-file heterogeneity instrumentation is also present at
+`tools/run_r2_segment_oracle.ps1`. It partitions one source file by explicit
+offset and length, measures all 43 forced modes with complete archive bytes,
+time, peak memory, and byte-exact hashes, then writes a per-segment forced-mode
+oracle. Auto is optional and its complete-archive gap is recorded separately.
+The runner verifies that a forced archive actually records the requested mode
+before it can enter the oracle. It is non-overwriting and requires
+`-AuthorizeRuntimeExperiment`; its PowerShell parser and no-runtime `-ListOnly`
+preflight pass. No segment-oracle runtime package has been produced, and it
+does not replace the final R2 ledger.
+
+Post-build branch gates on 2026-08-26 used the prior evidence Release binary
 (`FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`) and one
 deterministic random 1 KiB input. Forced mode 41 (`lmic-arithmetic`) produced
 a 1768-byte archive and forced mode 42 (`delta-binary-packed-zstd`) produced a
@@ -50,15 +94,15 @@ not final runtime or compression-quality completion.
 
 The consolidated metadata-only smoke index at
 `results/analysis/r2-smoke-evidence-index-20260826-registry` filters for the
-current binary hash and finds unique 1 KiB byte-exact evidence for 42/43 HZ02
-modes. Its fixed `mode_registry.tsv` includes all 43 names and marks mode 8
+prior evidence-binary hash and finds unique 1 KiB byte-exact evidence for
+42/43 HZ02 modes. Its fixed `mode_registry.tsv` includes all 43 names and marks mode 8
 (`bwt-rlt-zstd`) as the only missing mode because the random 1 KiB input did
 not produce a smaller Kanzi RLT representation; the forced path therefore
 emitted no archive. Existing corpus evidence confirms that mode 8 is runnable
 for suitable 32 KiB inputs. Historical smoke records use earlier binary hashes
 and remain provenance, not current-build evidence.
 
-The remaining current-Release gates were executed in three parallel lanes with
+The remaining prior-evidence-Release gates were executed in three parallel lanes with
 unique output directories, separate stdout/stderr logs, current-hash skipping,
 and a 60-second process timeout. No Auto, D40, CTest, batch, or larger-block
 test was run during this acceleration pass. The detailed mode-8 boundary record

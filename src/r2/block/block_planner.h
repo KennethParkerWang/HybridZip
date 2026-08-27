@@ -115,8 +115,9 @@ struct BlockDecision {
     std::optional<std::size_t> ppmd8_candidate_bytes;
     std::optional<std::size_t> zpaq_candidate_bytes;
     std::optional<std::size_t> ctw_candidate_bytes;
-    // Auto-mode instrumentation.  Forced single-candidate policies return
-    // before the complete portfolio ledger is finalized.
+    // Candidate accounting for one serialized block. Auto records the chosen
+    // candidate and the evaluated oracle; forced modes are filled from the
+    // final block framing by the codec.
     std::uint32_t candidates_evaluated = 0;
     std::size_t selected_candidate_bytes = 0;
     std::size_t oracle_candidate_bytes = 0;

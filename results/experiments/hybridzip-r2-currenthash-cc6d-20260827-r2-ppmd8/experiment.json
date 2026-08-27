@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "experiment_id": "hybridzip-r2-currenthash-cc6d-20260827-r2-ppmd8",
+  "name": "HybridZip R2 ppmd8 Silesia prefix experiment",
+  "state": "完成",
+  "description": "HybridZip HZ02 block portfolio mode ppmd8 on Silesia 32/64/128 KiB prefixes.",
+  "model_structure": "HZ02 donor-driven block portfolio with representation, specialist, neural, LZ, and multi-coder candidates.",
+  "change_from_baseline": "Uses HZ02 mode ppmd8 instead of the fixed HZ01 PROFILE_V1 full-file path.",
+  "hypothesis": "The block portfolio should retain byte-exact reconstruction and choose only payloads smaller than stored in auto mode.",
+  "baseline_description": "Product comparison uses available gzip, zstd, brotli, xz, and 7-Zip binaries on identical bytes.",
+  "created_at": "08/27/2026 14:52:03",
+  "dataset_name": "Silesia",
+  "dataset_path": "F:\\paq8px\\silesia",
+  "files": [
+    "dickens",
+    "mozilla",
+    "mr",
+    "nci",
+    "ooffice",
+    "osdb",
+    "reymont",
+    "samba",
+    "sao",
+    "webster",
+    "x-ray",
+    "xml"
+  ],
+  "scopes_kib": [
+    32
+  ],
+  "variants": [
+    "r2-ppmd8"
+  ],
+  "repeat_count": 1,
+  "codec_name": "HybridZip",
+  "codec_version": "1.0.0-r2-ppmd8",
+  "codec_path": "E:\\MIXER\\hybridzip\\build\\Release\\hybridzip.exe",
+  "codec_sha256": "CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191",
+  "source_revision": "working-tree-uncommitted",
+  "command_template": "\"<codec-path>\" c --profile=r2 --r2-mode=<mode> \"<input-path>\" \"<archive-path>\"; \"<codec-path>\" d \"<archive-path>\" \"<output-path>\"",
+  "configuration": "profile_id=2;mode=ppmd8;block_size=65536;zstd_level=19;lzma_level=9;threads=1;process_timeout_seconds=3600",
+  "environment": "Windows 10.0.19045.0; CPU=12th Gen Intel(R) Core(TM) i7-12650H; sequential execution",
+  "notes": "archive_bytes includes the complete HZ02 archive header, every block header, CRC32 metadata, backend envelope, and payload."
+}

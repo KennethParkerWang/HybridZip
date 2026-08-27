@@ -6,6 +6,23 @@ Continue the donor-first R2-A through R2-D implementation until the current
 portfolio is a runnable, byte-exact HybridZip product with HZ01 compatibility,
 decoder-visible routing, and a final archive-byte experiment ledger.
 
+## GPT Pro Research Handoff (2026-08-27)
+
+Goal: prepare a reproducible, evidence-bounded research packet for improving
+HybridZip toward the user-specified PAQ8PX-1 ratio and CPU/GPU throughput
+targets without changing the current codec during this preparation task.
+
+- [x] Audit the current R2 ledger, local PAQ8px baseline records, router
+  implementation, dataset availability, and result-import contract.
+- [x] Create a concise research brief, source-material index, and copy-ready
+  GPT Pro prompt under `docs/research/gpt-pro/`.
+- [x] Record the non-comparable-input boundary between the existing R2 leading
+  prefix ledger and the PAQ8px centred-slice benchmark.
+
+Status: research packet complete. No codec implementation or runtime
+experiment was started. The next implementation decision awaits the external
+research result and a fixed Tencent dataset identity/hardware target.
+
 ## Phases
 
 - [x] Phase 1: Record current state and preserve the existing R2 plan.
@@ -14,7 +31,7 @@ decoder-visible routing, and a final archive-byte experiment ledger.
 - [x] Phase 4: Release-build and run the allowed 1 KiB branch round-trip gates
   (42/43 current-hash modes pass; mode 8 is unsuitable for the random input).
 - [x] Phase 5: Update provenance, format, ledger, and choose the next candidate.
-- [ ] Phase 6: Regenerate the complete current-hash Auto/archive-byte ledger
+- [x] Phase 6: Regenerate the complete current-hash Auto/archive-byte ledger
   and retire or retain candidates after explicit experiment authorization.
 
 ### Phase 6 execution checklist
@@ -22,12 +39,17 @@ decoder-visible routing, and a final archive-byte experiment ledger.
 - [x] Add a resumable runner manifest for Auto plus all 43 decoder-visible R2
   modes (44 packages: Auto plus 43 forced paths).
 - [x] Add a read-only ledger derivation step that validates complete archive
-  bytes, timing, peak memory, and byte-exact hashes before writing outputs.
-- [ ] Run the authorized current-Release corpus experiment and preserve one
+  bytes, timing, peak memory, byte-exact hashes, and actual forced block-mode
+  attribution before writing outputs.
+- [x] Add a separately guarded intra-file segment-oracle runner. It writes
+  offset/length provenance plus archive bytes, bpb, time, RAM, byte-exact
+  hashes, and a per-segment forced-mode winner without changing HZ02 bytes.
+- [x] Run the authorized current-Release corpus experiment and preserve one
   package per mode without overwriting prior evidence.
-- [ ] Compare Auto/oracle gaps and retain or retire candidates from measured
+- [x] Compare Auto/oracle gaps and retain or retire candidates from measured
   results.
-- [ ] Update the product status and final technical report with the ledger.
+- [x] Update the product status and final technical report with the ledger.
+- [x] Run one current-Release HZ01 compatibility smoke and record exact hashes.
 
 ## Constraints
 
@@ -49,7 +71,8 @@ small Auto family-gating defect was fixed in `src/r2/block/block_planner.cpp`;
 mode 41 is now gated by the neural family and mode 42 by the numeric family.
 Release incremental compilation passed on 2026-08-26. The branch-level Phase 4
 gate is complete under the 1 KiB-only policy; the final Auto/CTest ledger is
-separate and remains pending because the current user constraint forbids it.
+separate; it was intentionally deferred until the complete ledger was
+authorized.
 
 Read-only evidence audit on 2026-08-26 found 50 smoke directories whose names
 contain `1k` and 59 `verification.json` files under `results/smoke`. These
@@ -75,7 +98,7 @@ one-mode-at-a-time smoke authorization.
 Donor warehouse validation passed with 2506 checks across 21 manifests and
 their provenance/license evidence. No additional complete model-free C++17
 decoder closure was found, so implementation proceeds with the existing
-portfolio while the final ledger remains pending.
+portfolio while the final ledger remained pending at that checkpoint.
 
 Tooling checkpoint on 2026-08-27: `tools/run_r2_complete_ledger.ps1` now emits
 a fixed, resumable 44-package manifest (Auto plus 43 forced decoder-visible
@@ -84,7 +107,8 @@ before starting any codec process. `tools/derive_r2_complete_ledger.ps1` is a
 read-only derivation step: it refuses incomplete packages, mixed codec hashes,
 duplicate cases, mismatched archive lengths, or non-byte-exact SHA-256
 round-trips. `-ListOnly` was parsed and run successfully; no runtime experiment
-was started. Phase 6 runtime execution remains pending explicit authorization.
+was started. Phase 6 runtime execution was later authorized and completed
+under ledger ID `hybridzip-r2-currenthash-cc6d-20260827-r2`.
 
 Documentation checkpoint on 2026-08-27: `README.md` now separates the completed
 HZ01 baseline measurements from the active HZ02 R2 implementation, records the
@@ -93,6 +117,12 @@ paths. `docs/PRODUCT_STATUS.md` now uses the current Release SHA-256; the final
 R2 ledger and candidate decisions remain intentionally unclaimed. Its HZ01
 baseline table retains the historical `2D28...` hash that is embedded in the
 completed product and Silesia evidence packages.
+
+README alignment checkpoint on 2026-08-27: the public README now explicitly
+records donor-first provenance links and the R2-A through R2-D continuation
+plan. It distinguishes five HZ01 baseline tests from the 18 CTest targets
+registered by the current CMake configuration. This is documentation-only
+progress; no codec process or runtime experiment was started.
 
 Ledger validation checkpoint on 2026-08-27: `derive_r2_complete_ledger.ps1`
 now rejects missing/non-finite/negative timing or memory values, non-zero codec
@@ -304,14 +334,15 @@ larger-block test was run.
 
 The next implementation checkpoint is metadata-only: use the mode registry
 emitted by `tools/index_r2_smoke_evidence.ps1` to keep the 43-mode evidence
-boundary auditable, then wait for authorization before running the final Auto
-archive-byte ledger.
+boundary auditable. The final Auto archive-byte ledger is now complete under
+the current Release hash; only the separately guarded segment-oracle runtime
+experiment remains unrun.
 
 Tooling checkpoint on 2026-08-27: the Silesia runner, family runner, and
 package validator now accept every decoder-visible R2 mode through mode 42,
 including the PAQ8px, WavPack, Kanzi ANS, LMIC, and delta-binary paths. This
-changes no archive bytes and does not count as runtime evidence; Phase 6
-remains pending.
+changes no archive bytes and does not count as runtime evidence; the Phase 6
+ledger was completed separately.
 
 Metadata checkpoint completed on 2026-08-26 without starting the codec. The
 current Release hash index is
@@ -319,3 +350,101 @@ current Release hash index is
 43-row registry contains 42 `PASS` modes and mode 8 as
 `MISSING_CURRENT_HASH_EVIDENCE`. The index and the registry changes were
 committed and pushed as `47766f1`.
+
+Pre-ledger instrumentation checkpoint on 2026-08-27: added
+`tools/run_r2_segment_oracle.ps1` for the planned local-heterogeneity oracle
+experiment. It is non-overwriting and refuses to launch the codec without
+`-AuthorizeRuntimeExperiment`; `-ListOnly` reports the exact segment/mode
+matrix. It retains failed rows, classifies the documented non-reducible
+`bwt-rlt-zstd` condition as inapplicable, and writes `manifest.csv`,
+`results.csv`, and per-segment `oracle.csv`. It is a research-specific package,
+not an Experiment Ledger Silesia-prefix import package.
+
+Parser checkpoint: the first AST check identified PowerShell's variable-plus-
+colon interpolation rule in one error message. The message was changed to use
+a formatting expression for the literal regex end-anchor, and the conditional
+return was expanded for compatibility. The final PowerShell AST parse passed;
+the 1 KiB one-segment `-ListOnly` preflight reported 43 forced modes plus
+optional Auto (88 maximum codec invocations) with `runtime_started=false`.
+The script registry also matched the canonical decoder-visible 43-mode order.
+
+Documentation checkpoint on 2026-08-27: reconciled both hand-authored 16:9
+architecture SVG/PNG exports with the corrected Mermaid sources and current
+R2 implementation. Both figures now depict all 43 decoder-visible modes, the
+integrated Layer A/B/C Auto route, archive-byte comparison, HZ02 CRC/strict
+decode, and HZ01 compatibility as source-integrated. The current-hash
+44-package ledger and its retain/retire decision are now recorded in the
+derived ledger and round-review report. XML parsing,
+1920x1080 PNG rendering, Mermaid/Markdown identity checks, and visual review
+passed; no codec process was started.
+
+Auto regression checkpoint on 2026-08-27: corrected
+`tests/r2_codec_tests.cpp` so its compressible-block Auto assertion sums every
+non-stored decoder-visible mode (`1..42`) rather than a stale handwritten
+range ending at mode 39. The affected test target rebuilt and linked in Release
+configuration; it was not executed under the current no-CTest constraint.
+
+Archive-accounting checkpoint on 2026-08-27: Auto telemetry now adds the
+fixed 16-byte block header, 4-byte CRC, and 40-byte archive header so selected
+and oracle byte totals can be compared directly with `archive_bytes`.
+`hybridzip` and `hz_r2_codec_tests` rebuilt and linked without running tests.
+The rebuilt Release SHA-256 is
+`F650AE7E662FDC28F82CF18F4279F7BAAA4433A9C3890EAAC94970A73D11432B`.
+The prior `FDE6...A75B` 42/43 smoke index remains historical behavior evidence,
+not current-hash evidence; the final authorized ledger must use the new hash.
+
+Final-ledger preflight on 2026-08-27: the rebuilt Release passed
+`tools/run_r2_complete_ledger.ps1 -ListOnly`, reporting 44 packages (Auto plus
+43 forced modes), all 12 Silesia files, 32 KiB scope, and
+`runtime_started=false`. No output package or codec process was created.
+
+Forced-mode accounting repair on 2026-08-27: the initial random 1 KiB forced
+stored gate showed that CLI `selected` and `oracle` totals included only the
+40-byte HZ02 archive header. This did not change archive bytes or the final
+file-based ledger, but it made single-mode diagnostics inconsistent with Auto.
+`src/r2/codec/r2_codec.cpp` now supplies the final serialized block bytes for
+every forced policy, while Auto keeps its portfolio/oracle accounting. Both
+affected Release targets compiled and linked. The replacement forced-stored
+1 KiB gate produced a 1,084-byte archive, printed `selected=1084` and
+`oracle=1084`, and had exact input/output SHA-256 equality; evidence is
+`results/smoke/r2-telemetry-stored-1k-20260827-v2/verification.json`. The
+active Release SHA-256 is now
+`CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191`.
+This is a targeted diagnostic and round-trip gate only. It is not Auto,
+corpus, D40, CTest, or a final ledger run.
+
+Forced-mode attribution gate on 2026-08-27: the final derivation now parses
+each row's CLI `block_types` record and refuses unknown, duplicate, zero,
+wrong-total, or forced-mode-mismatched blocks. A forced donor can therefore
+only receive an archive-byte result if the archive actually records that donor
+for every forced block. The fixed 64 KiB ledger block-size parameter is also
+validated before rows enter the Auto/oracle comparison. PowerShell parsing and
+in-memory positive/negative parser checks passed without creating an archive
+or launching the codec.
+
+Immediate forced-mode gate on 2026-08-27: `run_silesia_experiment.ps1` now
+performs the same valid-mode, count, and requested-mode validation immediately
+after each R2 encode and before decode. Incorrect forced attribution therefore
+stops that case rather than consuming the rest of a 44-package ledger. Parser
+and in-memory positive/negative checks passed without a codec process.
+
+Segment-oracle attribution gate on 2026-08-27:
+`tools/run_r2_segment_oracle.ps1` now applies the same forced block-mode proof
+before any archive can enter its per-segment oracle. Its parser and in-memory
+positive/negative checks passed without creating a runtime package or starting
+the codec.
+
+Ledger recovery checkpoint on 2026-08-27: the authorized current-hash runner
+revalidated 43 existing packages (516 rows) and completed the four missing
+32 KiB cases for `paq8px-detected-sse`. A stale `sao.hz2.tmp` left by the
+interrupted prior run exposed a runner error: empty telemetry stdout caused a
+regex null-input exception. `run_silesia_experiment.ps1` now removes only the
+current case's known archive/temp/decoded paths before a rerun and treats empty
+telemetry as `UNKNOWN`; PowerShell AST parsing passed. All 44 packages now
+need final manifest status reconciliation and read-only derivation.
+
+Current-Release compatibility checkpoint on 2026-08-27: a deterministic 1 KiB
+HZ01 encode/decode smoke passed with a 537-byte archive, 1,024 decoded bytes,
+and exact input/decoded SHA-256 equality. Evidence is
+`results/smoke/r2-final-hz01-1k-20260827/verification.json`; it uses the same
+Release hash as the R2 ledger.

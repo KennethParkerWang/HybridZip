@@ -586,6 +586,8 @@ CompressionStats compress_file(const std::filesystem::path& input,
 
     CompressionStats stats{};
     stats.input_bytes = static_cast<std::uint64_t>(reported_size);
+    stats.selected_candidate_bytes = kR2ArchiveHeaderSize;
+    stats.oracle_candidate_bytes = kR2ArchiveHeaderSize;
     const std::uint32_t block_count =
         block_count_for(stats.input_bytes, options.block_size);
 
@@ -624,6 +626,15 @@ CompressionStats compress_file(const std::filesystem::path& input,
             if (decision.payload.size() >
                 std::numeric_limits<std::uint32_t>::max()) {
                 throw std::runtime_error("HZ02 block payload is too large");
+            }
+
+            if (options.policy != CandidatePolicy::Auto) {
+                const std::size_t serialized_block_bytes =
+                    kR2BlockHeaderSize + kR2BlockChecksumSize +
+                    decision.transform_metadata.size() + decision.payload.size();
+                decision.selected_candidate_bytes = serialized_block_bytes;
+                decision.oracle_candidate_bytes = serialized_block_bytes;
+                decision.oracle_gap_bytes = 0;
             }
 
             BlockHeader block_header{};

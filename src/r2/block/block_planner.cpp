@@ -1154,12 +1154,14 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
             oracle = std::min(oracle, *candidate);
         }
     }
+    constexpr std::size_t kBlockArchiveOverhead =
+        kR2BlockHeaderSize + kR2BlockChecksumSize;
     decision.selected_candidate_bytes = decision.payload.size() +
-        decision.transform_metadata.size();
+        decision.transform_metadata.size() + kBlockArchiveOverhead;
     decision.oracle_candidate_bytes = oracle ==
             std::numeric_limits<std::size_t>::max()
         ? decision.selected_candidate_bytes
-        : oracle;
+        : oracle + kBlockArchiveOverhead;
     decision.oracle_gap_bytes = decision.selected_candidate_bytes >
             decision.oracle_candidate_bytes
         ? decision.selected_candidate_bytes - decision.oracle_candidate_bytes

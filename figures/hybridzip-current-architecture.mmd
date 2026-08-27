@@ -1,17 +1,22 @@
-%% Logical Mermaid companion. Use hybridzip-current-architecture.svg/.png for the fixed 16:9 PPT figure.
-%% Solid = implemented. Dashed = planned but not integrated.
+%% Solid = source-integrated HZ02 capability. Dashed = runtime evidence still pending.
 flowchart LR
-    input[输入] --> blocks[分块] --> compare[HZ02 候选比较<br/>24 条已实现路径] --> archive[写入 HZ02<br/>模式 / 变换 / CRC] --> decoder[严格解码<br/>边界 / CRC] --> output[逐字节一致]
-    input --> hz01[HZ01 基线<br/>V1 四专家 mixer] --> hz01out[HZ01 归档]
-    blocks -.-> families[算法族<br/>统计 / LZ / 表示 / 专家 / 神经] -.-> layerB[Layer B<br/>族级路由] -.-> layerC[Layer C<br/>分支策略] -.-> compare
-    compare -.-> oracle[Oracle 观测]
-    archive -.-> metadata[增强元数据]
-    decoder -.-> extension[解码器扩展]
+    input[输入文件] --> blocks[HZ02 分块<br/>默认 64 KiB]
+    blocks --> layerA[Layer A<br/>结构与表示激活]
+    layerA --> layerB[Layer B<br/>算法族门控]
+    layerB --> layerC[Layer C<br/>候选策略]
+    families[43 条已接入路径<br/>通用多编码 / LZ 表示 / specialist / neural / donor PAQ8px] --> layerC
+    layerC --> compare[真实完整 HZ02<br/>archive bytes 比较]
+    compare --> archive[写入 HZ02 块<br/>mode / transform / entropy / CRC32]
+    archive --> decoder[严格解码<br/>边界、metadata、CRC]
+    decoder --> output[逐字节一致输出]
+    input --> hz01[HZ01 V1 基线<br/>四专家 mixer] --> hz01archive[HZ01 归档]
+    compare --> telemetry[Auto block telemetry<br/>candidates / selected / oracle gap]
+    telemetry -.-> ledger[当前 hash 完整账本<br/>44 packages，待授权运行]
 
     classDef current fill:#FFFFFF,stroke:#163A5F,stroke-width:2px,color:#111827;
     classDef baseline fill:#FFFFFF,stroke:#6B7280,stroke-width:1.5px,color:#374151;
-    classDef planned fill:#FFFFFF,stroke:#6B7280,stroke-width:1.5px,stroke-dasharray:6 4,color:#374151;
-    class input,blocks,compare,archive,decoder,output current;
-    class hz01,hz01out baseline;
-    class families,layerB,layerC,oracle,metadata,extension planned;
+    classDef pending fill:#FFFFFF,stroke:#6B7280,stroke-width:1.5px,stroke-dasharray:6 4,color:#374151;
+    class input,blocks,layerA,layerB,layerC,families,compare,archive,decoder,output,telemetry current;
+    class hz01,hz01archive baseline;
+    class ledger pending;
     linkStyle default stroke:#163A5F,stroke-width:2px;

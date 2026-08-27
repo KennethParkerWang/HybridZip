@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -127,6 +128,10 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
         directory, "stored", pseudo_random_bytes(257), options);
     require(stored.blocks_by_mode[0] == 1,
             "Forced stored mode selected another backend");
+    require(stored.selected_candidate_bytes == stored.archive_bytes &&
+                stored.oracle_candidate_bytes == stored.archive_bytes &&
+                stored.oracle_gap_bytes == 0,
+            "Forced-mode telemetry does not equal the complete HZ02 archive");
 
     options.policy = hz::r2::CandidatePolicy::ZstdOnly;
     const std::vector<std::uint8_t> repeated(4096, 0x41U);
@@ -431,51 +436,22 @@ void test_auto_selection(const std::filesystem::path& directory) {
     const std::vector<std::uint8_t> repeated(4096, 0x5AU);
     const auto compressible =
         round_trip(directory, "auto-compressible", repeated, options);
-    require(compressible.blocks_by_mode[0] == 0 &&
-                compressible.blocks_by_mode[1] +
-                        compressible.blocks_by_mode[2] +
-                        compressible.blocks_by_mode[3] +
-                        compressible.blocks_by_mode[4] +
-                        compressible.blocks_by_mode[5] +
-                        compressible.blocks_by_mode[6] +
-                        compressible.blocks_by_mode[7] +
-                        compressible.blocks_by_mode[8] +
-                        compressible.blocks_by_mode[9] +
-                        compressible.blocks_by_mode[10] +
-                        compressible.blocks_by_mode[11] +
-                        compressible.blocks_by_mode[12] +
-                        compressible.blocks_by_mode[13] +
-                        compressible.blocks_by_mode[14] +
-                        compressible.blocks_by_mode[15] +
-                        compressible.blocks_by_mode[16] +
-                        compressible.blocks_by_mode[17] +
-                        compressible.blocks_by_mode[18] +
-                        compressible.blocks_by_mode[19] +
-                        compressible.blocks_by_mode[20] +
-                        compressible.blocks_by_mode[21] +
-                        compressible.blocks_by_mode[22] +
-                        compressible.blocks_by_mode[23] +
-                        compressible.blocks_by_mode[24] +
-                        compressible.blocks_by_mode[25] +
-                        compressible.blocks_by_mode[26] +
-                        compressible.blocks_by_mode[27] +
-                        compressible.blocks_by_mode[28] +
-                        compressible.blocks_by_mode[29] +
-                        compressible.blocks_by_mode[30] +
-                        compressible.blocks_by_mode[31] +
-                        compressible.blocks_by_mode[32] +
-                        compressible.blocks_by_mode[33] +
-                        compressible.blocks_by_mode[34] +
-                        compressible.blocks_by_mode[35] +
-                        compressible.blocks_by_mode[36] +
-                        compressible.blocks_by_mode[37] +
-                        compressible.blocks_by_mode[38] +
-                        compressible.blocks_by_mode[39] ==
-                    1,
+    require(compressible.selected_candidate_bytes == compressible.archive_bytes,
+            "Auto selected-byte telemetry does not equal archive bytes");
+    require(compressible.oracle_candidate_bytes <=
+                compressible.selected_candidate_bytes,
+            "Auto oracle-byte telemetry exceeds selected bytes");
+    const std::uint32_t non_stored_blocks = std::accumulate(
+        compressible.blocks_by_mode.begin() + 1,
+        compressible.blocks_by_mode.end(), 0U);
+    require(compressible.blocks_by_mode[0] == 0 && non_stored_blocks == 1,
             "Auto mode selected stored for compressible repeated data");
 
     const auto incompressible = round_trip(
         directory, "auto-incompressible", pseudo_random_bytes(2048), options);
+    require(incompressible.selected_candidate_bytes ==
+                incompressible.archive_bytes,
+            "Auto stored-byte telemetry does not equal archive bytes");
     require(incompressible.blocks_by_mode[0] == 1,
             "Auto mode did not select stored for high-entropy data");
 }

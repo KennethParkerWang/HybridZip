@@ -69,6 +69,20 @@ $allFiles = @(
     'dickens', 'mozilla', 'mr', 'nci', 'ooffice', 'osdb',
     'reymont', 'samba', 'sao', 'webster', 'x-ray', 'xml'
 )
+# Keep this order equal to decoder-visible BlockMode IDs 0..42.
+$r2BlockModes = @(
+    'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
+    'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
+    'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'fastpfor', 'rans',
+    'bcj2-zstd', 'record-transpose-zstd', 'jpegls', 'flac-residual',
+    'brotli-text', 'cmix-word-zstd', 'neural-lstm', 'shared-neural-lstm',
+    'lstm-compress', 'delta-of-delta-zstd', 'bgpt-shared-prior',
+    'jax-compress-portable', 'ppmd7', 'ppmd8', 'zpaq', 'ctw',
+    'paq8px-apm', 'paq8px-record-model', 'paq8px-linear-prediction',
+    'paq8px-similarity', 'paq8px-similarity-sse', 'paq8px-generic-sse',
+    'paq8px-detected-sse', 'wavpack', 'lz4', 'kanzi-ans',
+    'lmic-arithmetic', 'delta-binary-packed-zstd'
+)
 if ($SilesiaFiles.Count -eq 0) {
     $files = @($allFiles)
 }
@@ -442,6 +456,9 @@ function Get-RecordedBlockTypes([string]$EncodeStdoutPath) {
         return 'UNKNOWN'
     }
     $stdout = Get-Content -LiteralPath $EncodeStdoutPath -Raw -Encoding UTF8
+    if ([string]::IsNullOrWhiteSpace($stdout)) {
+        return 'UNKNOWN'
+    }
     $pattern = 'blocks\(([^)]+)\)=([0-9]+(?:/[0-9]+)*)'
     $match = [regex]::Match($stdout, $pattern)
     if (-not $match.Success) {
@@ -462,6 +479,63 @@ function Get-RecordedBlockTypes([string]$EncodeStdoutPath) {
         return 'none'
     }
     return [string]::Join(';', $parts)
+}
+
+function Assert-R2BlockTypes([string]$RequestedMode,
+                             [string]$BlockTypes,
+                             [int64]$InputBytes,
+                             [string]$Description) {
+    if ([string]::IsNullOrWhiteSpace($BlockTypes) -or
+        $BlockTypes -eq 'none' -or $BlockTypes -eq 'UNKNOWN') {
+        throw "Missing recorded HZ02 block modes for $Description"
+    }
+
+    $counts = New-Object 'System.Collections.Generic.Dictionary[string,int64]' `
+        ([System.StringComparer]::Ordinal)
+    foreach ($part in $BlockTypes.Split(';')) {
+        $match = [regex]::Match(
+            $part.Trim(), '^(?<name>[^=;]+)=(?<count>[1-9][0-9]*)$')
+        if (-not $match.Success) {
+            throw "Malformed HZ02 block record for ${Description}: $part"
+        }
+        $matches = @($r2BlockModes | Where-Object {
+            [string]::Equals($_, $match.Groups['name'].Value,
+                [System.StringComparison]::Ordinal)
+        })
+        if ($matches.Count -ne 1) {
+            throw "Unknown HZ02 block mode for ${Description}: $($match.Groups['name'].Value)"
+        }
+        [int64]$count = 0
+        if (-not [int64]::TryParse(
+            $match.Groups['count'].Value,
+            [Globalization.NumberStyles]::None,
+            [Globalization.CultureInfo]::InvariantCulture,
+            [ref]$count
+        )) {
+            throw "Invalid HZ02 block count for ${Description}: $($match.Groups['count'].Value)"
+        }
+        if ($counts.ContainsKey($matches[0])) {
+            throw "Duplicate HZ02 block mode for ${Description}: $($matches[0])"
+        }
+        $counts.Add($matches[0], $count)
+    }
+
+    [int64]$total = 0
+    foreach ($count in $counts.Values) {
+        if ($count -gt ([int64]::MaxValue - $total)) {
+            throw "HZ02 block count overflow for $Description"
+        }
+        $total += $count
+    }
+    $expectedBlocks = [int64][Math]::Ceiling([double]$InputBytes / 65536.0)
+    if ($total -ne $expectedBlocks) {
+        throw "HZ02 block count mismatch for ${Description}: recorded=$total expected=$expectedBlocks"
+    }
+    if ($RequestedMode -ne 'auto' -and
+        ($counts.Count -ne 1 -or -not $counts.ContainsKey($RequestedMode) -or
+         $counts[$RequestedMode] -ne $expectedBlocks)) {
+        throw "Forced HZ02 mode mismatch for ${Description}: requested=$RequestedMode recorded=$BlockTypes"
+    }
 }
 
 function Write-ExperimentJson([string]$State) {
@@ -892,7 +966,14 @@ foreach ($case in $cases) {
     $roundtrip = 'NOT_VERIFIED'
     $notes = ''
     try {
-        foreach ($stalePath in @($case.ArchivePath, $case.DecodedPath)) {
+        # The codec commits archives through `<archive>.tmp`. A prior
+        # interrupted encode may leave that temporary path behind even when
+        # the final archive is absent; remove only this case's known artifact.
+        foreach ($stalePath in @(
+            $case.ArchivePath,
+            ($case.ArchivePath + '.tmp'),
+            $case.DecodedPath
+        )) {
             if (Test-Path -LiteralPath $stalePath -PathType Leaf) {
                 [System.IO.File]::Delete($stalePath)
             }
@@ -912,6 +993,11 @@ foreach ($case in $cases) {
         }
         if ($encode.ExitCode -ne 0) {
             throw "Encode exit code $($encode.ExitCode)"
+        }
+        if ($Profile -eq 'r2') {
+            $recordedBlockTypes = Get-RecordedBlockTypes $encode.StdoutPath
+            Assert-R2BlockTypes $R2Mode $recordedBlockTypes $case.InputBytes `
+                "case $($case.Order)/$($cases.Count) ($($case.Key))"
         }
 
         Assert-CodecUnchanged "before decode for case $($case.Order)/$($cases.Count) ($($case.Key))"

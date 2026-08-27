@@ -1,5 +1,32 @@
 # HybridZip R2 Continuation Notes
 
+## GPT Pro Research Handoff - 2026-08-27
+
+- Prepared `docs/research/gpt-pro/` as the handoff location for the next
+  research pass. The package does not copy large archives; it indexes the
+  authoritative local reports, source files, and tabular evidence.
+- Current R2 evidence is the 44-package, 528-row current-hash ledger at
+  `results/analysis/r2-complete-ledger/hybridzip-r2-currenthash-cc6d-20260827-r2/`.
+  Auto produced 99,720 bytes over 393,216 bytes (2.02880859375 bpb), with zero
+  archive-byte gap to the 43-forced-mode oracle. Its aggregate encode/decode
+  wall times were 2227.074129/151.5291793 seconds and peak sampled RAM was
+  735.3046875 MiB.
+- The current local PAQ8px v216 `-1` 32 KiB suite at
+  `F:/paq8px/benchmark_paq8px_32KiB_parallel/` is valid evidence for its own
+  protocol, but takes a centred slice from each Silesia file. R2 takes the
+  leading prefix. The input SHA-256 values differ, so archive-byte and bpb
+  comparisons across those two packages are not valid acceptance evidence.
+- No Tencent dataset directory, provenance manifest, or completed measurement
+  was found under `E:/MIXER`, `E:/MIXER/KU`, or the inspected PAQ8px benchmark
+  records. The exact Tencent corpus/version/license/split must be frozen before
+  the stated dual-corpus target can be measured.
+- Source inspection: `BlockPlanner::plan` computes stored, generic, and
+  structure-gated candidate archive sizes before selecting the minimum. The
+  existing `StructureActivationRouter` and `HierarchicalActivationRouter` are
+  deterministic heuristic gates, not a measured small-candidate production
+  shortlist. This explains why Auto reaches the measured oracle but has poor
+  encode throughput.
+
 ## 2026-08-26 donor audit
 
 - Audited `E:/MIXER/KU/hybridzip-r2` and its provenance inventory.
@@ -380,3 +407,144 @@
   `results/analysis/r2-smoke-evidence-index-20260826-parallel`: 42 unique
   passing modes, missing only mode 8. Auto, D40, CTest, batch, and larger
   inputs were not run.
+
+## 2026-08-27 README alignment audit
+
+- GitHub `origin/main` and the local `main` both resolve to
+  `2e7b1b97d56ec90f671141f8afeaecc0e29f4111`; the remote README was the same
+  revision as the local README before this documentation update.
+- README now states the donor-first rule and links donor/provenance and license
+  records. It also links the R2-A through R2-D continuation plan and clarifies
+  that phase labels are execution order, not a scope reduction.
+- The phrase `five repository tests` was narrowed to five HZ01 baseline tests;
+  the current CMake configuration registers 18 CTest targets in total.
+- The README status remains intentionally incomplete for R2: 43 decoder-visible
+  candidates are exposed, 42/43 have current-Release 1 KiB byte-exact branch
+  gates, and the final Auto/archive-byte ledger plus candidate decisions are
+  still pending. No runtime experiment was started for this audit.
+
+## 2026-08-27 architecture figure reconciliation
+
+- Updated the hand-authored SVG and PNG exports for the current and full R2
+  architecture diagrams. The prior exports incorrectly labeled router layers
+  and most portfolio capability as planned and said only 24 paths existed.
+- The diagrams now match their Mermaid source: all 43 decoder-visible HZ02
+  modes, Layer A/B/C routing, complete archive-byte comparison, per-block
+  mode/transform/entropy/CRC32, strict decode, and HZ01 compatibility are
+  solid. Only the current-hash Auto plus 43 forced ledger and measured
+  retain/retire decision are dashed.
+- Verification passed: both SVGs parse as XML, both PNGs render at 1920x1080,
+  Mermaid source equals the corresponding fenced Markdown block, and strict
+  visual review found no clipping, overlap, or incorrect flow direction. No
+  codec process was launched.
+
+## 2026-08-27 Auto test coverage correction
+
+- The R2 Auto test's hand-written non-stored sum ended at mode 39, leaving the
+  current mode 40 (Kanzi ANS), mode 41 (LMIC), and mode 42
+  (delta-binary-packed Zstd) outside its assertion.
+- Replaced the range with `std::accumulate(begin + 1, end, 0U)`, so the test
+  remains correct for every current non-stored block mode and future additions
+  that expand `blocks_by_mode`.
+- `hz_r2_codec_tests` rebuilt and linked successfully. It was deliberately not
+  run, so this is compilation evidence rather than a fresh CTest result.
+
+## 2026-08-27 Auto archive-byte accounting
+
+- Auto selection compares payload plus transform metadata. The 16-byte block
+  header and 4-byte CRC are invariant across candidates, so their omission did
+  not change selection; it did make exported selected/oracle telemetry smaller
+  than the corresponding archive by 20 bytes per block plus the 40-byte HZ02
+  archive header.
+- `BlockPlanner` now adds the per-block fixed overhead and `compress_file`
+  seeds aggregate selected/oracle totals with the archive header. The Auto test
+  now asserts selected bytes equal archive bytes and oracle bytes do not exceed
+  selected bytes for both compressible and stored cases.
+- The rebuilt Release hash is
+  `F650AE7E662FDC28F82CF18F4279F7BAAA4433A9C3890EAAC94970A73D11432B`.
+  No codec execution followed the rebuild. The FDE6 current-hash smoke records
+  are therefore preserved as prior-build evidence pending the final ledger.
+
+## 2026-08-27 final-ledger preflight after rebuild
+
+- `tools/run_r2_complete_ledger.ps1 -ListOnly` accepted the rebuilt Release
+  path and reported 44 packages, 43 forced modes, 12 Silesia files, and the
+  32 KiB scope with `runtime_started=false`.
+- The runner did not create an experiment package or launch a codec process.
+
+## 2026-08-27 forced-mode archive-byte telemetry repair
+
+- The first minimal forced `stored` gate on the Auto-accounting Release found
+  that its CLI `selected` and `oracle` fields retained only the 40-byte HZ02
+  archive header. This did not affect the archive bytes or the final ledger,
+  which reads files directly, but it made forced-mode CLI measurements
+  misleading.
+- `r2_codec.cpp` now fills forced-mode decision telemetry from the final
+  serialized block size: 16-byte block header, 4-byte CRC32, transform
+  metadata, and payload. The statistics therefore use the same full-file
+  meaning in Auto and forced operation.
+- Release compilation passed for `hybridzip` and `hz_r2_codec_tests`. A new
+  random 1 KiB forced-stored smoke wrote a 1,084-byte archive, reported
+  `selected=1084` and `oracle=1084`, and decoded with equal input/output
+  SHA-256. Evidence is
+  `results/smoke/r2-telemetry-stored-1k-20260827-v2/verification.json`.
+- The active Release SHA-256 after this repair is
+  `CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191`.
+  The earlier `F650...1432` build remains a distinct pre-repair hash; it must
+  not be combined with either the historical branch evidence or a future
+  current-hash ledger.
+
+## 2026-08-27 forced-mode ledger attribution gate
+
+- The complete-ledger derivation previously trusted a forced package's name
+  when exporting its selected mode. Its `block_types` field was present but
+  was not used to prove that the requested forced mode was actually serialized.
+- `derive_r2_complete_ledger.ps1` now parses the CLI block count record,
+  rejects missing, malformed, unknown, duplicate, zero-count, and
+  wrong-total records, and requires every forced block to equal its requested
+  mode. It also requires the fixed 64 KiB ledger block-size parameter.
+- In-memory PowerShell checks passed for `zstd=1`, Auto's canonical
+  `stored=1;zstd=1` mode order, a forced-mode substitution, and a zero-count
+  malformed record. No archive was created and no codec process was started.
+
+## 2026-08-27 immediate forced-mode runner gate
+
+- The Silesia runner now applies the same HZ02 `block_types` validation right
+  after an R2 encode succeeds and before it starts decode. This makes an
+  unexpected forced-mode fallback a failed case at its source instead of a
+  late final-ledger failure after the remaining packages have run.
+- The gate verifies a known decoder-visible mode, positive non-duplicate
+  counts, the expected 64 KiB block count, and exact requested-mode identity
+  for forced runs. Auto remains free to record any valid candidate combination.
+- The PowerShell parser plus in-memory `zstd=1`, Auto two-block,
+  forced-substitution, and wrong-block-count checks passed. No archive was
+  created and no codec process was started.
+
+## 2026-08-27 segment-oracle forced attribution gate
+
+- `run_r2_segment_oracle.ps1` now validates the actual HZ02 `block_types`
+  record after each successful encode and before it enters a forced-mode oracle
+  comparison. A fallback or malformed archive therefore cannot become a local
+  oracle winner under the requested donor name.
+- Its parser plus `zstd=1`, Auto two-block, forced-substitution, and
+  wrong-block-count checks passed in memory. The runner remains non-overwriting
+  and requires explicit runtime authorization.
+# Current-hash ledger result (2026-08-27)
+
+The authorized ledger `hybridzip-r2-currenthash-cc6d-20260827-r2` is complete.
+It contains Auto plus 43 forced HZ02 modes, 44 packages, 12 Silesia 32 KiB
+prefix cases per package, and 528 validated rows. Every row is COMPLETE/PASS,
+has zero codec exit codes, uses Release SHA-256
+`CC6DA8404E3A2789A0E98BED460C4FAA90822BAC0EA362C67E261774BD0BF191`, and has
+byte-exact input/archive/decoded SHA-256 evidence.
+
+Auto totals 99,720 complete archive bytes over 393,216 input bytes (2.028809
+bpb). The forced archive-byte oracle is identical on all 12 cases: aggregate
+and per-case Auto gap are zero. Auto selects `paq8px-detected-sse` five times
+and `paq8px-generic-sse` seven times; they are the only observed forced-mode
+oracle winners. Other donor paths remain in the product and are not deleted;
+their no-win status is limited to this one prefix matrix.
+
+Derived files, strict analysis, figures, and the round-review report are under
+`results/analysis/r2-complete-ledger/hybridzip-r2-currenthash-cc6d-20260827-r2/`.
+The separate segment-oracle runtime experiment remains unrun by design.

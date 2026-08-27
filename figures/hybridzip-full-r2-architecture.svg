@@ -1,80 +1,95 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
   <defs>
     <marker id="arrow-current" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#163A5F"/></marker>
-    <marker id="arrow-planned" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#6B7280"/></marker>
+    <marker id="arrow-pending" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#6B7280"/></marker>
     <style>
-      .title { font: 700 44px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #163A5F; }
-      .section { font: 700 23px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #6B7280; letter-spacing: 0; }
-      .legend { font: 22px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #374151; }
-      .label { font: 700 28px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #111827; text-anchor: middle; }
-      .small { font: 22px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #374151; text-anchor: middle; }
+      .title { font: 700 42px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #163A5F; }
+      .section { font: 700 22px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #6B7280; letter-spacing: 0; }
+      .legend { font: 21px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #374151; }
+      .label { font: 700 24px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #111827; text-anchor: middle; }
+      .small { font: 17px "Microsoft YaHei", "Segoe UI", Arial, sans-serif; fill: #374151; text-anchor: middle; }
       .current { fill: #FFFFFF; stroke: #163A5F; stroke-width: 4; }
       .focus { fill: #F1F5F9; stroke: #163A5F; stroke-width: 5; }
       .baseline { fill: #FFFFFF; stroke: #6B7280; stroke-width: 3.5; }
-      .planned { fill: #FFFFFF; stroke: #6B7280; stroke-width: 3.5; stroke-dasharray: 12 8; }
+      .pending { fill: #FFFFFF; stroke: #6B7280; stroke-width: 3.5; stroke-dasharray: 12 8; }
       .edge-current { fill: none; stroke: #163A5F; stroke-width: 4; marker-end: url(#arrow-current); }
-      .edge-planned { fill: none; stroke: #6B7280; stroke-width: 3.5; stroke-dasharray: 12 8; marker-end: url(#arrow-planned); }
+      .edge-pending { fill: none; stroke: #6B7280; stroke-width: 3.5; stroke-dasharray: 12 8; marker-end: url(#arrow-pending); }
     </style>
   </defs>
   <rect width="1920" height="1080" fill="#FFFFFF"/>
-  <text x="80" y="82" class="title">HybridZip R2 完整目标架构</text>
+  <text x="70" y="82" class="title">HybridZip R2 完整运行架构</text>
 
-  <rect x="1360" y="45" width="42" height="30" class="current"/>
-  <path d="M1420 60 H1480" class="edge-current"/><text x="1500" y="68" class="legend">已有基础</text>
-  <rect x="1650" y="45" width="42" height="30" class="planned"/>
-  <path d="M1710 60 H1770" class="edge-planned"/><text x="1790" y="68" class="legend">未来扩展</text>
+  <rect x="1190" y="45" width="42" height="30" class="current"/>
+  <path d="M1250 60 H1310" class="edge-current"/><text x="1330" y="68" class="legend">已接入产品</text>
+  <rect x="1570" y="45" width="42" height="30" class="pending"/>
+  <path d="M1630 60 H1690" class="edge-pending"/><text x="1710" y="68" class="legend">待测量决策</text>
 
-  <text x="80" y="183" class="section">目标组合能力（虚线）</text>
-  <path d="M710 245 H805" class="edge-planned"/>
-  <path d="M985 245 H1080" class="edge-planned"/>
-  <path d="M1280 245 H1390" class="edge-planned"/>
-  <rect x="450" y="185" width="260" height="120" class="planned"/>
-  <text x="580" y="231" class="label">算法族</text>
-  <text x="580" y="268" class="small">统计 / LZ / 表示 / 专家 / 神经</text>
-  <rect x="805" y="190" width="180" height="110" class="planned"/>
-  <text x="895" y="231" class="label">Layer B</text>
-  <text x="895" y="267" class="small">族级路由</text>
-  <rect x="1080" y="190" width="200" height="110" class="planned"/>
-  <text x="1180" y="231" class="label">Layer C</text>
-  <text x="1180" y="267" class="small">分支 / 模型 / 编码</text>
-  <rect x="1390" y="190" width="230" height="110" class="planned"/>
-  <text x="1505" y="231" class="label">神经扩展</text>
-  <text x="1505" y="267" class="small">共享模型与运行时</text>
+  <text x="70" y="150" class="section">donor-first 资产与 R2 组合层</text>
+  <path d="M370 230 H430" class="edge-current"/>
+  <path d="M650 290 V340 H1008 V450" class="edge-current"/>
+  <rect x="70" y="180" width="300" height="100" class="current"/>
+  <text x="220" y="222" class="label">KU donor warehouse</text>
+  <text x="220" y="255" class="small">source / revision / license evidence</text>
+  <rect x="430" y="170" width="440" height="120" class="current"/>
+  <text x="650" y="217" class="label">Donor-driven portfolio</text>
+  <text x="650" y="250" class="small">43 modes：representation / LZ / specialist / neural</text>
 
-  <text x="80" y="404" class="section">HZ02 当前基础（实线）</text>
-  <path d="M195 500 H240" class="edge-current"/>
-  <path d="M400 500 H445" class="edge-current"/>
-  <path d="M650 500 H695" class="edge-current"/>
-  <path d="M955 500 H1000" class="edge-current"/>
-  <path d="M1235 500 H1280" class="edge-current"/>
-  <path d="M1490 500 H1535" class="edge-current"/>
-  <rect x="45" y="450" width="150" height="100" class="current"/><text x="120" y="510" class="label">输入</text>
-  <rect x="240" y="450" width="160" height="100" class="current"/><text x="320" y="510" class="label">分块</text>
-  <rect x="445" y="435" width="205" height="130" class="current"/>
-  <text x="548" y="483" class="label">Layer A</text><text x="548" y="525" class="small">结构门控</text>
-  <rect x="695" y="425" width="260" height="150" class="focus"/>
-  <text x="825" y="483" class="label">候选系统</text><text x="825" y="525" class="small">真实归档字节比较</text>
-  <rect x="1000" y="435" width="235" height="130" class="current"/>
-  <text x="1118" y="483" class="label">写入 HZ02</text><text x="1118" y="525" class="small">模式 / 变换 / CRC</text>
-  <rect x="1280" y="435" width="210" height="130" class="current"/>
-  <text x="1385" y="483" class="label">严格解码</text><text x="1385" y="525" class="small">格式与 CRC</text>
-  <rect x="1535" y="450" width="175" height="100" class="current"/><text x="1623" y="510" class="label">输出</text>
+  <text x="70" y="400" class="section">HZ02 自动编码与严格解码（实线：已接入）</text>
+  <path d="M200 500 H250" class="edge-current"/>
+  <path d="M420 500 H470" class="edge-current"/>
+  <path d="M645 500 H695" class="edge-current"/>
+  <path d="M870 500 H920" class="edge-current"/>
+  <path d="M1095 500 H1145" class="edge-current"/>
+  <rect x="45" y="450" width="155" height="100" class="current"/>
+  <text x="123" y="510" class="label">输入文件</text>
+  <rect x="250" y="450" width="170" height="100" class="current"/>
+  <text x="335" y="492" class="label">HZ02 分块</text>
+  <text x="335" y="523" class="small">64 KiB 默认块</text>
+  <rect x="470" y="440" width="175" height="120" class="current"/>
+  <text x="558" y="487" class="label">Layer A</text>
+  <text x="558" y="521" class="small">结构与表示激活</text>
+  <rect x="695" y="440" width="175" height="120" class="current"/>
+  <text x="783" y="487" class="label">Layer B</text>
+  <text x="783" y="521" class="small">算法族门控</text>
+  <rect x="920" y="440" width="175" height="120" class="current"/>
+  <text x="1008" y="482" class="label">Layer C</text>
+  <text x="1008" y="513" class="small">branch / model</text>
+  <text x="1008" y="535" class="small">coder policy</text>
+  <rect x="1145" y="430" width="340" height="140" class="focus"/>
+  <text x="1315" y="480" class="label">完整 archive bytes 比较</text>
+  <text x="1315" y="513" class="small">候选选择与 stored fallback</text>
 
-  <path d="M548 435 V345 H580 V305" class="edge-planned"/>
-  <path d="M1180 300 V350 H825 V425" class="edge-planned"/>
-  <path d="M120 550 V760" class="edge-current"/>
-  <path d="M825 575 V760" class="edge-current"/>
-  <path d="M1118 565 V760" class="edge-planned"/>
-  <path d="M1385 565 V760" class="edge-planned"/>
+  <path d="M1315 570 V640 H1115 V700" class="edge-current"/>
+  <path d="M1295 757 H1355" class="edge-current"/>
+  <path d="M1545 757 H1605" class="edge-current"/>
+  <rect x="935" y="700" width="360" height="115" class="current"/>
+  <text x="1115" y="742" class="label">HZ02 archive</text>
+  <text x="1115" y="773" class="small">mode / transform / entropy / CRC32</text>
+  <rect x="1355" y="700" width="190" height="115" class="current"/>
+  <text x="1450" y="742" class="label">严格解码</text>
+  <text x="1450" y="773" class="small">边界、metadata、CRC</text>
+  <rect x="1605" y="700" width="245" height="115" class="current"/>
+  <text x="1728" y="757" class="label">逐字节一致输出</text>
 
-  <path d="M275 815 H330" class="edge-current"/>
-  <rect x="45" y="760" width="230" height="110" class="baseline"/>
-  <text x="160" y="803" class="label">HZ01 基线</text><text x="160" y="841" class="small">V1 四专家 mixer</text>
-  <rect x="330" y="775" width="170" height="80" class="baseline"/><text x="415" y="824" class="label">HZ01 归档</text>
-  <rect x="705" y="760" width="240" height="110" class="current"/>
-  <text x="825" y="803" class="label">当前账本</text><text x="825" y="841" class="small">bytes / oracle gap</text>
-  <rect x="998" y="760" width="240" height="110" class="planned"/>
-  <text x="1118" y="803" class="label">解码元数据</text><text x="1118" y="841" class="small">更丰富身份字段</text>
-  <rect x="1265" y="760" width="240" height="110" class="planned"/>
-  <text x="1385" y="803" class="label">解码器扩展</text><text x="1385" y="841" class="small">更严格契约</text>
+  <text x="370" y="875" class="section">HZ01 兼容与最终测量交付</text>
+  <path d="M123 550 V925" class="edge-current"/>
+  <path d="M290 975 H350" class="edge-current"/>
+  <rect x="45" y="925" width="245" height="100" class="baseline"/>
+  <text x="168" y="960" class="label">HZ01 V1 兼容路径</text>
+  <text x="168" y="989" class="small">四专家 mixer 保持可解码</text>
+  <rect x="350" y="935" width="180" height="80" class="baseline"/>
+  <text x="440" y="984" class="label">HZ01 归档</text>
+
+  <path d="M1315 570 V895 H775 V925" class="edge-current"/>
+  <path d="M930 975 H990" class="edge-pending"/>
+  <path d="M1235 975 H1295" class="edge-pending"/>
+  <rect x="620" y="925" width="310" height="100" class="current"/>
+  <text x="775" y="960" class="label">Auto telemetry</text>
+  <text x="775" y="989" class="small">selected / oracle / gap / block mode</text>
+  <rect x="990" y="925" width="245" height="100" class="pending"/>
+  <text x="1113" y="960" class="label">current hash 账本</text>
+  <text x="1113" y="989" class="small">44 packages，待授权运行</text>
+  <rect x="1295" y="925" width="350" height="100" class="pending"/>
+  <text x="1470" y="960" class="label">retain / retire 决策</text>
+  <text x="1470" y="989" class="small">真实 bytes、时间、内存、回解</text>
 </svg>

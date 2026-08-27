@@ -7,3 +7,10 @@
 /results/experiments/*/logs/
 *.hz
 *.decoded
+
+# Local harness diagnostics and interpreter caches.
+tools/__pycache__/
+results/smoke/*.stdout
+results/smoke/*.stderr
+results/smoke/*.out
+results/smoke/*.err

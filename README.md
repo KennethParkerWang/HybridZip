@@ -14,12 +14,28 @@ specialist PAQ8px branches, neural profiles, and router-controlled Auto
 selection. See [docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) for the
 current evidence boundary and known limitations.
 
-The HZ01 baseline Release executable, five repository tests, nine-input product
-matrix, and 36-case Silesia ledger are complete. R2 implementation is active:
-42/43 decoder-visible modes currently have current-Release 1 KiB byte-exact
-branch gates, while the final Auto plus 43-mode archive-byte ledger, candidate
-retirement, and final hot-path selection remain pending. The missing branch
-gate is `bwt-rlt-zstd` on random 1 KiB input; suitable 32 KiB evidence exists.
+R2 follows a donor-first integration rule. Donor revisions, accepted code
+subsets, provenance, and license boundaries are recorded in
+[docs/DONORS.md](docs/DONORS.md) and
+[docs/LICENSE_MATRIX.md](docs/LICENSE_MATRIX.md).
+
+The HZ01 baseline Release executable, five HZ01 baseline tests (within the 18
+CTest targets registered by the current build), nine-input product matrix, and
+36-case Silesia ledger are complete. The active R2 Release has a complete
+current-hash ledger for Auto plus all 43 forced modes: 44 packages, 528 rows,
+and 528/528 byte-exact round trips. On the declared 12-file, 32 KiB Silesia
+prefix matrix, Auto totals 99,720 archive bytes (2.028809 bpb) and matches the
+complete forced-mode oracle with a zero-byte gap in every case. Auto selected
+`paq8px-detected-sse` five times and `paq8px-generic-sse` seven times. This is
+an engineering result for one prefix size; it is not a global ranking or a
+reason to delete the remaining donor paths.
+
+The R2-A through R2-D continuation plan and the ledger decision are tracked in
+[task_plan.md](task_plan.md). The exact ledger, strict analysis bundle, and
+round-review report are under
+`results/analysis/r2-complete-ledger/hybridzip-r2-currenthash-cc6d-20260827-r2/`.
+The phase labels describe execution order; they do not reduce the final
+portfolio scope.
 
 ```text
 HZ01 compatibility path
@@ -133,9 +149,9 @@ modified cmix source. Exact upstream locations and adaptations are recorded in
 ## HZ01 Baseline Measured Results
 
 The measurements in this section are the completed HZ01/PROFILE_V1 baseline.
-They are not the pending R2 Auto/oracle archive-byte ledger; the current R2
-evidence boundary and remaining work are tracked in
-[docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md).
+The separate R2 Auto/oracle archive-byte ledger is recorded in
+[docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) and the current-hash ledger
+directory described above.
 
 The product corpus contains nine data classes and 251,589 input bytes. Large
 sources are exact leading-byte prefixes, not full-corpus runs; selections and

@@ -45,21 +45,70 @@ function Get-Sha256([string]$Path) {
     (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToUpperInvariant()
 }
 
-function Get-SelectedModes([string]$Mode, [string]$BlockTypes) {
-    if ($Mode -ne 'auto') {
-        return @($Mode)
+function Get-RecordedModeCounts([string]$BlockTypes,
+                                [string]$Description) {
+    if ([string]::IsNullOrWhiteSpace($BlockTypes) -or
+        $BlockTypes -eq 'none' -or $BlockTypes -eq 'UNKNOWN') {
+        throw "Missing recorded HZ02 block modes for $Description"
     }
-    if ([string]::IsNullOrWhiteSpace($BlockTypes) -or $BlockTypes -eq 'none') {
-        return @()
-    }
-    $selected = New-Object System.Collections.Generic.List[string]
+
+    $counts = New-Object 'System.Collections.Generic.Dictionary[string,int64]' `
+        ([System.StringComparer]::Ordinal)
     foreach ($part in $BlockTypes.Split(';')) {
-        $match = [regex]::Match($part.Trim(), '^(?<name>[^=]+)=(?<count>[0-9]+)$')
-        if ($match.Success -and [int]$match.Groups['count'].Value -gt 0) {
-            $selected.Add($match.Groups['name'].Value)
+        $match = [regex]::Match(
+            $part.Trim(), '^(?<name>[^=;]+)=(?<count>[1-9][0-9]*)$')
+        if (-not $match.Success) {
+            throw "Malformed block mode record for ${Description}: $part"
         }
+        $matches = @($forcedModes | Where-Object {
+            [string]::Equals($_, $match.Groups['name'].Value,
+                [System.StringComparison]::Ordinal)
+        })
+        if ($matches.Count -ne 1) {
+            throw "Unknown block mode for ${Description}: $($match.Groups['name'].Value)"
+        }
+        [int64]$count = 0
+        if (-not [int64]::TryParse(
+            $match.Groups['count'].Value,
+            [Globalization.NumberStyles]::None,
+            [Globalization.CultureInfo]::InvariantCulture,
+            [ref]$count
+        )) {
+            throw "Invalid block count for ${Description}: $($match.Groups['count'].Value)"
+        }
+        if ($counts.ContainsKey($matches[0])) {
+            throw "Duplicate block mode for ${Description}: $($matches[0])"
+        }
+        $counts.Add($matches[0], $count)
     }
-    return $selected.ToArray()
+    return ,$counts
+}
+
+function Get-SelectedModes($Counts) {
+    return @($forcedModes | Where-Object { $Counts.ContainsKey($_) })
+}
+
+function Assert-RecordedModes([string]$Mode,
+                              [string]$BlockTypes,
+                              [int64]$ExpectedBlockCount,
+                              [string]$Description) {
+    $counts = Get-RecordedModeCounts $BlockTypes $Description
+    [int64]$total = 0
+    foreach ($count in $counts.Values) {
+        if ($count -gt ([int64]::MaxValue - $total)) {
+            throw "Block count overflow for $Description"
+        }
+        $total += $count
+    }
+    if ($total -ne $ExpectedBlockCount) {
+        throw "Block count mismatch for ${Description}: recorded=$total expected=$ExpectedBlockCount"
+    }
+    if ($Mode -ne 'auto' -and
+        ($counts.Count -ne 1 -or -not $counts.ContainsKey($Mode) -or
+         $counts[$Mode] -ne $ExpectedBlockCount)) {
+        throw "Forced mode mismatch for ${Description}: requested=$Mode recorded=$BlockTypes"
+    }
+    return ,$counts
 }
 
 function Get-RequiredProperty($Object, [string]$Name) {
@@ -225,6 +274,14 @@ foreach ($manifestRow in $manifestRows) {
         }
         $rowCodecHash = Get-RequiredSha256 $row 'codec_sha256' "$mode/$key codec_sha256"
 
+        if ([string]$row.parameters -notmatch '(^|;)block_size=65536(;|$)') {
+            throw "Unexpected HZ02 block size for ${mode}/${key}"
+        }
+        $expectedBlockCount = [int64][Math]::Ceiling(
+            [double]$actualInputBytes / 65536.0)
+        $recordedCounts = Assert-RecordedModes $mode ([string]$row.block_types) `
+            $expectedBlockCount "$mode/$key"
+
         $inputHash = Get-Sha256 $inputPath
         $archiveHash = Get-Sha256 $archivePath
         $decodedHash = Get-Sha256 $decodedPath
@@ -233,7 +290,7 @@ foreach ($manifestRow in $manifestRows) {
         Assert-EqualHash ([string]$row.decoded_sha256) $decodedHash "$mode/$key decoded"
         Assert-EqualHash $inputHash $decodedHash "$mode/$key roundtrip"
         [void]$codecHashes.Add($rowCodecHash)
-        $selectedModes = @(Get-SelectedModes $mode ([string]$row.block_types))
+        $selectedModes = @(Get-SelectedModes $recordedCounts)
         $normalizedRow = [pscustomobject][ordered]@{
             ledger_id = $ledgerId
             mode = $mode
@@ -344,7 +401,12 @@ foreach ($mode in $modes) {
             @([string]$_.oracle_winner_modes -split ';') -contains $mode
         }).Count
     }
-    $autoSelectedRows = if ($autoSelectionCounts.ContainsKey($mode)) { $autoSelectionCounts[$mode] } else { 0 }
+    # Count Auto selections directly from the materialized case summaries.
+    # This avoids PowerShell treating a hashtable lookup result as an
+    # untyped pipeline value on older hosts.
+    $autoSelectedRows = @($caseSummaries.ToArray() | Where-Object {
+        @([string]$_.auto_selected_modes -split ';') -contains $mode
+    }).Count
     $recommendation = if ($mode -eq 'auto') { 'routing-observation' }
         elseif ($oracleWins -gt 0) { 'retain-candidate' }
         else { 'candidate-not-oracle-winner' }
@@ -369,9 +431,14 @@ foreach ($mode in $modes) {
 }
 
 New-Item -ItemType Directory -Path $OutputPath | Out-Null
-$normalizedArray = @($normalized | Sort-Object mode_index, file, scope_kib)
-$caseArray = @($caseSummaries)
-$aggregateArray = @($modeAggregates)
+# Materialize the generic list before sorting. Windows PowerShell and recent
+# PowerShell Core builds can otherwise hit a dynamic-binder "Argument types do
+# not match" error when a List[object] is piped with multiple sort properties.
+$normalizedArray = @($normalized.ToArray() | Sort-Object -Property @(
+    'mode_index', 'file', 'scope_kib'
+))
+$caseArray = @($caseSummaries.ToArray())
+$aggregateArray = @($modeAggregates.ToArray())
 $manifestArray = @($manifestRows)
 Write-NoBom (Join-Path $OutputPath 'mode_rows.tsv') `
     ((($normalizedArray | ConvertTo-Csv -Delimiter "`t" -NoTypeInformation) -join "`r`n") + "`r`n")
@@ -394,33 +461,33 @@ $readme = @"
 # HybridZip R2 Complete Current-Hash Ledger
 
 This derived ledger validates Auto plus all 43 forced HZ02 modes on the exact
-file/scope matrix declared by `manifest.tsv`. Every archive byte count comes
+file/scope matrix declared by ``manifest.tsv``. Every archive byte count comes
 from the complete `.hz2` file, including the HZ02 header, block headers, CRC32
 metadata, backend envelope, and payload. Rows are accepted only when input,
 archive, and decoded artifact SHA-256 values match and the decoded bytes equal
 the input bytes.
 
-- ledger id: `$ledgerId`
+- ledger id: $ledgerId
 - modes: $($modes.Count) total (Auto + $($forcedModes.Count) forced)
 - rows per mode: $expectedRows
 - total validated rows: $($normalizedArray.Count)
-- codec SHA-256: `$codecHash`
-- source manifest SHA-256: `$sourceManifestHash`
+- codec SHA-256: $codecHash
+- source manifest SHA-256: $sourceManifestHash
 - Auto gap-positive cases: $autoGapPositive/$($autoRows.Count)
 - total Auto gap bytes: $autoGapTotal
 - total forced-mode oracle winner rows (ties counted): $oracleWinsTotal
 
 ## Outputs
 
-- `mode_rows.tsv`: normalized archive bytes, timing, memory, and SHA-256 data.
-- `per_case_oracle.tsv`: Auto archive bytes versus the minimum complete archive
+- ``mode_rows.tsv``: normalized archive bytes, timing, memory, and SHA-256 data.
+- ``per_case_oracle.tsv``: Auto archive bytes versus the minimum complete archive
   bytes among all 43 forced modes for each file and scope.
-- `mode_aggregate.tsv`: weighted archive totals, encode/decode time, peak
+- ``mode_aggregate.tsv``: weighted archive totals, encode/decode time, peak
   memory, Auto selections, oracle wins, and evidence-based recommendation.
-- `auto_selection.tsv`: compact Auto/oracle view for review.
-- `package_manifest.tsv`: exact package inputs used for this derivation.
+- ``auto_selection.tsv``: compact Auto/oracle view for review.
+- ``package_manifest.tsv``: exact package inputs used for this derivation.
 
-`candidate-not-oracle-winner` is a measured retention signal, not permission
+``candidate-not-oracle-winner`` is a measured retention signal, not permission
 to delete donor source. Candidate removal from the product requires a separate
 review of corpus coverage, license constraints, and future inputs.
 "@
