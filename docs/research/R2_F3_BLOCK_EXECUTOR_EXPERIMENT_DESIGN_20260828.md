@@ -45,7 +45,9 @@ regret, PAQ8px ratio, Silesia, Tencent/OASum, or GPU performance.
 After F3.2 passes, create a new non-overwriting Fast package on the frozen
 36-row leading-prefix Silesia manifest. For each 32/64/128 KiB input scope and
 internal block size, run one warmup plus three retained repeats at worker
-counts one and a fixed CPU-pool value. Record complete archive bytes, bpb,
+counts one and a fixed CPU-pool value. The matrix runner exposes this as
+`-FastThreadCount`; it passes the same value to every Fast child as
+`--threads` and rejects it for E5. Record complete archive bytes, bpb,
 decoded hashes, executable hash, wall/CPU time, encode/decode MB/s, P50/P95
 queue-plus-service and service-only block latency, process RAM, worker count,
 and candidate telemetry.

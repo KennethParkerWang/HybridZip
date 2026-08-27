@@ -36,7 +36,7 @@ policy cannot be used to claim the other policy's target.
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
 | F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; no-leakage labels and measured router budget remain required | Bootstrap implemented; not promoted |
 | F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | 1 KiB gate passed; corpus rerun pending |
-| F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Fast-only executor and 1 KiB gate passed; post-change timing matrix pending |
+| F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Fast-only executor/1 KiB gate passed; guarded worker-count matrix preflight passed; post-change timing pending |
 | F4 | GPU `LZ_RANS_V1` | CPU reference decoder; end-to-end >= 8 MB/s at every required size | Blocked by F2/F3 |
 
 ## Runtime Protocol

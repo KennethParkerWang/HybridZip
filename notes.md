@@ -881,3 +881,11 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   The Fast policy evaluated 16 candidates over four blocks and selected Mode
   43 on each. Evidence:
   `results/smoke/r2-f3-fast-executor-1k-20260828-v2/verification.json`.
+- F3.4a adds `-FastThreadCount` to `tools/run_r2_e5_e6_matrix.ps1` and
+  `-ThreadCount` to the child runner. The parent stores the requested count in
+  its experiment metadata, rejects incompatible resume packages, forwards it
+  to `--threads` for Fast, checks `workers=` encoder telemetry, and includes
+  both values in matrix/summary rows. E5 and every non-Fast child reject a
+  count above one. PowerShell AST parsing passed; E6 one-file/one-cell
+  `-ListOnly` preflights passed at one and two workers with
+  `runtime_started=false`.

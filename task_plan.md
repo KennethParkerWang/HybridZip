@@ -202,8 +202,11 @@ when compression decisions finish in another order.
   archive gate at one and two workers.
 - [x] F3.3: commit and push the implementation/evidence milestone as
   `501759c` (`feat(r2): add Fast block executor`).
-- [ ] F3.4: only after F3.2, schedule the separate post-change E6 Fast K=4
-  32/64/128 KiB timing matrix.
+- [x] F3.4a: add `-FastThreadCount` to the guarded E6 matrix and thread-count
+  resume/telemetry checks; AST and one-file `-ListOnly` preflights passed for
+  one and two workers without starting a codec process.
+- [ ] F3.4b: only after explicit authorization, run the separate post-change
+  E6 Fast K=4 32/64/128 KiB timing matrix.
 
 ### Decision
 
@@ -213,9 +216,9 @@ policies and every forced mode also retain their existing serial behavior.
 
 ### Status
 
-**F3.1-F3.3 complete.** The next target is F3.4: prepare and explicitly
-authorize a post-change Fast K=4 timing matrix. No corpus benchmark is running
-or authorized by this work item.
+**F3.1-F3.4a complete.** F3.4b requires explicit authorization for a
+post-change Fast K=4 timing matrix. No corpus benchmark is running or
+authorized by this work item.
 
 ## 2026-08-28 attachment-driven target execution
 

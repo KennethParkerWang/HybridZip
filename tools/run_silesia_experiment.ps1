@@ -28,6 +28,8 @@ param(
     [int[]]$ScopesKiB = @(32, 64, 128),
     [ValidateSet(32, 64, 128)]
     [int]$BlockSizeKiB = 64,
+    [ValidateRange(1, 256)]
+    [int]$ThreadCount = 1,
     [string[]]$SilesiaFiles = @(),
     [switch]$ListOnly,
     [switch]$AllowAllFiles
@@ -113,6 +115,12 @@ $scopesKiB = @($ScopesKiB | Sort-Object -Unique)
 if ($files.Count -eq 0) {
     throw 'At least one Silesia file must be selected'
 }
+if ($Profile -eq 'v1' -and $ThreadCount -ne 1) {
+    throw 'ThreadCount is only supported by the R2 Fast policy'
+}
+if ($Profile -eq 'r2' -and $R2Mode -ne 'fast' -and $ThreadCount -ne 1) {
+    throw 'ThreadCount greater than one is only supported by R2 Fast'
+}
 if ($SilesiaFiles.Count -eq 0 -and -not $AllowAllFiles -and -not $ListOnly) {
     throw 'Refusing an implicit all-file experiment; specify -SilesiaFiles or -AllowAllFiles'
 }
@@ -121,6 +129,7 @@ if ($ListOnly) {
         files = [string]::Join(',', $files)
         scopes_kib = [string]::Join(',', $scopesKiB)
         block_size_kib = $BlockSizeKiB
+        thread_count = $ThreadCount
         profile = $Profile
         r2_mode = $R2Mode
     } | ConvertTo-Json -Compress
@@ -858,8 +867,11 @@ else {
     if ($R2Mode -eq 'fast' -or $R2Mode -eq 'fast-ext') {
         $encodeArguments += '--zstd-level=3'
     }
+    if ($R2Mode -eq 'fast') {
+        $encodeArguments += "--threads=$ThreadCount"
+    }
     $decodeArguments = @('d')
-    $configuration = "profile_id=2;mode=$R2Mode;block_size=$blockSizeBytes;zstd_level=$zstdLevel;lzma_level=9;threads=1;process_timeout_seconds=$ProcessTimeoutSeconds"
+    $configuration = "profile_id=2;mode=$R2Mode;block_size=$blockSizeBytes;zstd_level=$zstdLevel;lzma_level=9;threads=$ThreadCount;process_timeout_seconds=$ProcessTimeoutSeconds"
     $rowParameters = $configuration
     $experimentName = "HybridZip R2 $R2Mode Silesia prefix experiment"
     $experimentDescription = "HybridZip HZ02 block portfolio mode $R2Mode on Silesia 32/64/128 KiB prefixes."

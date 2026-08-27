@@ -10,6 +10,8 @@ param(
     [int[]]$ScopesKiB = @(32, 64, 128),
     [ValidateSet(32, 64, 128)]
     [int[]]$BlockSizesKiB = @(32, 64, 128),
+    [ValidateRange(1, 256)]
+    [int]$FastThreadCount = 1,
     [string[]]$SilesiaFiles = @(),
     [switch]$AllowAllFiles,
     [ValidateRange(1, 604800)]
@@ -94,14 +96,17 @@ function Get-R2Telemetry([string]$Path) {
     }
     $text = Get-Content -LiteralPath $Path -Raw -Encoding UTF8
     $candidate = [regex]::Match($text, 'candidates=(?<value>[0-9]+)')
+    $workers = [regex]::Match($text, 'workers=(?<value>[1-9][0-9]*)')
     $fullOracle = [regex]::Match($text, 'full_oracle=(?<value>[01])')
     $candidateModes = [regex]::Match($text, 'candidate_modes=(?<value>[^\s]+)')
-    if (-not $candidate.Success -or -not $fullOracle.Success -or
+    if (-not $candidate.Success -or -not $workers.Success -or
+        -not $fullOracle.Success -or
         -not $candidateModes.Success) {
         throw "Malformed R2 telemetry: $Path"
     }
     [pscustomobject]@{
         Candidates = [int]$candidate.Groups['value'].Value
+        Workers = [int]$workers.Groups['value'].Value
         FullOracle = [int]$fullOracle.Groups['value'].Value
         CandidateModes = $candidateModes.Groups['value'].Value
     }
@@ -151,7 +156,7 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
                            [string]$ExpectedCodecHash, [string]$ExpectedDatasetPath,
                            [string[]]$ExpectedFiles, [int[]]$ExpectedScopes,
                            [int[]]$ExpectedBlockSizes, [string[]]$ExpectedPolicies,
-                           [int[]]$ExpectedRepeats) {
+                           [int[]]$ExpectedRepeats, [int]$ExpectedFastThreadCount) {
     if ([string]$Existing.experiment_id -cne $ExpectedId -or
         [string]$Existing.stage -cne $ExpectedStage) {
         throw "Resume metadata does not match requested experiment: $ExpectedId"
@@ -162,6 +167,10 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
         -not [string]::Equals([string]$Existing.dataset_path, $ExpectedDatasetPath,
                                [StringComparison]::OrdinalIgnoreCase)) {
         throw 'Resume codec or dataset identity differs from the existing package'
+    }
+    if ($null -eq $Existing.PSObject.Properties['fast_thread_count'] -or
+        [int]$Existing.fast_thread_count -ne $ExpectedFastThreadCount) {
+        throw 'Resume Fast worker count differs from the existing package'
     }
     $pairs = @(
         @(@($Existing.files), @($ExpectedFiles)),
@@ -234,6 +243,9 @@ $blockSizes = @($BlockSizesKiB | Sort-Object -Unique)
 if ($files.Count -eq 0 -or $scopes.Count -eq 0 -or $blockSizes.Count -eq 0) {
     throw 'At least one file, scope, and block size is required'
 }
+if ($Stage -eq 'e5-router' -and $FastThreadCount -ne 1) {
+    throw 'FastThreadCount is only valid for the e6-fast stage'
+}
 if (-not $ListOnly -and -not $AuthorizeRuntimeExperiment) {
     throw 'Runtime is disabled. Use -ListOnly:$false and -AuthorizeRuntimeExperiment together.'
 }
@@ -255,6 +267,7 @@ else {
     @('fast')
 }
 $timingRepeats = if ($Stage -eq 'e5-router') { @(1) } else { @(0, 1, 2, 3) }
+$threadCount = if ($Stage -eq 'e6-fast') { $FastThreadCount } else { 1 }
 $jobs = New-Object System.Collections.Generic.List[object]
 foreach ($blockSize in $blockSizes) {
     foreach ($policy in $policies) {
@@ -277,12 +290,13 @@ $plan = [ordered]@{
     block_sizes_kib = $blockSizes
     policies = $policies
     timing_repeats = $timingRepeats
+    fast_thread_count = $threadCount
     child_packages = $jobs.Count
     cases_per_child = $files.Count * $scopes.Count
     codec_invocations = $jobs.Count * $files.Count * $scopes.Count * 2
     runtime_authorization_required = $true
     resume_requested = [bool]$Resume
-    command = "& $($MyInvocation.MyCommand.Path) -Stage $Stage -ListOnly:`$false -AuthorizeRuntimeExperiment ..."
+    command = "& $($MyInvocation.MyCommand.Path) -Stage $Stage -FastThreadCount $threadCount -ListOnly:`$false -AuthorizeRuntimeExperiment ..."
 }
 if ($ListOnly) {
     $plan | ConvertTo-Json -Depth 5
@@ -324,7 +338,8 @@ if (Test-Path -LiteralPath $packagePath) {
         -ExpectedStage $Stage -ExpectedCodecPath $CodecPath `
         -ExpectedCodecHash $codecHash -ExpectedDatasetPath $DatasetPath `
         -ExpectedFiles $files -ExpectedScopes $scopes -ExpectedBlockSizes $blockSizes `
-        -ExpectedPolicies $policies -ExpectedRepeats $timingRepeats
+        -ExpectedPolicies $policies -ExpectedRepeats $timingRepeats `
+        -ExpectedFastThreadCount $threadCount
     if ([string]$plan.status -ceq 'COMPLETE') {
         Assert-CompletedMatrixPackage -PackagePath $packagePath `
             -ExpectedRows ($jobs.Count * $files.Count * $scopes.Count)
@@ -367,6 +382,7 @@ try {
             ProcessTimeoutSeconds = $ProcessTimeoutSeconds
             ScopesKiB = $scopes
             BlockSizeKiB = $job.BlockSizeKiB
+            ThreadCount = $threadCount
             SilesiaFiles = $files
         }
         if ($AllowAllFiles) {
@@ -392,12 +408,17 @@ try {
             $logPath = Join-Path $childPath (
                 'logs\{0}KiB\{1}.encode.stdout.log' -f $row.scope_kib, $row.file)
             $telemetry = Get-R2Telemetry $logPath
+            if ($telemetry.Workers -ne $threadCount) {
+                throw "Fast worker count mismatch for $childId $($row.file) $($row.scope_kib): expected $threadCount, found $($telemetry.Workers)"
+            }
             $record = [ordered]@{
                 stage = $Stage
                 policy = $job.Policy
                 block_size_kib = $job.BlockSizeKiB
                 timing_repeat = $job.TimingRepeat
                 warmup = ($Stage -eq 'e6-fast' -and $job.TimingRepeat -eq 0)
+                fast_thread_count = $threadCount
+                telemetry_worker_count = $telemetry.Workers
                 candidates_evaluated = $telemetry.Candidates
                 full_oracle_evaluated = $telemetry.FullOracle
                 candidate_modes = $telemetry.CandidateModes
@@ -478,7 +499,7 @@ try {
     }
     else {
         $retained = @($matrixRows | Where-Object { -not $_.warmup })
-        foreach ($group in ($retained | Group-Object block_size_kib, scope_kib)) {
+        foreach ($group in ($retained | Group-Object block_size_kib, scope_kib, fast_thread_count)) {
             $rows = @($group.Group)
             $inputBytes = @($rows | ForEach-Object { [int64]$_.input_bytes } | Measure-Object -Sum).Sum
             $encodeSeconds = @($rows | ForEach-Object { [double]$_.encode_seconds } | Measure-Object -Sum).Sum
@@ -487,6 +508,7 @@ try {
                 stage = $Stage
                 block_size_kib = [int]$rows[0].block_size_kib
                 scope_kib = [int]$rows[0].scope_kib
+                fast_thread_count = [int]$rows[0].fast_thread_count
                 retained_samples = $rows.Count
                 input_bytes = [int64]$inputBytes
                 encode_mb_per_s = if ($encodeSeconds -gt 0) { $inputBytes / $encodeSeconds / 1000000.0 } else { 0 }
@@ -501,7 +523,7 @@ try {
         }
         $aggregate = [ordered]@{
             status = 'COMPLETE'
-            evidence_boundary = 'Fast-policy warmup repeat 0 is retained in matrix_rows.csv and excluded from timing summaries.'
+            evidence_boundary = 'Fast-policy warmup repeat 0 is retained in matrix_rows.csv and excluded from timing summaries. Each row records the requested and telemetry-reported Fast worker count.'
             rows = $summaryRows.Count
             cpu_floor_mb_per_s = 0.16
             all_rows_byte_exact = @($summaryRows | Where-Object byte_exact).Count -eq $summaryRows.Count
