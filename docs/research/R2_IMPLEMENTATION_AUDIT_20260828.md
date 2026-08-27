@@ -12,7 +12,7 @@ passing 1 KiB smoke proves only the named path can round-trip that input.
 | --- | --- | --- | --- |
 | Same-input Silesia protocol | Implemented and exercised | `bench/manifests/silesia-leading-32-64-128.tsv`: 36 prefixes, SHA-256 `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`; E3 package has all 36 matching input/decoded hashes | Execute the corresponding current HybridZip ratio cases. |
 | PAQ8px v216 `-1` baseline | Complete | `results/experiments/paq8px-v216-level1-silesia-leading-e3-20260828/`: 36/36 COMPLETE/PASS, 622,563 archive bytes / 2,752,512 input bytes | Current HybridZip comparisons at all three scopes remain pending. |
-| K=8 ratio router | 28-feature fixed-point bootstrap implemented | `src/r2/routing/block_features.*`, `mode_ranker.*`, `block_planner.cpp`; CLI `auto-k8`; `docs/research/R2_FIXED_POINT_RANKER_V1.md` | E5 forced-mode labels, no-leakage fitted model, router-budget timing, and held-out archive/regret measurements. |
+| K=8 ratio router | 28-feature fixed-point bootstrap and exact feature export implemented | `src/r2/routing/block_features.*`, `mode_ranker.*`, `block_planner.cpp`; CLI `auto-k8`; `hz_r2_feature_dump`; file-level dataset exporter | E5 forced-mode labels, no-leakage fitted model, router-budget timing, and held-out archive/regret measurements. |
 | K=2/K=4 ablations | Implemented, ablation only | CLI `auto-k2`/`auto-k4`; current 1 KiB telemetry shows 2/4/8 materialized modes | No policy promotion from this smoke. |
 | Candidate accounting | Implemented and guarded | `candidate_modes=<id>:<count>` telemetry; explicit backend-order to BlockMode mapping in `block_planner.cpp` | E5 runtime rows and a matching forced-mode oracle are needed for tie-aware recall. |
 | CPU Fast policy | Mode-2 baseline measured; Fast K=4 and Fast-only block executor implemented | `results/experiments/hybridzip-r2-e6-fast-full-20260828-retry1/`: 432/432 byte-exact rows, 324 retained rows, all nine cells above 0.16 MB/s; Mode-43/Fast K=4 smoke; F3 one/two-worker evidence: `results/smoke/r2-f3-fast-executor-1k-20260828-v2/` | Rerun E6 for Fast K=4 with the executor; no post-change throughput claim yet. |
@@ -34,10 +34,13 @@ The Fast K=4 smoke executable SHA-256 is
 | `fast` (F3 executor) | 1,024 bytes / four 256-byte blocks | one and two workers: same 690-byte archive SHA-256; both exact decode |
 | HZ01 | 1,024 bytes | 537-byte archive; exact decode |
 
-`hz_structure_routing_tests.exe` and `hz_r2_codec_tests.exe` were rebuilt for
-this working tree. They were not rerun after Mode-43/Fast K=4 under the
-minimal-runtime boundary; the named 1 KiB archive/recovery gates are the
-current runtime evidence. No complete CTest matrix was run.
+`hz_structure_routing_tests.exe` was rebuilt and passed on the current working
+tree after the training-data interface was added. It covers deterministic
+feature vectors, K=2/K=4/K=8 membership, classification, and the pinned
+fixed-point model identity; it does not construct an archive. The broader
+`hz_r2_codec_tests.exe` was rebuilt but remains unrun under the minimal-runtime
+boundary; the named 1 KiB archive/recovery gates are still the current archive
+evidence. No complete CTest matrix was run.
 
 ## Offline Preview Boundary
 

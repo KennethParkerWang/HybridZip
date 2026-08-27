@@ -971,3 +971,7 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   the preview launched no feature dump or codec, the completed export invoked
   only the feature tool, and its single validation file was absent from
   training. No HybridZip archive was encoded or decoded.
+- The current-worktree `hz_structure_routing_tests.exe` was rebuilt and run
+  after this interface was added. It passed and exercises deterministic
+  feature extraction, class routing, K=2/K=4/K=8 cardinality and membership,
+  plus the pinned fixed-point ranker identity without archive construction.

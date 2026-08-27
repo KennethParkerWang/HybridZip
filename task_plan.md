@@ -877,6 +877,8 @@ committed and pushed as `996d59d`.
 - [x] Build the exporter and pass its two-file synthetic test: 28 features per
   row, one training file, one validation file, zero codec invocations, and no
   archive encode/decode.
+- [x] Rebuild and run `hz_structure_routing_tests.exe` after adding the
+  interface; it passed without constructing an archive.
 - [ ] Run the completed forced ledger through the exporter, fit a frozen model
   without validation leakage, then measure held-out E5 recall/regret before
   changing K=8 from experimental.
