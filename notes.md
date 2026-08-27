@@ -909,3 +909,19 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
 - A first PowerShell xorshift generator overflowed during input creation and
   never launched the codec. It is excluded; the retained v2 input uses the
   system random-number source.
+
+## 2026-08-28: Forced-mode oracle label infrastructure
+
+- `run_r2_complete_ledger.ps1` now records and forwards `block_size_kib`.
+  The dedicated ratio-label run uses 32 KiB scope and 32 KiB internal blocks,
+  making each archive result an exact one-block forced comparison.
+- `derive_r2_forced_oracle.ps1` validates the 43 retained ratio modes, same
+  executable/input identity, complete archive bytes, and exact forced block
+  attribution. It preserves all tied minimum-byte modes and evaluates whether
+  an E5 K2/K4/K8 candidate set contains any tied winner.
+- `test_r2_forced_oracle.ps1` passed without invoking the codec. Its synthetic
+  oracle ties `zstd,fse`; K2 misses and K4/K8 hit, proving tie handling and
+  candidate-ID joins. The tool rejects mixed ranker identities and incomplete
+  coverage when requested.
+- Runtime remains deliberately pending. The full 12-file 32 KiB forced ledger
+  has 44 child packages and 1,056 codec invocations before retries.

@@ -813,3 +813,19 @@ No corpus matrix was launched.
 The first input-generator attempt used a PowerShell unsigned-integer cast that
 reported overflow as non-terminating errors. It launched no codec process and
 is excluded; the retained v2 evidence uses the system random-number source.
+
+## 2026-08-28 Forced-Mode Oracle Labels
+
+- [x] Extend the complete R2 ledger runner with an explicit recorded internal
+  block size so 32 KiB forced results can be comparable to K=8 blocks.
+- [x] Add a no-write/list-only-aware forced-oracle derivation that retains all
+  tied minimum complete-archive modes and joins a matching E5 package to
+  calculate tie-aware K2/K4/K8 recall.
+- [x] Add and pass a 43-mode synthetic self-test: a tied `zstd,fse` oracle is
+  detected, K2 misses it, and K4/K8 hit it.
+- [ ] Run the dedicated 12-file 32 KiB forced ledger after runtime approval;
+  it plans 1,056 codec invocations and must remain separate from E5/E6.
+
+The detailed protocol is
+`docs/research/R2_FORCED_ORACLE_EXPERIMENT_DESIGN_20260828.md`. No corpus
+codec process was launched for this checkpoint.

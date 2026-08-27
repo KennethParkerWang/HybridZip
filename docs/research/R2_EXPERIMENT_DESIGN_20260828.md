@@ -43,7 +43,7 @@ same-input PAQ smoke is separately recorded and remains a single-case result.
 | --- | --- | --- | --- |
 | E3 | 12 Silesia files x 32/64/128 KiB leading prefixes | PAQ8px v216 `-1` | complete archive bytes, archive/input/decoded hashes, byte-exact PASS |
 | E4 | Frozen fixtures and one 1 KiB smoke | `auto-k8` | deterministic features, eight-mode shortlist, exact round trip |
-| E5 | Held-out frozen prefixes | full `auto` oracle, rule K=2/K=4/K=8 | tie-aware winner recall, regret bytes/percent, candidate count, latency/RAM |
+| E5 | Held-out frozen prefixes | full `auto`, rule K=2/K=4/K=8, matching 32 KiB forced oracle | tie-aware winner recall, regret bytes/percent, candidate count, latency/RAM |
 | E6 | Same inputs at 32/64/128 KiB | `fast` policy using zstd level 3 | complete archive bytes, P50/P95 latency, encode/decode MB/s, RAM |
 
 E3 is a serial PAQ run and is not started by this implementation checkpoint.
@@ -93,9 +93,10 @@ encoder telemetry. This telemetry is not archive metadata. It lets E5 prove
 exactly which candidates and which frozen model were materialized for a
 shortlist. The matrix runner writes the model identity to every row and
 rejects a completed package containing more than one identity. A full Auto
-reference can measure archive regret and selected-mode coverage. Tie-aware
-forced-mode-oracle recall remains unavailable until a matching forced-mode
-ledger is completed for the same executable and inputs.
+reference can measure archive regret and selected-mode coverage. The new
+32 KiB one-block forced-oracle tooling can derive tie-aware recall once its
+matching ledger is completed; see
+`docs/research/R2_FORCED_ORACLE_EXPERIMENT_DESIGN_20260828.md`.
 
 ## Acceptance formulas
 
@@ -116,8 +117,9 @@ the full Auto/oracle, not a K=8 held-out measurement.
 1. E5: build a non-overwriting held-out K=2/K=4/K=8 ledger from the frozen
    manifest. For every block, retain the full-Auto complete-archive oracle,
    shortlist complete archive bytes, recall, regret, candidate count, wall
-   time, and peak RAM. A K=8 promotion claim is prohibited until its stated
-   recall and regret gates pass.
+   time, and peak RAM. Run the separate same-executable 32 KiB forced oracle
+   and derive tied winner labels before reporting recall. A K=8 promotion
+   claim is prohibited until its stated recall and regret gates pass.
 2. E6: use the Fast policy at 32, 64, and 128 KiB with three retained timing
    repeats after a warmup. Report encode/decode MB/s, P50/P95 block latency,
    peak RAM, byte-exact reconstruction, and complete archive bpb. The CPU

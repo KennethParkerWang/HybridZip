@@ -32,7 +32,7 @@ policy cannot be used to claim the other policy's target.
 | ID | Measurement | Gate | Status |
 | --- | --- | --- | --- |
 | E3 | PAQ8px v216 `-1` on all 36 frozen inputs | Every row has matching input/decoded SHA-256 and complete archive bytes | Passed |
-| E5 | K=2/K=4/K=8 versus full Auto | Report complete-byte regret and selected-mode coverage; promotion additionally needs a matching forced-mode tie-aware oracle | Queued |
+| E5 | K=2/K=4/K=8 versus full Auto | Report complete-byte regret, selected-mode coverage, and a matching 32 KiB forced-mode tie-aware oracle | Oracle tooling/self-test complete; runtime queued |
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
 | F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; one model identity per matrix package; no-leakage labels and measured router budget remain required | Bootstrap identity telemetry implemented; not promoted |
 | F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | 1 KiB gate passed; corpus rerun pending |
@@ -71,6 +71,11 @@ and the append-only Mode-43 extension are implemented, but their corpus-level
 throughput matrix is pending. Fast now has a bounded independent-block thread
 pool; Auto, shortlists, and forced modes remain serial. There is no GPU
 backend.
+
+The forced-mode ledger runner now pins a requested internal block size and the
+new derivation tool rejects mixed executable/input/block evidence before
+calculating tied winners. It is designed for 32 KiB one-block labels only;
+the ledger and E5 runtime packages remain pending.
 
 `third_party/zstd` identifies as 1.6.0. The decision requests zstd 1.5.7,
 whose stated source archive is 2,434,947 bytes under BSD-3-Clause. No 1.5.7

@@ -6,6 +6,8 @@ param(
     [string]$LedgerId = '',
     [ValidateSet(32, 64, 128)]
     [int[]]$ScopesKiB = @(32),
+    [ValidateSet(32, 64, 128)]
+    [int]$BlockSizeKiB = 32,
     [string[]]$SilesiaFiles = @(),
     [ValidateRange(1, 604800)]
     [int]$ProcessTimeoutSeconds = 3600,
@@ -61,8 +63,10 @@ if ($ListOnly) {
         forced_modes = $forcedModes.Count
         files = [string]::Join(',', $SilesiaFiles)
         scopes_kib = [string]::Join(',', (@($ScopesKiB | Sort-Object -Unique)))
+        block_size_kib = $BlockSizeKiB
         codec_path = $CodecPath
         output_root = $OutputRoot
+        planned_codec_invocations = $modes.Count * $SilesiaFiles.Count * $ScopesKiB.Count * 2
         runtime_started = $false
     } | ConvertTo-Json -Compress
     return
@@ -140,6 +144,10 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         if ([int]$row.expected_rows -ne $expectedRows) {
             throw "Manifest scope/file mismatch for mode $($row.mode)"
         }
+        if ($null -eq $row.PSObject.Properties['block_size_kib'] -or
+            [int]$row.block_size_kib -ne $BlockSizeKiB) {
+            throw "Manifest block size mismatch for mode $($row.mode)"
+        }
     }
 }
 else {
@@ -153,6 +161,7 @@ else {
             package_path = [IO.Path]::GetFullPath((Join-Path $OutputRoot $packageName))
             files = [string]::Join(',', $SilesiaFiles)
             scopes_kib = [string]::Join(',', $ScopesKiB)
+            block_size_kib = $BlockSizeKiB
             expected_rows = $expectedRows
             status = 'PENDING'
             started_at = ''
@@ -197,6 +206,7 @@ for ($index = 0; $index -lt $manifestRows.Count; ++$index) {
             Profile = 'r2'
             R2Mode = [string]$row.mode
             ScopesKiB = $ScopesKiB
+            BlockSizeKiB = $BlockSizeKiB
             SilesiaFiles = $SilesiaFiles
             ProcessTimeoutSeconds = $ProcessTimeoutSeconds
         }
