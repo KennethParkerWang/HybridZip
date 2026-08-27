@@ -852,3 +852,16 @@ The attachment's tie-aware router measurement now has a recoverable evidence
 path in the runner. No corpus encode, decode, or PAQ-heavy E5 job was started
 by this implementation checkpoint. The implementation and documentation are
 committed and pushed as `996d59d`.
+
+## 2026-08-28 zstd v1.5.7 Donor Provenance Reconciliation
+
+- [x] Verify the existing `E:/MIXER/KU/zstd-v1.5.7/` release artifact rather
+  than downloading it again: archive bytes/SHA-256, annotated tag, peeled
+  commit, extracted source version, selected BSD-3-Clause license hash, and
+  deterministic path/content tree identity all match the recorded donor.
+- [x] Add `docs/provenance/zstd-v1.5.7.json` and correct the target document's
+  stale "not downloaded" statement.
+- [ ] Decide and implement a distinct production source replacement only if
+  v1.5.7 is required over the current vendored 1.6.0. That change requires
+  independent frame vectors, HZ01/HZ02 decode gates, and new Fast evidence;
+  staging provenance alone is not an encoder acceptance result.

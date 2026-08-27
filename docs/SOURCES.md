@@ -7,6 +7,22 @@ revision, license, and hashes are recorded beside each authoritative checkout.
 Donor directories are not edited in place; adapted copies live in
 `third_party/`.
 
+## zstd v1.5.7 Staging Donor
+
+- Local artifact: `E:\MIXER\KU\zstd-v1.5.7\zstd-1.5.7.tar.gz`
+- Upstream: `https://github.com/facebook/zstd`, tag `v1.5.7`, peeled commit
+  `f8745da6ff1ad1e7bab384bd1f9d742439278e99`
+- Archive: 2,434,947 bytes, SHA-256
+  `EB33E51F49A15E023950CD7825CA74A4A2B43DB8354825AC24FC1B7EE09E6FA3`
+- License: BSD-3-Clause, `LICENSE` SHA-256
+  `7055266497633C9025B777C78EB7235AF13922117480ED5C674677ADC381C9D8`
+- Repository provenance: `docs/provenance/zstd-v1.5.7.json`
+
+This is a verified warehouse artifact, not a production import. HybridZip
+continues to build the separately recorded `third_party/zstd` v1.6.0 source
+until a distinct source-replacement patch records its copied files, build
+changes, compatibility gates, and new archive evidence.
+
 ## Project Nayuki Reference Arithmetic Coding
 
 - Local upstream: `E:\MIXER\KU\nayuki-ac`

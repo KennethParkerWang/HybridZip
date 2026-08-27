@@ -36,7 +36,7 @@ policy cannot be used to claim the other policy's target.
 | E5 | K=2/K=4/K=8 versus full Auto | Report complete-byte regret, selected-mode coverage, and a matching 32 KiB forced-mode tie-aware oracle | Forced-ledger/E5 evidence binding and self-test complete; runtime queued |
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
 | F1 | 28-feature fixed-point ranker | Feature/model implementation is deterministic; one model identity per matrix package; no-leakage labels and measured router budget remain required | Bootstrap identity telemetry implemented; not promoted |
-| F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | 1 KiB gate passed; corpus rerun pending |
+| F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | v1.5.7 donor staged and verified; current production source remains 1.6.0; corpus rerun pending |
 | F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Fast-only executor/1 KiB gate passed; guarded worker-count matrix preflight passed; post-change timing pending |
 | F4 | GPU `LZ_RANS_V1` | CPU reference decoder; end-to-end >= 8 MB/s at every required size | Blocked by F2/F3 |
 
@@ -81,9 +81,11 @@ new derivation tool rejects mixed executable/input/block evidence before
 calculating tied winners. It is designed for 32 KiB one-block labels only;
 the ledger and E5 runtime packages remain pending.
 
-`third_party/zstd` identifies as 1.6.0. The decision requests zstd 1.5.7,
-whose stated source archive is 2,434,947 bytes under BSD-3-Clause. No 1.5.7
-download/import has occurred; present E6 results must be treated only as
+`third_party/zstd` identifies as 1.6.0. The requested zstd 1.5.7 donor is
+already staged under `E:/MIXER/KU/zstd-v1.5.7/`: its 2,434,947-byte release
+tarball, peeled release commit, BSD-3-Clause license hash, and extracted-tree
+identity are recorded in `docs/provenance/zstd-v1.5.7.json`. No production
+source replacement has occurred, so present E6 results remain 1.6.0
 current-build baseline measurements.
 
 OASum is not downloaded. Its final `test.jsonl` is 1,065,019,104 bytes and

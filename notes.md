@@ -942,3 +942,17 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   planned codec invocations with `runtime_started=false`.
 - The implementation and updated execution design are committed and pushed as
   `996d59d` (`feat(r2): bind forced oracle to E5`).
+
+## 2026-08-28: zstd v1.5.7 donor provenance reconciliation
+
+- The warehouse already contains the official v1.5.7 release archive at
+  `E:/MIXER/KU/zstd-v1.5.7/zstd-1.5.7.tar.gz`; it is 2,434,947 bytes with
+  SHA-256 `EB33E51F49A15E023950CD7825CA74A4A2B43DB8354825AC24FC1B7EE09E6FA3`.
+- Upstream tag verification returns annotated tag object
+  `ac66b19e6bd6b83238bf008eecc1298105298532` and peeled release commit
+  `f8745da6ff1ad1e7bab384bd1f9d742439278e99`. Its extracted 639-file source
+  tree identifies as zstd 1.5.7; the selected BSD-3-Clause `LICENSE` SHA-256
+  is `7055266497633C9025B777C78EB7235AF13922117480ED5C674677ADC381C9D8`.
+- The durable repository record is `docs/provenance/zstd-v1.5.7.json`. It
+  explicitly marks the donor staged, not imported: production still compiles
+  the separately recorded vendored zstd 1.6.0.
