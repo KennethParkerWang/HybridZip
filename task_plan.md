@@ -200,7 +200,8 @@ when compression decisions finish in another order.
 - [x] F3.1: add a bounded Fast-only worker executor and `--threads` option.
 - [x] F3.2: run the permitted 1 KiB / four-block lossless and deterministic
   archive gate at one and two workers.
-- [ ] F3.3: commit and push the implementation/evidence milestone.
+- [x] F3.3: commit and push the implementation/evidence milestone as
+  `501759c` (`feat(r2): add Fast block executor`).
 - [ ] F3.4: only after F3.2, schedule the separate post-change E6 Fast K=4
   32/64/128 KiB timing matrix.
 
@@ -212,9 +213,9 @@ policies and every forced mode also retain their existing serial behavior.
 
 ### Status
 
-**Currently in F3.3** - recording the 1 KiB evidence and preparing the
-incremental GitHub milestone. No corpus benchmark is running or authorized by
-this work item.
+**F3.1-F3.3 complete.** The next target is F3.4: prepare and explicitly
+authorize a post-change Fast K=4 timing matrix. No corpus benchmark is running
+or authorized by this work item.
 
 ## 2026-08-28 attachment-driven target execution
 
