@@ -55,7 +55,7 @@ accepted before archive-byte evidence exists.
 
 | Priority | Work item | Immediate proof | Not claimed yet |
 | --- | --- | --- | --- |
-| P0 | ID-43 raw zstd extension | Build, forced 1 KiB decode, malformed-metadata rejection, HZ01 smoke | Transform selection, K=4, v1.5.7 acceptance |
+| P0 | ID-43 raw zstd extension | Build, forced 1 KiB decode, malformed-metadata rejection, HZ01 smoke | v1.5.7 production acceptance |
 | P1 | Fast transforms and K=4 | Per-transform archive-byte comparison and inverse-tail tests | Corpus-level Fast result |
 | P1 | 28-feature ranker and E5 | Frozen model identity and held-out coverage/regret | K=8 promotion without forced oracle |
 | P1 | Block executor | Canonical order, repeatable bytes, Fast timing rerun | GPU target |

@@ -706,8 +706,9 @@ Keep compression-ratio and throughput claims on separate evidence tracks.
 - [x] P0: Build and execute focused mode-43/HZ01 1 KiB byte-exact gates.
   Independent `zstd.exe` decoding and malformed-version rejection passed; E5
   was not started.
-- [ ] P1: Add independently measured shuffle, bitshuffle, delta/XOR, and BCJ
-  mode-43 choices, then form the Fast K=4 policy.
+- [x] P1: Add shuffle, bitshuffle, delta/XOR, and BCJ Mode-43 choices and
+  form the Fast K=4 policy. The 1 KiB gate selected bitshuffle and round-trip
+  decoding passed; corpus-level E6 evidence remains pending.
 - [ ] P1: Add the fixed-point 28-feature ranker and no-leakage labels. K=8
   remains experimental until held-out regret evidence exists.
 - [ ] P1: Run E5 in a dedicated CPU window. Its known lower-bound cost is
@@ -733,10 +734,14 @@ v1.5.7 acceptance result.
   archive, and passed HybridZip byte-exact decode.
 - [x] Independently decode the extracted Mode-43 zstd payload with the local
   zstd executable; 1,024 transformed bytes were recovered.
+- [x] Register `fast-ext` in the guarded child Silesia runner's parameter
+  validation. Both runner scripts passed PowerShell AST parsing, and the
+  Fast E6 one-file/one-cell `-ListOnly` preflight planned four child packages
+  with `runtime_started=false`.
 
 ### Next execution target
 
-- [ ] Commit and push this Mode-43/Fast K=4 milestone.
+- [x] Commit and push this Mode-43/Fast K=4 milestone as `01d129e`.
 - [ ] Rerun the guarded E6 matrix under a new non-overwriting ID after the
   policy change; do not reuse the prior mode-2 baseline package.
 - [ ] Keep E5 full-Auto/K=2/K=4/K=8 regret work as a separate PAQ-heavy job;

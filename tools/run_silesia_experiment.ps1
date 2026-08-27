@@ -18,7 +18,7 @@ param(
         'paq8px-apm', 'paq8px-record-model', 'paq8px-linear-prediction',
         'paq8px-similarity', 'paq8px-similarity-sse', 'paq8px-generic-sse',
         'paq8px-detected-sse', 'wavpack', 'lz4', 'kanzi-ans',
-        'lmic-arithmetic', 'delta-binary-packed-zstd'
+        'lmic-arithmetic', 'delta-binary-packed-zstd', 'fast-ext'
     )]
     [string]$R2Mode = 'auto',
     [switch]$Resume,

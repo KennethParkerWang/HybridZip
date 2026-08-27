@@ -824,3 +824,17 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
 - This is a correctness/dispatch gate only. The previous 432-row E6 package
   remains the mode-2 Fast baseline; no post-change corpus throughput claim is
   made until a new E6 matrix is run.
+
+## 2026-08-28: Fast matrix preflight repair
+
+- `tools/run_r2_e5_e6_matrix.ps1` already listed `fast-ext` in its internal
+  44-mode registry, but `tools/run_silesia_experiment.ps1` omitted it from
+  the public `ValidateSet`. The child runner would reject a forced Mode-43
+  experiment before starting a codec process. The parameter value is now
+  registered in both places.
+- Both PowerShell scripts passed AST parsing. A no-runtime Fast E6 preflight
+  for `dickens`, 32 KiB input and 32 KiB internal blocks planned four child
+  packages (warmup plus three retained repeats), eight codec invocations, and
+  reported `runtime_started=false`.
+- `docs/R2_FORMAT.md` now documents the Mode-43 table row, descriptor bytes,
+  IDs, side-information constraints, zstd frame flags, and CRC/inverse order.

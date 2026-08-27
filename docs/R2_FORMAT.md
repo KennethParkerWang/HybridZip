@@ -126,6 +126,7 @@ Only these triples are valid in the current profile:
 | KanziAns | 40 | Raw | 0 | KanziAns | 23 |
 | LmicArithmetic | 41 | Raw | 0 | LmicArithmetic | 24 |
 | DeltaBinaryPackedZstd | 42 | DeltaBinaryPacked | 21 | ZstdFseDeltaBinaryPacked | 25 |
+| FastExtension | 43 | Raw | 0 | ZstdFse | 2 |
 
 Unknown IDs and mismatched mode/entropy pairs MUST be rejected. Transform
 parameters and IDs for future transforms must be carried in block metadata;
@@ -722,6 +723,40 @@ The decoder rejects unknown profiles, inconsistent sizes, either checksum
 mismatch, donor failure, and output-length mismatch. The payload bound is
 `24 + LZ4_compressBound(uncompressed_size)`. Exact donor file hashes and the
 BSD-only copy boundary are recorded in `third_party/lz4/PROVENANCE.md`.
+
+### FastExtension
+
+Mode 43 is the append-only fast-path extension. Its outer block triple is
+`(mode=43, transform=Raw, entropy=ZstdFse)`. The outer `Raw` transform is
+intentional: the extension's reversible transform is self-described inside
+Mode-43 metadata rather than consuming another HZ02 top-level transform ID.
+
+Metadata begins with the mandatory four-byte raw CRC32, followed by this
+descriptor:
+
+```text
+byte 0       extension version (1)
+byte 1       codec ID (0 = standard zstd frame)
+byte 2       extension transform ID
+uLEB128      side-information byte count
+byte[]       side information
+```
+
+The current transform IDs are `0 = none`, `1 = byte shuffle`, `2 =
+bitshuffle`, `3 = XOR delta`, and `4 = x86 BCJ`. `none` and x86 BCJ have no
+side information. Byte shuffle and bitshuffle require exactly one width byte
+in `{2,4,8}`. XOR delta requires exactly one width byte in `{1,2,4,8}`. The
+current descriptors are therefore four bytes for no-side-information forms
+and five bytes for width-carrying forms; any malformed uLEB128 sequence,
+unknown ID, unsupported width, or trailing descriptor byte is invalid.
+
+The payload is one standard zstd frame. HZ02 owns the raw length and CRC32, so
+the frame is written with its checksum, content-size, and dictionary-ID flags
+disabled and with zero zstd workers. Every current extension transform
+preserves byte count. The decoder first zstd-decodes exactly
+`uncompressed_size` bytes, inverse-transforms according to the descriptor,
+then verifies the outer raw CRC32 before publishing output. All descriptor and
+payload bytes count toward Fast candidate selection.
 
 ## Block CRC32 Metadata
 

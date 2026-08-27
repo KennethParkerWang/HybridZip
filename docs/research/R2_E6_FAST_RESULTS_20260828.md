@@ -2,9 +2,9 @@
 
 ## Result
 
-The current `fast` policy passed its CPU floor on the frozen Tier-A Silesia
-matrix. This is a baseline result for the committed working-tree executable,
-not acceptance of the still-unimplemented Fast K=4/extension design.
+The historical mode-2 `fast` policy passed its CPU floor on the frozen Tier-A
+Silesia matrix. Fast K=4 and the Mode-43 extension are now implemented, but
+this result is not acceptance evidence for that changed policy.
 
 ## Protocol
 
@@ -42,6 +42,6 @@ RAM is 5.00–5.42 MiB. The authoritative per-cell values are in
 
 The installed zstd donor identifies as 1.6.0, while the external decision
 specified a future pinned 1.5.7 import. The result therefore establishes the
-current mode-2 Fast baseline only. It does not prove the target Fast K=4
-candidate policy, `MODE_FAST_EXT_V1`, transform selection, block parallelism,
-or the 8–10 MB/s GPU target.
+historical mode-2 Fast baseline only. It does not prove the now-implemented
+Fast K=4 candidate policy, `MODE_FAST_EXT_V1`, transform selection under the
+corpus matrix, block parallelism, or the 8–10 MB/s GPU target.
