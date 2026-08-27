@@ -76,6 +76,16 @@ mode. With a completed matching E5 package it emits:
 - `tie_aware_recall_summary.csv` and `summary.json`: recall and aggregate
   regret by policy.
 
+`tools/run_r2_e5_e6_matrix.ps1` accepts the optional E5-only
+`-ForcedOracleLedgerPath`. When supplied for a runtime E5 matrix, it first
+performs the derivation tool's read-only forced-ledger validation, records the
+normalized ledger path in `experiment.json`, and checks that identity on
+`-Resume`. After all E5 child rows pass, it writes the derived artifacts under
+`<e5-package>\forced-oracle` and records the linked evidence in the E5
+`summary.json`. A completed E5 package requested with this parameter is not
+accepted on resume unless that evidence is present and consistent. `-ListOnly`
+only displays the planned linkage and launches no codec process.
+
 Example after both packages are complete:
 
 ```powershell

@@ -118,8 +118,11 @@ the full Auto/oracle, not a K=8 held-out measurement.
    manifest. For every block, retain the full-Auto complete-archive oracle,
    shortlist complete archive bytes, recall, regret, candidate count, wall
    time, and peak RAM. Run the separate same-executable 32 KiB forced oracle
-   and derive tied winner labels before reporting recall. A K=8 promotion
-   claim is prohibited until its stated recall and regret gates pass.
+   and derive tied winner labels before reporting recall. Pass the completed
+   forced ledger through `-ForcedOracleLedgerPath` when E5 is launched so the
+   runner records the link and derives its own `forced-oracle/` evidence before
+   marking the E5 package complete. A K=8 promotion claim is prohibited until
+   its stated recall and regret gates pass.
 2. E6: use the Fast policy at 32, 64, and 128 KiB with three retained timing
    repeats after a warmup. Report encode/decode MB/s, P50/P95 block latency,
    peak RAM, byte-exact reconstruction, and complete archive bpb. The CPU

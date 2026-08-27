@@ -17,7 +17,7 @@ passing 1 KiB smoke proves only the named path can round-trip that input.
 | Candidate accounting | Implemented and guarded | `candidate_modes=<id>:<count>` telemetry; explicit backend-order to BlockMode mapping in `block_planner.cpp` | E5 runtime rows and a matching forced-mode oracle are needed for tie-aware recall. |
 | CPU Fast policy | Mode-2 baseline measured; Fast K=4 and Fast-only block executor implemented | `results/experiments/hybridzip-r2-e6-fast-full-20260828-retry1/`: 432/432 byte-exact rows, 324 retained rows, all nine cells above 0.16 MB/s; Mode-43/Fast K=4 smoke; F3 one/two-worker evidence: `results/smoke/r2-f3-fast-executor-1k-20260828-v2/` | Rerun E6 for Fast K=4 with the executor; no post-change throughput claim yet. |
 | HZ01 compatibility | Current-build 1 KiB byte-exact gate | `results/smoke/r2-e5-e6-compat-1k-20260828-v1/verification-recovery.json`: 537-byte archive, exact decoded SHA-256 | Larger compatibility regression remains outside the current minimal-test boundary. |
-| E5/E6 runtime protocol | E6 complete; E5 pending | `tools/run_r2_e5_e6_matrix.ps1`; E6 package and summary; runner supports non-overwriting recovery | E5 full Auto versus K=2/K=4/K=8 measurement and forced-oracle recall evidence. |
+| E5/E6 runtime protocol | E6 complete; E5 pending | `tools/run_r2_e5_e6_matrix.ps1`; E6 package and summary; E5 can bind a completed forced ledger and retain derived tie-aware evidence | E5 full Auto versus K=2/K=4/K=8 measurement and forced-oracle recall evidence. |
 
 ## Current Small-Input Gates
 
@@ -60,8 +60,11 @@ run unless both switches are provided:
 At full scope, each stage plans 12 child packages and 864 encode/decode
 invocations. E5 writes full-Auto-reference regret and selected-mode coverage.
 It deliberately labels tie-aware forced-oracle recall unavailable unless a
-matching complete forced-mode ledger exists. E6 excludes warmup repeat 0 from
-its throughput and percentile summary.
+matching complete forced-mode ledger exists. With E5-only
+`-ForcedOracleLedgerPath`, it validates the finished 32 KiB forced ledger
+before launching child work, stores that normalized path in the experiment
+identity, and derives tie-aware evidence after E5 completes. E6 excludes
+warmup repeat 0 from its throughput and percentile summary.
 
 ## Conclusions Not Yet Supported
 

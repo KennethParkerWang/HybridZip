@@ -12,6 +12,7 @@ param(
     [int[]]$BlockSizesKiB = @(32, 64, 128),
     [ValidateRange(1, 256)]
     [int]$FastThreadCount = 1,
+    [string]$ForcedOracleLedgerPath = '',
     [string[]]$SilesiaFiles = @(),
     [switch]$AllowAllFiles,
     [ValidateRange(1, 604800)]
@@ -164,7 +165,8 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
                            [string]$ExpectedCodecHash, [string]$ExpectedDatasetPath,
                            [string[]]$ExpectedFiles, [int[]]$ExpectedScopes,
                            [int[]]$ExpectedBlockSizes, [string[]]$ExpectedPolicies,
-                           [int[]]$ExpectedRepeats, [int]$ExpectedFastThreadCount) {
+                           [int[]]$ExpectedRepeats, [int]$ExpectedFastThreadCount,
+                           [string]$ExpectedForcedOracleLedgerPath) {
     if ([string]$Existing.experiment_id -cne $ExpectedId -or
         [string]$Existing.stage -cne $ExpectedStage) {
         throw "Resume metadata does not match requested experiment: $ExpectedId"
@@ -179,6 +181,11 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
     if ($null -eq $Existing.PSObject.Properties['fast_thread_count'] -or
         [int]$Existing.fast_thread_count -ne $ExpectedFastThreadCount) {
         throw 'Resume Fast worker count differs from the existing package'
+    }
+    if ($null -eq $Existing.PSObject.Properties['forced_oracle_ledger_path'] -or
+        -not [string]::Equals([string]$Existing.forced_oracle_ledger_path,
+            $ExpectedForcedOracleLedgerPath, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Resume forced-oracle ledger identity differs from the existing package'
     }
     $pairs = @(
         @(@($Existing.files), @($ExpectedFiles)),
@@ -201,8 +208,53 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
     }
 }
 
+function Assert-ForcedOracleEvidence([string]$PackagePath,
+                                     [string]$ExpectedForcedLedgerPath) {
+    $oraclePath = Join-Path $PackagePath 'forced-oracle'
+    $summaryPath = Join-Path $oraclePath 'summary.json'
+    $requiredFiles = @(
+        'forced_archive_rows.csv', 'forced_oracle_rows.csv',
+        'tie_aware_recall_rows.csv', 'tie_aware_recall_summary.csv', 'summary.json'
+    )
+    foreach ($file in $requiredFiles) {
+        if (-not (Test-Path -LiteralPath (Join-Path $oraclePath $file) -PathType Leaf)) {
+            throw "Forced-oracle evidence is missing ${file}: $oraclePath"
+        }
+    }
+    $summary = Get-Content -LiteralPath $summaryPath -Raw -Encoding UTF8 |
+        ConvertFrom-Json
+    if ([string]$summary.status -cne 'COMPLETE' -or
+        -not [bool]$summary.tie_aware_recall_available -or
+        [int]$summary.e5_matching_rows -le 0 -or
+        -not [string]::Equals([string]$summary.forced_ledger_path,
+            $ExpectedForcedLedgerPath, [StringComparison]::OrdinalIgnoreCase) -or
+        -not [string]::Equals([string]$summary.e5_package_path, $PackagePath,
+            [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Forced-oracle evidence is incomplete or has a mismatched identity: $oraclePath"
+    }
+    return $summary
+}
+
+function Invoke-ForcedOracleDerivation([string]$PackagePath,
+                                       [string]$ForcedLedgerPath,
+                                       [string]$DeriveScript) {
+    $oraclePath = Join-Path $PackagePath 'forced-oracle'
+    if (Test-Path -LiteralPath $oraclePath) {
+        return Assert-ForcedOracleEvidence -PackagePath $PackagePath `
+            -ExpectedForcedLedgerPath $ForcedLedgerPath
+    }
+    & $DeriveScript -ForcedLedgerPath $ForcedLedgerPath -E5PackagePath $PackagePath `
+        -OutputPath $oraclePath -RequireE5Coverage
+    if (-not $?) {
+        throw "Forced-oracle derivation failed: $oraclePath"
+    }
+    return Assert-ForcedOracleEvidence -PackagePath $PackagePath `
+        -ExpectedForcedLedgerPath $ForcedLedgerPath
+}
+
 function Assert-CompletedMatrixPackage([string]$PackagePath,
-                                       [int]$ExpectedRows) {
+                                        [int]$ExpectedRows,
+                                        [string]$ExpectedForcedOracleLedgerPath) {
     $matrixPath = Join-Path $PackagePath 'matrix_rows.csv'
     $summaryPath = Join-Path $PackagePath 'summary.json'
     if (-not (Test-Path -LiteralPath $matrixPath -PathType Leaf) -or
@@ -234,6 +286,10 @@ function Assert-CompletedMatrixPackage([string]$PackagePath,
     if ([string]$summary.status -cne 'COMPLETE') {
         throw "Completed package summary is not COMPLETE: $PackagePath"
     }
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedForcedOracleLedgerPath)) {
+        [void](Assert-ForcedOracleEvidence -PackagePath $PackagePath `
+            -ExpectedForcedLedgerPath $ExpectedForcedOracleLedgerPath)
+    }
 }
 
 $requestedFiles = @()
@@ -264,6 +320,13 @@ if ($files.Count -eq 0 -or $scopes.Count -eq 0 -or $blockSizes.Count -eq 0) {
 }
 if ($Stage -eq 'e5-router' -and $FastThreadCount -ne 1) {
     throw 'FastThreadCount is only valid for the e6-fast stage'
+}
+if ($Stage -ne 'e5-router' -and -not [string]::IsNullOrWhiteSpace($ForcedOracleLedgerPath)) {
+    throw 'ForcedOracleLedgerPath is only valid for the e5-router stage'
+}
+$forcedOracleLedgerPathNormalized = ''
+if (-not [string]::IsNullOrWhiteSpace($ForcedOracleLedgerPath)) {
+    $forcedOracleLedgerPathNormalized = [IO.Path]::GetFullPath($ForcedOracleLedgerPath)
 }
 if (-not $ListOnly -and -not $AuthorizeRuntimeExperiment) {
     throw 'Runtime is disabled. Use -ListOnly:$false and -AuthorizeRuntimeExperiment together.'
@@ -310,12 +373,14 @@ $plan = [ordered]@{
     policies = $policies
     timing_repeats = $timingRepeats
     fast_thread_count = $threadCount
+    forced_oracle_ledger_path = $forcedOracleLedgerPathNormalized
+    forced_oracle_output_path = if ([string]::IsNullOrWhiteSpace($forcedOracleLedgerPathNormalized)) { '' } else { 'forced-oracle' }
     child_packages = $jobs.Count
     cases_per_child = $files.Count * $scopes.Count
     codec_invocations = $jobs.Count * $files.Count * $scopes.Count * 2
     runtime_authorization_required = $true
     resume_requested = [bool]$Resume
-    command = "& $($MyInvocation.MyCommand.Path) -Stage $Stage -FastThreadCount $threadCount -ListOnly:`$false -AuthorizeRuntimeExperiment ..."
+    command = "& $($MyInvocation.MyCommand.Path) -Stage $Stage -FastThreadCount $threadCount -ForcedOracleLedgerPath <complete-forced-ledger> -ListOnly:`$false -AuthorizeRuntimeExperiment ..."
 }
 if ($ListOnly) {
     $plan | ConvertTo-Json -Depth 5
@@ -341,6 +406,20 @@ foreach ($file in $files) {
     }
 }
 $codecHash = Get-Sha256 $CodecPath
+$deriveScript = Join-Path $scriptRoot 'derive_r2_forced_oracle.ps1'
+if (-not [string]::IsNullOrWhiteSpace($forcedOracleLedgerPathNormalized)) {
+    if (-not (Test-Path -LiteralPath $deriveScript -PathType Leaf)) {
+        throw "Required forced-oracle derivation script is missing: $deriveScript"
+    }
+    if (-not (Test-Path -LiteralPath $forcedOracleLedgerPathNormalized -PathType Container)) {
+        throw "Forced-oracle ledger directory not found: $forcedOracleLedgerPathNormalized"
+    }
+    # Validate all forced rows before investing in the PAQ-heavy E5 matrix.
+    & $deriveScript -ForcedLedgerPath $forcedOracleLedgerPathNormalized -ListOnly | Out-Null
+    if (-not $?) {
+        throw "Forced-oracle ledger preflight failed: $forcedOracleLedgerPathNormalized"
+    }
+}
 $childRoot = Join-Path $packagePath 'children'
 if (Test-Path -LiteralPath $packagePath) {
     if (-not $Resume) {
@@ -358,10 +437,12 @@ if (Test-Path -LiteralPath $packagePath) {
         -ExpectedCodecHash $codecHash -ExpectedDatasetPath $DatasetPath `
         -ExpectedFiles $files -ExpectedScopes $scopes -ExpectedBlockSizes $blockSizes `
         -ExpectedPolicies $policies -ExpectedRepeats $timingRepeats `
-        -ExpectedFastThreadCount $threadCount
+        -ExpectedFastThreadCount $threadCount `
+        -ExpectedForcedOracleLedgerPath $forcedOracleLedgerPathNormalized
     if ([string]$plan.status -ceq 'COMPLETE') {
         Assert-CompletedMatrixPackage -PackagePath $packagePath `
-            -ExpectedRows ($jobs.Count * $files.Count * $scopes.Count)
+            -ExpectedRows ($jobs.Count * $files.Count * $scopes.Count) `
+            -ExpectedForcedOracleLedgerPath $forcedOracleLedgerPathNormalized
         Write-Host "Experiment already complete: $packagePath"
         return
     }
@@ -526,13 +607,31 @@ try {
         $retained = @($summaryRows.ToArray())
         $aggregate = [ordered]@{
             status = 'COMPLETE'
-            evidence_boundary = 'Reference regret is against current full Auto. Tie-aware forced-mode oracle recall requires a separately completed forced-mode ledger.'
+            evidence_boundary = if ([string]::IsNullOrWhiteSpace($forcedOracleLedgerPathNormalized)) {
+                'Reference regret is against current full Auto. Tie-aware forced-mode oracle recall requires a separately completed forced-mode ledger.'
+            }
+            else {
+                'Reference regret is against current full Auto. The attached 32 KiB one-block forced-mode ledger supplies tie-aware winner recall only for its matching E5 rows.'
+            }
             rows = $retained.Count
             selected_mode_coverage = if ($retained.Count -eq 0) { 0 } else {
                 (@($retained | Where-Object full_auto_selected_mode_covered).Count / $retained.Count)
             }
             aggregate_regret_vs_full_auto_bytes = @($retained | ForEach-Object { [int64]$_.regret_vs_full_auto_bytes } | Measure-Object -Sum).Sum
             ranker_model = $rankerModel
+        }
+        if (-not [string]::IsNullOrWhiteSpace($forcedOracleLedgerPathNormalized)) {
+            $forcedOracle = Invoke-ForcedOracleDerivation -PackagePath $packagePath `
+                -ForcedLedgerPath $forcedOracleLedgerPathNormalized -DeriveScript $deriveScript
+            $aggregate.forced_oracle = [ordered]@{
+                ledger_path = $forcedOracleLedgerPathNormalized
+                output_path = (Join-Path $packagePath 'forced-oracle')
+                block_size_kib = [int]$forcedOracle.block_size_kib
+                input_cases = [int]$forcedOracle.input_cases
+                e5_matching_rows = [int]$forcedOracle.e5_matching_rows
+                tie_aware_recall_available = [bool]$forcedOracle.tie_aware_recall_available
+                ranker_identity = [string]$forcedOracle.ranker_identity
+            }
         }
     }
     else {

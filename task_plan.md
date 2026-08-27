@@ -829,3 +829,25 @@ is excluded; the retained v2 evidence uses the system random-number source.
 The detailed protocol is
 `docs/research/R2_FORCED_ORACLE_EXPERIMENT_DESIGN_20260828.md`. No corpus
 codec process was launched for this checkpoint.
+
+## 2026-08-28 E5 Forced-Oracle Evidence Binding
+
+- [x] Add the optional E5-only `-ForcedOracleLedgerPath` identity to the
+  guarded matrix runner. A non-empty path is normalized, persisted in
+  `experiment.json`, and required to match during resume.
+- [x] Validate the completed ledger read-only before the PAQ-heavy E5 matrix,
+  then derive and retain tie-aware results in `<e5-package>\forced-oracle`
+  before marking an attached E5 package complete.
+- [x] Verify PowerShell AST parsing, the no-codec synthetic tied-winner test,
+  and a one-file E5 `-ListOnly` plan (four child packages; eight planned codec
+  invocations; `runtime_started=false`).
+- [ ] Run the separate 12-file forced ledger, then invoke the E5 matrix with
+  that ledger path in a dedicated runtime window. This remains 1,056 forced
+  invocations plus the separate E5 workload; do not co-schedule it with Fast
+  timing.
+
+### Status
+
+The attachment's tie-aware router measurement now has a recoverable evidence
+path in the runner. No corpus encode, decode, or PAQ-heavy E5 job was started
+by this implementation checkpoint.

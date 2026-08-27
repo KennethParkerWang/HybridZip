@@ -925,3 +925,18 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   coverage when requested.
 - Runtime remains deliberately pending. The full 12-file 32 KiB forced ledger
   has 44 child packages and 1,056 codec invocations before retries.
+
+## 2026-08-28: E5 forced-oracle evidence binding
+
+- `tools/run_r2_e5_e6_matrix.ps1` now accepts E5-only
+  `-ForcedOracleLedgerPath`. It writes the normalized ledger path and planned
+  `forced-oracle` output location into `experiment.json`; a resume request
+  with a different path is rejected.
+- Runtime use first invokes `derive_r2_forced_oracle.ps1 -ListOnly` to validate
+  the completed forced ledger before launching E5. After all E5 rows pass, it
+  derives tied-winner recall under `<e5-package>\forced-oracle` and embeds the
+  evidence link in E5 `summary.json`.
+- Verification used no codec process: PowerShell AST parsing passed;
+  `tools/test_r2_forced_oracle.ps1` passed its synthetic `zstd,fse` tie; an E5
+  one-file/32 KiB `-ListOnly` plan reported four child packages and eight
+  planned codec invocations with `runtime_started=false`.
