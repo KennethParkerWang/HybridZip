@@ -8,7 +8,7 @@ encoder policies independently:
 | Policy | Current form | Acceptance claim it may support |
 | --- | --- | --- |
 | `ENC_RATIO_V1` | Full Auto reference and deterministic `auto-k8` shortlist | Same-input complete archive bytes versus PAQ8px v216 `-1` |
-| `ENC_FAST_V1` | `fast`, existing HZ02 zstd mode 2 at level 3 | CPU encode and decode throughput |
+| `ENC_FAST_V1` | `fast`, four candidates: stored, Mode-43 zstd extension/transforms, and LZ4 | CPU encode and decode throughput |
 | `ENC_ORACLE` | Existing full `auto` portfolio | Router reference only; not a product policy |
 
 These policies are not separate archive formats. HZ01 and all existing HZ02
@@ -24,7 +24,8 @@ policy cannot be used to claim the other policy's target.
 - Existing 32 KiB R2 ledger: 528/528 byte-exact rows; full Auto 2.028809 bpb;
   full-Auto and forced-mode oracle are equal on that historical 12-case matrix.
 - Implemented encoder policies: `auto`, `auto-k2`, `auto-k4`, `auto-k8`, and
-  `fast`. K=2/K=4 are ablations; K=8 is not promoted.
+  Fast K=4. K=2/K=4/K=8 ratio shortlists remain ablations; K=8 is not
+  promoted.
 
 ## Measurable Objectives
 
@@ -34,7 +35,7 @@ policy cannot be used to claim the other policy's target.
 | E5 | K=2/K=4/K=8 versus full Auto | Report complete-byte regret and selected-mode coverage; promotion additionally needs a matching forced-mode tie-aware oracle | Queued |
 | E6 | Fast policy, warmup plus 3 retained repeats | Every 32/64/128 KiB input/block cell byte-exact; encode/decode each >= 0.16 MB/s | Passed for current Fast baseline |
 | F1 | 28-feature fixed-point ranker | Deterministic across named builds; measured router budget; no-leakage labels | Queued |
-| F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | Queued |
+| F2 | `MODE_FAST_EXT_V1` | Pinned donor, independent standard-frame decode, old archives decode unchanged | 1 KiB gate passed; corpus rerun pending |
 | F3 | Block executor | Canonical archive order and byte-exact repeats; measure before/after Fast throughput | Queued |
 | F4 | GPU `LZ_RANS_V1` | CPU reference decoder; end-to-end >= 8 MB/s at every required size | Blocked by F2/F3 |
 
@@ -60,9 +61,9 @@ recoverable without weakening its evidence identity.
 ## Known Gaps
 
 The current `BlockFeaturesV1` has a small rule-only feature set, not the
-decision's 28-feature ranker. `fast` currently chooses only zstd mode 2; it
-does not yet implement the requested fast K=4 selection or extension format.
-There is no independent-block thread pool or GPU backend.
+decision's 28-feature ranker. Fast K=4 and the append-only Mode-43 extension
+are implemented, but their corpus-level throughput matrix is pending. There
+is no independent-block thread pool or GPU backend.
 
 `third_party/zstd` identifies as 1.6.0. The decision requests zstd 1.5.7,
 whose stated source archive is 2,434,947 bytes under BSD-3-Clause. No 1.5.7

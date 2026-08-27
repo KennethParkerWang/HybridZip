@@ -36,11 +36,17 @@ std::vector<std::uint8_t> ZstdBackend::encode(const ByteView input) const {
                                compression_level_),
         "Failed to set zstd compression level");
     require_zstd_success(
-        ZSTD_CCtx_setParameter(context.get(), ZSTD_c_checksumFlag, 1),
-        "Failed to enable zstd block checksum");
+        ZSTD_CCtx_setParameter(context.get(), ZSTD_c_checksumFlag,
+                               include_checksum_ ? 1 : 0),
+        "Failed to set zstd block checksum flag");
     require_zstd_success(
-        ZSTD_CCtx_setParameter(context.get(), ZSTD_c_contentSizeFlag, 1),
-        "Failed to enable zstd content size");
+        ZSTD_CCtx_setParameter(context.get(), ZSTD_c_contentSizeFlag,
+                               include_content_size_ ? 1 : 0),
+        "Failed to set zstd content size flag");
+    require_zstd_success(
+        ZSTD_CCtx_setParameter(context.get(), ZSTD_c_dictIDFlag,
+                               include_dict_id_ ? 1 : 0),
+        "Failed to set zstd dictionary ID flag");
     require_zstd_success(
         ZSTD_CCtx_setParameter(context.get(), ZSTD_c_nbWorkers, 0),
         "Failed to force single-threaded zstd");
@@ -70,4 +76,3 @@ std::size_t ZstdBackend::maximum_payload_size(const std::size_t input_size) {
 }
 
 }  // namespace hz::r2
-

@@ -120,7 +120,8 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
     const hz::r2::CompressionStats empty =
         round_trip(directory, "empty", {}, options);
     require(empty.archive_bytes == hz::r2::kR2ArchiveHeaderSize &&
-                empty.blocks_by_mode == std::array<std::uint32_t, 43>{},
+                empty.blocks_by_mode ==
+                    std::array<std::uint32_t, hz::r2::kR2BlockModeCount>{},
             "Empty HZ02 archive contract is wrong");
 
     options.policy = hz::r2::CandidatePolicy::StoredOnly;
@@ -170,6 +171,15 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
         directory, "delta-binary-packed-zstd", pseudo_random_bytes(4096), options);
     require(delta_binary_packed.blocks_by_mode[42] == 1,
             "Forced delta-binary-packed+zstd mode selected another backend");
+
+    options.policy = hz::r2::CandidatePolicy::FastExtensionOnly;
+    const auto fast_extension = round_trip(
+        directory, "fast-extension", pseudo_random_bytes(1024), options);
+    require(fast_extension.blocks_by_mode[43] == 1,
+            "Forced fast extension selected another backend");
+    require(fast_extension.selected_candidate_bytes ==
+                fast_extension.archive_bytes,
+            "Fast extension telemetry does not equal complete HZ02 bytes");
 
     options.policy = hz::r2::CandidatePolicy::Ppmd7Only;
     const auto ppmd7 = round_trip(directory, "ppmd7", repeated, options);
@@ -496,8 +506,15 @@ void test_fast_policy(const std::filesystem::path& directory) {
 
     const auto fast = round_trip(
         directory, "fast-policy", pseudo_random_bytes(1024), options);
-    require(fast.blocks_by_mode[2] == 1U,
-            "Fast policy did not serialize the existing zstd mode");
+    require(!fast.full_oracle_evaluated,
+            "Fast policy was reported as a full oracle");
+    require(fast.candidates_evaluated == 4U,
+            "Fast policy did not materialize four top-level candidates");
+    const std::uint32_t candidate_total = std::accumulate(
+        fast.candidate_blocks_by_mode.begin(),
+        fast.candidate_blocks_by_mode.end(), 0U);
+    require(candidate_total == 4U,
+            "Fast policy candidate telemetry has the wrong cardinality");
     require(fast.selected_candidate_bytes == fast.archive_bytes,
             "Fast selected-byte telemetry does not equal archive bytes");
 }

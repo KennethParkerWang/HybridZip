@@ -510,6 +510,7 @@ add_library(hz_r2
     src/r2/codec/r2_codec.cpp
     src/r2/entropy/binary_arithmetic_codec.cpp
     src/r2/entropy/donor_match_predictive_backend.cpp
+    src/r2/entropy/fast_extension_backend.cpp
     src/r2/entropy/fastpfor_backend.cpp
     src/r2/entropy/rans_backend.cpp
     src/r2/entropy/fse_backend.cpp

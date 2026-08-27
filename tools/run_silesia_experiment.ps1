@@ -8,7 +8,7 @@ param(
     [string]$Profile = 'v1',
     # Keep this order equal to the decoder-visible BlockMode IDs.
     [ValidateSet(
-        'auto', 'auto-k2', 'auto-k4', 'auto-k8', 'fast', 'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
+        'auto', 'auto-k2', 'auto-k4', 'auto-k8', 'fast', 'fast-ext', 'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
         'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
         'shuffle-zstd', 'bitshuffle-zstd', 'delta-zstd', 'fastpfor', 'rans',
         'bcj2-zstd', 'record-transpose-zstd', 'jpegls', 'flac-residual',
@@ -71,7 +71,7 @@ $allFiles = @(
     'dickens', 'mozilla', 'mr', 'nci', 'ooffice', 'osdb',
     'reymont', 'samba', 'sao', 'webster', 'x-ray', 'xml'
 )
-# Keep this order equal to decoder-visible BlockMode IDs 0..42.
+# Keep this order equal to decoder-visible BlockMode IDs 0..43.
 $r2BlockModes = @(
     'stored', 'predictive', 'zstd', 'fse', 'lzma', 'donor-match',
     'bwt-zstd', 'bwt-mtf-zstd', 'bwt-rlt-zstd', 'x86-bcj-zstd',
@@ -83,7 +83,7 @@ $r2BlockModes = @(
     'paq8px-apm', 'paq8px-record-model', 'paq8px-linear-prediction',
     'paq8px-similarity', 'paq8px-similarity-sse', 'paq8px-generic-sse',
     'paq8px-detected-sse', 'wavpack', 'lz4', 'kanzi-ans',
-    'lmic-arithmetic', 'delta-binary-packed-zstd'
+    'lmic-arithmetic', 'delta-binary-packed-zstd', 'fast-ext'
 )
 if ($SilesiaFiles.Count -eq 0) {
     $files = @($allFiles)
@@ -850,12 +850,12 @@ else {
     $variant = "r2-$R2Mode"
     $archiveExtension = '.hz2'
     $blockSizeBytes = [int64]$BlockSizeKiB * 1024L
-    $zstdLevel = if ($R2Mode -eq 'fast') { 3 } else { 19 }
+    $zstdLevel = if ($R2Mode -eq 'fast' -or $R2Mode -eq 'fast-ext') { 3 } else { 19 }
     $encodeArguments = @(
         'c', '--profile=r2', "--r2-mode=$R2Mode",
         "--block-size=$blockSizeBytes"
     )
-    if ($R2Mode -eq 'fast') {
+    if ($R2Mode -eq 'fast' -or $R2Mode -eq 'fast-ext') {
         $encodeArguments += '--zstd-level=3'
     }
     $decodeArguments = @('d')

@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-08-27T19:56:17.2698844Z",
+  "input_bytes": 1024,
+  "input_sha256": "CCA5E448EAF942DC406AF4BC778128571B7B8B21228BE8581E7E37FBA97B0211",
+  "codec_sha256": "8125425879D70EB24FE5F36379B49A541BE66201319ADF073096FE0DFEF1479B",
+  "profile": "fast",
+  "policy": "Fast K=4",
+  "policy_candidates_expected": 4,
+  "archive_bytes": 159,
+  "archive_sha256": "DCB2974A494AFADD9372F7E810A7C28D41ABFC8C5F0C439DCB03CAB34B7B89CE",
+  "mode_id": 43,
+  "hz02_transform_id": 0,
+  "entropy_id": 2,
+  "payload_bytes": 94,
+  "metadata_bytes_total": 9,
+  "extension_metadata_bytes": 5,
+  "extension_version": 1,
+  "extension_codec_id": 0,
+  "extension_transform_id": 2,
+  "extension_side_information_length": 1,
+  "extension_side_information": [
+    2
+  ],
+  "encode_exit_code": 0,
+  "decode_exit_code": 0,
+  "decoded_sha256": "CCA5E448EAF942DC406AF4BC778128571B7B8B21228BE8581E7E37FBA97B0211",
+  "byte_exact": true,
+  "external_zstd_executable": "D:\\anaconda\\Library\\bin\\zstd.exe",
+  "external_zstd_decode_exit_code": 0,
+  "external_zstd_decoded_sha256": "816CCD294309C281D0BD6D1772284E08FE28F6F26F1ABB6B7FE64A33D27D7924",
+  "external_zstd_decoded_bytes": 1024,
+  "encode_stdout": "HZ02 input=1024 archive=159 payload=94 candidates=4 selected=159 oracle=159 oracle_gap=0 full_oracle=0 candidate_modes=0:1,39:1,43:2 blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd/fast-ext)=0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/1"
+}

@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-08-27T19:41:16.4776490+00:00",
+  "input_bytes": 1024,
+  "input_sha256": "8D419B8E27411BFF0C71DD34AE40D8BE8CAADD813A3D254463365D05C38B1B4A",
+  "codec_sha256": "C548DBFB6AE23D7F7D5F9D9675C2EFADA618C97367F7885BA70CAE169F641C1A",
+  "zstd_executable": "D:\\anaconda\\Library\\bin\\zstd.exe",
+  "fast_extension": {
+    "archive_bytes": 1097,
+    "archive_sha256": "C71E82DA9F732E1352BD15A6D0BA9A07B85E2013EBE661E02CFC80C51CCA1E81",
+    "mode_id": 43,
+    "transform_id": 0,
+    "entropy_id": 2,
+    "extension_version": 1,
+    "codec_id": 0,
+    "transform_id_in_extension": 0,
+    "side_information_bytes": 0,
+    "encode_exit_code": 0,
+    "decode_exit_code": 0,
+    "decoded_sha256": "8D419B8E27411BFF0C71DD34AE40D8BE8CAADD813A3D254463365D05C38B1B4A",
+    "external_zstd_decode_exit_code": 0,
+    "external_zstd_decoded_sha256": "8D419B8E27411BFF0C71DD34AE40D8BE8CAADD813A3D254463365D05C38B1B4A",
+    "external_zstd_decoded_bytes": 1024
+  },
+  "invalid_extension_version": {
+    "decode_exit_code": 1,
+    "output_published": false
+  },
+  "hz01": {
+    "archive_bytes": 1065,
+    "encode_exit_code": 0,
+    "decode_exit_code": 0,
+    "decoded_sha256": "8D419B8E27411BFF0C71DD34AE40D8BE8CAADD813A3D254463365D05C38B1B4A"
+  }
+}

@@ -18,6 +18,7 @@ enum class CandidatePolicy {
     AutoK4,
     AutoK8,
     Fast,
+    FastExtensionOnly,
     StoredOnly,
     PredictiveV1Only,
     ZstdOnly,
@@ -80,6 +81,7 @@ struct BlockDecision {
     std::size_t stored_candidate_bytes = 0;
     std::optional<std::size_t> predictive_candidate_bytes;
     std::optional<std::size_t> zstd_candidate_bytes;
+    std::optional<std::size_t> fast_extension_candidate_bytes;
     std::optional<std::size_t> fse_candidate_bytes;
     std::optional<std::size_t> lzma_candidate_bytes;
     std::optional<std::size_t> lz4_candidate_bytes;
@@ -125,7 +127,7 @@ struct BlockDecision {
     // final block framing by the codec.
     std::uint32_t candidates_evaluated = 0;
     // Encoder telemetry only. It is not serialized into HZ02 archives.
-    std::array<std::uint32_t, 43> candidate_blocks_by_mode{};
+    std::array<std::uint32_t, kR2BlockModeCount> candidate_blocks_by_mode{};
     std::size_t selected_candidate_bytes = 0;
     std::size_t oracle_candidate_bytes = 0;
     std::size_t oracle_gap_bytes = 0;

@@ -26,10 +26,10 @@ struct CompressionStats {
     std::uint64_t oracle_candidate_bytes = 0;
     std::uint64_t oracle_gap_bytes = 0;
     bool full_oracle_evaluated = false;
-    // BlockMode currently occupies IDs 0..42, including Arrow delta packing.
-    std::array<std::uint32_t, 43> blocks_by_mode{};
+    // IDs 0..42 are retained HZ02 modes; ID 43 is the additive fast extension.
+    std::array<std::uint32_t, kR2BlockModeCount> blocks_by_mode{};
     // Encoder telemetry only; it is not part of the archive contract.
-    std::array<std::uint32_t, 43> candidate_blocks_by_mode{};
+    std::array<std::uint32_t, kR2BlockModeCount> candidate_blocks_by_mode{};
 };
 
 CompressionStats compress_file(const std::filesystem::path& input,

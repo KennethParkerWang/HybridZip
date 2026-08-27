@@ -769,3 +769,58 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   codec. The completed E6 package passed this check while its
   `matrix_rows.csv` SHA-256 remained
   `671E3C42E8C678FB2D05E94030C6CA626AEC6BD7848AF76765DD0D3D86462D0C`.
+
+## 2026-08-28: Attachment-Driven Protocol Decision
+
+- Input: `C:/Users/Administrator/.codex/attachments/b96760cb-802c-4f54-b886-1fce9454f953/pasted-text.txt`.
+- Applied direction: retain one HZ02 container, HZ01 compatibility, and IDs
+  0..42; append an extensible fast mode as ID 43 rather than replacing the
+  existing portfolio.
+- Evidence tracks remain separate: `ENC_RATIO_V1` uses identical inputs and
+  complete archive bytes versus PAQ8px; `ENC_FAST_V1` uses the CPU throughput
+  contract. One track does not satisfy the other.
+- Existing evidence: E3 PAQ8px has 36/36 byte-exact rows at 1.809440 bpb
+  across frozen Tier-A prefixes; current Fast has 432/432 byte-exact rows and
+  clears the 0.16 MB/s CPU floor in all nine cells.
+- Deferred: E5 shortlist promotion, final ratio result, Tencent/OASum
+  coverage, and GPU performance are unproven.
+- Donor boundary: `E:/MIXER/KU/zstd-v1.5.7/` has verified provenance, while
+  production still builds the existing vendored zstd 1.6.0.
+
+## 2026-08-28: MODE_FAST_EXT_V1 Initial Gate
+
+- Appended HZ02 `BlockMode::FastExtension = 43`; IDs 0..42 remain unchanged.
+- Initial metadata is exactly `01 00 00 00`: extension version 1, standard
+  zstd codec 0, transform none 0, and uLEB128 side-information length 0.
+- The zstd frame is built with zstd checksum, content size, and dictionary ID
+  disabled because HZ02 already carries CRC32 and raw size; zstd workers stay
+  at zero.
+- Release `hybridzip` and `hz_r2_codec_tests` built and linked. The full test
+  executable was not run.
+- `results/smoke/r2-fast-extension-1k-20260828/verification.json` records a
+  deterministic 1 KiB gate: HZ02 ID 43 decoded byte-exactly, external
+  `D:/anaconda/Library/bin/zstd.exe` decoded the extracted frame byte-exactly,
+  a version-2 mutation was rejected with no output, and HZ01 also decoded
+  byte-exactly.
+
+## 2026-08-28: Fast K=4 runtime gate
+
+- The current Release build evaluates four Fast candidates: stored, raw
+  Mode-43 zstd extension, best transformed Mode-43 zstd extension, and LZ4.
+- A deterministic 1 KiB 32-bit counter input produced `candidates=4` and
+  selected Mode 43. The extension selected `transform_id=2` (bitshuffle) with
+  side-information width `2`.
+- Complete archive accounting: 159 bytes total, 94-byte zstd payload, 9-byte
+  HZ02 metadata field (4-byte CRC plus 5-byte extension metadata).
+- HybridZip decode was byte-exact: input SHA-256
+  `CCA5E448EAF942DC406AF4BC778128571B7B8B21228BE8581E7E37FBA97B0211`.
+  Archive SHA-256 is
+  `DCB2974A494AFADD9372F7E810A7C28D41ABFC8C5F0C439DCB03CAB34B7B89CE`.
+- External `D:/anaconda/Library/bin/zstd.exe` decoded the extracted frame with
+  exit code 0 and recovered 1,024 transformed bytes. Its transformed-byte
+  SHA-256 is `816CCD294309C281D0BD6D1772284E08FE28F6F26F1ABB6B7FE64A33D27D7924`.
+- Evidence is retained under
+  `results/smoke/r2-fast-k4-xordelta-1k-20260828-v1/verification.json`.
+- This is a correctness/dispatch gate only. The previous 432-row E6 package
+  remains the mode-2 Fast baseline; no post-change corpus throughput claim is
+  made until a new E6 matrix is run.

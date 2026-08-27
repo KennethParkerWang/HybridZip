@@ -24,6 +24,7 @@
 #include "r2/entropy/predictive_v1_backend.h"
 #include "r2/entropy/fse_backend.h"
 #include "r2/entropy/fastpfor_backend.h"
+#include "r2/entropy/fast_extension_backend.h"
 #include "r2/entropy/rans_backend.h"
 #include "r2/entropy/lzma_backend.h"
 #include "r2/entropy/lz4_backend.h"
@@ -195,6 +196,33 @@ std::vector<std::uint8_t> decode_block(const BlockHeader& header,
         case BlockMode::Zstd:
             decoded = ZstdBackend().decode(payload, header.uncompressed_size);
             break;
+        case BlockMode::FastExtension:
+        {
+            FastExtensionDecodedBlock extension =
+                FastExtensionBackend::decode_zstd(
+                    payload, transform_metadata, header.uncompressed_size);
+            decoded = std::move(extension.bytes);
+            switch (extension.metadata.transform) {
+            case FastExtensionTransform::None:
+                break;
+            case FastExtensionTransform::ByteShuffle:
+                decoded = BloscShuffleTransform().inverse(
+                    ByteView(decoded), extension.metadata.side_information[0]);
+                break;
+            case FastExtensionTransform::BitShuffle:
+                decoded = BloscBitshuffleTransform().inverse(
+                    ByteView(decoded), extension.metadata.side_information[0]);
+                break;
+            case FastExtensionTransform::XorDelta:
+                decoded = BloscDeltaTransform().inverse(
+                    ByteView(decoded), extension.metadata.side_information[0]);
+                break;
+            case FastExtensionTransform::X86Bcj:
+                decoded = XzX86BcjTransform().inverse(ByteView(decoded), ByteView{});
+                break;
+            }
+            break;
+        }
         case BlockMode::Fse:
             decoded = FseBackend().decode(payload, header.uncompressed_size);
             break;
@@ -446,7 +474,9 @@ std::size_t maximum_payload_for(const BlockHeader& header) {
     if (header.mode == BlockMode::Stored) {
         return header.uncompressed_size;
     }
-    if (header.mode == BlockMode::Zstd || header.mode == BlockMode::BwtZstd ||
+    if (header.mode == BlockMode::Zstd ||
+        header.mode == BlockMode::FastExtension ||
+        header.mode == BlockMode::BwtZstd ||
         header.mode == BlockMode::BwtMtfZstd ||
         header.mode == BlockMode::BwtRltZstd || header.mode == BlockMode::X86BcjZstd ||
         header.mode == BlockMode::ShuffleZstd || header.mode == BlockMode::BitshuffleZstd ||

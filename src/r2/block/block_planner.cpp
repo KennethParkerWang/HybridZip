@@ -23,6 +23,7 @@
 #include "r2/entropy/predictive_v1_backend.h"
 #include "r2/entropy/fse_backend.h"
 #include "r2/entropy/fastpfor_backend.h"
+#include "r2/entropy/fast_extension_backend.h"
 #include "r2/entropy/rans_backend.h"
 #include "r2/entropy/lzma_backend.h"
 #include "r2/entropy/lz4_backend.h"
@@ -179,6 +180,99 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
     decision.stored_candidate_bytes = decision.payload.size();
 
     if (options_.policy == CandidatePolicy::StoredOnly) {
+        return decision;
+    }
+
+    if (options_.policy == CandidatePolicy::FastExtensionOnly) {
+        FastExtensionEncodedBlock encoded =
+            FastExtensionBackend(std::min(options_.zstd_level, 3))
+                .encode_raw_zstd(input);
+        decision.fast_extension_candidate_bytes =
+            encoded.payload.size() + encoded.metadata.size();
+        decision.mode = BlockMode::FastExtension;
+        decision.entropy = EntropyKind::ZstdFse;
+        decision.payload = std::move(encoded.payload);
+        decision.transform_metadata = std::move(encoded.metadata);
+        return decision;
+    }
+
+    if (options_.policy == CandidatePolicy::Fast) {
+        const FastExtensionBackend fast_extension(
+            std::min(options_.zstd_level, 3));
+        decision.candidate_blocks_by_mode[
+            static_cast<std::size_t>(BlockMode::Stored)] = 1U;
+
+        FastExtensionEncodedBlock raw_extension =
+            fast_extension.encode_raw_zstd(input);
+        decision.fast_extension_candidate_bytes =
+            raw_extension.payload.size() + raw_extension.metadata.size();
+        consider(decision, BlockMode::FastExtension, TransformKind::Raw,
+                 EntropyKind::ZstdFse, std::move(raw_extension.payload),
+                 std::move(raw_extension.metadata));
+
+        std::optional<FastExtensionEncodedBlock> best_transform;
+        const auto consider_transform =
+            [&](const FastExtensionTransform transform,
+                std::vector<std::uint8_t> transformed,
+                std::vector<std::uint8_t> side_information) {
+                FastExtensionEncodedBlock candidate =
+                    fast_extension.encode_zstd(
+                        ByteView(transformed), transform,
+                        ByteView(side_information));
+                if (!best_transform.has_value() ||
+                    candidate.payload.size() + candidate.metadata.size() <
+                        best_transform->payload.size() +
+                            best_transform->metadata.size()) {
+                    best_transform = std::move(candidate);
+                }
+            };
+
+        const BloscShuffleTransform shuffle;
+        for (const std::uint8_t width : {std::uint8_t{2}, std::uint8_t{4},
+                                         std::uint8_t{8}}) {
+            TransformResult transformed = shuffle.forward(input, width);
+            consider_transform(FastExtensionTransform::ByteShuffle,
+                               std::move(transformed.bytes), {width});
+        }
+
+        const BloscBitshuffleTransform bitshuffle;
+        for (const std::uint8_t width : {std::uint8_t{2}, std::uint8_t{4},
+                                         std::uint8_t{8}}) {
+            if (!bitshuffle.applicable(input, width)) {
+                continue;
+            }
+            TransformResult transformed = bitshuffle.forward(input, width);
+            consider_transform(FastExtensionTransform::BitShuffle,
+                               std::move(transformed.bytes), {width});
+        }
+
+        const BloscDeltaTransform delta;
+        for (const std::uint8_t width : {std::uint8_t{1}, std::uint8_t{2},
+                                         std::uint8_t{4}, std::uint8_t{8}}) {
+            if (!delta.applicable(input, width)) {
+                continue;
+            }
+            TransformResult transformed = delta.forward(input, width);
+            consider_transform(FastExtensionTransform::XorDelta,
+                               std::move(transformed.bytes), {width});
+        }
+
+        TransformResult bcj = XzX86BcjTransform().forward(input);
+        consider_transform(FastExtensionTransform::X86Bcj,
+                           std::move(bcj.bytes), {});
+
+        if (!best_transform.has_value()) {
+            throw std::logic_error("Fast policy did not build a transform candidate");
+        }
+        consider(decision, BlockMode::FastExtension, TransformKind::Raw,
+                 EntropyKind::ZstdFse, std::move(best_transform->payload),
+                 std::move(best_transform->metadata));
+
+        std::vector<std::uint8_t> lz4_payload = Lz4Backend().encode(input);
+        decision.lz4_candidate_bytes = lz4_payload.size();
+        consider(decision, BlockMode::Lz4, TransformKind::Raw,
+                 EntropyKind::Lz4, std::move(lz4_payload));
+        decision.candidates_evaluated = 4U;
         return decision;
     }
 
@@ -388,16 +482,12 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
                  std::move(payload));
     }
 
-    if (options_.policy == CandidatePolicy::ZstdOnly ||
-        options_.policy == CandidatePolicy::Fast || auto_lz ||
+    if (options_.policy == CandidatePolicy::ZstdOnly || auto_lz ||
         shortlist_has(BlockMode::Zstd)) {
-        const int zstd_level = options_.policy == CandidatePolicy::Fast
-            ? std::min(options_.zstd_level, 3) : options_.zstd_level;
-        const ZstdBackend zstd(zstd_level);
+        const ZstdBackend zstd(options_.zstd_level);
         std::vector<std::uint8_t> payload = zstd.encode(input);
         decision.zstd_candidate_bytes = payload.size();
-        if (options_.policy == CandidatePolicy::ZstdOnly ||
-            options_.policy == CandidatePolicy::Fast) {
+        if (options_.policy == CandidatePolicy::ZstdOnly) {
             decision.mode = BlockMode::Zstd;
             decision.entropy = EntropyKind::ZstdFse;
             decision.payload = std::move(payload);
@@ -1131,7 +1221,7 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
                  EntropyKind::Wavpack, std::move(payload));
     }
 
-    const std::array<std::optional<std::size_t>, 43> candidates{
+    const std::array<std::optional<std::size_t>, kR2BlockModeCount> candidates{
         decision.stored_candidate_bytes,
         decision.predictive_candidate_bytes,
         decision.zstd_candidate_bytes,
@@ -1174,11 +1264,12 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
         decision.wavpack_candidate_bytes,
         decision.lz4_candidate_bytes,
         decision.kanzi_ans_candidate_bytes,
-        decision.delta_binary_packed_zstd_candidate_bytes};
+        decision.delta_binary_packed_zstd_candidate_bytes,
+        decision.fast_extension_candidate_bytes};
     // Candidate byte fields are grouped by backend construction order, not by
     // decoder-visible BlockMode ID. Keep this mapping explicit so encoder
     // telemetry cannot silently relabel a materialized candidate.
-    const std::array<BlockMode, 43> candidate_mode_ids{
+    const std::array<BlockMode, kR2BlockModeCount> candidate_mode_ids{
         BlockMode::Stored,
         BlockMode::PredictiveV1,
         BlockMode::Zstd,
@@ -1221,7 +1312,8 @@ BlockDecision BlockPlanner::plan(const ByteView input) {
         BlockMode::Wavpack,
         BlockMode::Lz4,
         BlockMode::KanziAns,
-        BlockMode::DeltaBinaryPackedZstd};
+        BlockMode::DeltaBinaryPackedZstd,
+        BlockMode::FastExtension};
     std::size_t oracle = std::numeric_limits<std::size_t>::max();
     for (std::size_t mode_index = 0; mode_index < candidates.size();
          ++mode_index) {

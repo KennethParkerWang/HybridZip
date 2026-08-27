@@ -21,7 +21,7 @@ void print_usage(std::ostream& output) {
     output << "Usage:\n\n"
               "  hybridzip c <input> <archive>\n"
               "  hybridzip c --profile=r2 "
-              "[--r2-mode=auto|auto-k2|auto-k4|auto-k8|fast|stored|zstd|fse|lzma|lz4|kanzi-ans|lmic-arithmetic|delta-binary-packed-zstd|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] "
+              "[--r2-mode=auto|auto-k2|auto-k4|auto-k8|fast|fast-ext|stored|zstd|fse|lzma|lz4|kanzi-ans|lmic-arithmetic|delta-binary-packed-zstd|ppmd7|ppmd8|zpaq|ctw|predictive|donor-match|paq8px-apm|paq8px-record-model|paq8px-linear-prediction|paq8px-similarity|paq8px-similarity-sse|paq8px-generic-sse|paq8px-detected-sse|wavpack|bwt-zstd|bwt-mtf-zstd|bwt-rlt-zstd|x86-bcj-zstd|bcj2-zstd|shuffle-zstd|bitshuffle-zstd|delta-zstd|delta-of-delta-zstd|fastpfor|rans|record-transpose-zstd|jpegls|flac-residual|brotli-text|cmix-word-zstd|neural-lstm|shared-neural-lstm|lstm-compress|bgpt-shared-prior|jax-compress-portable] "
               "[--block-size=BYTES] [--zstd-level=LEVEL] "
               "[--lzma-level=LEVEL] [--lzma-dictionary=BYTES] "
               "<input> <archive>\n"
@@ -65,6 +65,9 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
     }
     if (value == "fast") {
         return r2::CandidatePolicy::Fast;
+    }
+    if (value == "fast-ext") {
+        return r2::CandidatePolicy::FastExtensionOnly;
     }
     if (value == "stored") {
         return r2::CandidatePolicy::StoredOnly;
@@ -178,7 +181,7 @@ r2::CandidatePolicy parse_r2_mode(const std::string_view value) {
 
 void print_candidate_modes(
     std::ostream& output,
-    const std::array<std::uint32_t, 43>& candidate_blocks_by_mode) {
+    const std::array<std::uint32_t, r2::kR2BlockModeCount>& candidate_blocks_by_mode) {
     output << " candidate_modes=";
     bool first = true;
     for (std::size_t mode = 0; mode < candidate_blocks_by_mode.size(); ++mode) {
@@ -206,7 +209,7 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << " oracle_gap=" << stats.oracle_gap_bytes
               << " full_oracle=" << (stats.full_oracle_evaluated ? 1 : 0);
     print_candidate_modes(std::cout, stats.candidate_blocks_by_mode);
-    std::cout << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd)="
+    std::cout << " blocks(stored/predictive/zstd/fse/lzma/donor-match/bwt-zstd/bwt-mtf-zstd/bwt-rlt-zstd/x86-bcj-zstd/shuffle-zstd/bitshuffle-zstd/delta-zstd/fastpfor/rans/bcj2-zstd/record-transpose-zstd/jpegls/flac-residual/brotli-text/cmix-word-zstd/neural-lstm/shared-neural-lstm/lstm-compress/delta-of-delta-zstd/bgpt-shared-prior/jax-compress-portable/ppmd7/ppmd8/zpaq/ctw/paq8px-apm/paq8px-record-model/paq8px-linear-prediction/paq8px-similarity/paq8px-similarity-sse/paq8px-generic-sse/paq8px-detected-sse/wavpack/lz4/kanzi-ans/lmic-arithmetic/delta-binary-packed-zstd/fast-ext)="
               << stats.blocks_by_mode[0] << '/'
               << stats.blocks_by_mode[1] << '/'
               << stats.blocks_by_mode[2] << '/'
@@ -249,7 +252,8 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << stats.blocks_by_mode[39] << '/'
               << stats.blocks_by_mode[40] << '/'
               << stats.blocks_by_mode[41] << '/'
-              << stats.blocks_by_mode[42] << '\n';
+              << stats.blocks_by_mode[42] << '/'
+              << stats.blocks_by_mode[43] << '\n';
 }
 
 }  // namespace

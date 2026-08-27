@@ -5,11 +5,11 @@ Status date: 2026-08-28
 ## R2 Current Status
 
 The R2 implementation is active in the same C++17 product and preserves the
-HZ01/PROFILE_V1 decoder path. HZ02 currently exposes block modes `0..42` (43
-candidate paths), including representation transforms, LZ/coding donors,
-specialist PAQ8px graphs, neural profiles, router activation, and multi-coder
-selection. The Release executable and the R2 codec test executable compile and
-link successfully. The current working-tree Release hash is
+HZ01/PROFILE_V1 decoder path. HZ02 retains existing block modes `0..42` and
+adds append-only `MODE_FAST_EXT_V1` at mode `43`; the current working tree
+therefore has 44 decoder-visible mode IDs. The Release executable and the R2
+codec test executable compile and link successfully. The current working-tree
+Release hash is
 `E65526F9DFF3F93844E004D63C7B2A4E4F219B5EAB3F1B3D3ABCF0B301F65003`.
 The completed current-hash ledger below remains bound to its earlier
 `CC6DA840...` executable and is not silently mixed with this build.
@@ -24,15 +24,26 @@ implementation gate, not a held-out recall/regret or corpus-level ratio
 result; those remain pending E5.
 
 An experimental `--r2-mode=fast` policy is also available for E6 throughput
-work. It reuses HZ02 mode 2 with zstd level 3 and is not a ratio-oracle claim.
+work. It now evaluates four top-level candidates: stored, raw/transform
+Mode-43 zstd extension, and LZ4. The Mode-43 candidate compares byte shuffle,
+bitshuffle, XOR-delta, and x86 BCJ transforms including their metadata. This
+is not a ratio-oracle claim and has only a 1 KiB smoke result so far.
 `tools/run_r2_e5_e6_matrix.ps1` supplies guarded non-overwriting E5/E6 matrix
-execution; its list-only plans pass, while full runtime remains unstarted.
+execution; the prior 432-row runtime package remains a mode-2 baseline and
+has not been rerun for Fast K=4.
 
 On the current working-tree executable, a separate shared random 1 KiB smoke
 also preserved both contracts: Fast serialized existing mode 2 (`zstd`) into
 662 bytes, and HZ01 produced a 537-byte archive. Both decoded SHA-256 values
 equal the 1 KiB input. Evidence is
 `results/smoke/r2-e5-e6-compat-1k-20260828-v1/verification-recovery.json`.
+
+The new Fast K=4 smoke uses a deterministic 1 KiB 32-bit counter input. It
+evaluated exactly four candidates, selected Mode 43, and selected extension
+`transform_id=2` (bitshuffle, width 2). The complete archive is 159 bytes;
+HybridZip decoded it byte-for-byte and external zstd decoded the 94-byte
+extension frame to 1,024 transformed bytes. Evidence is
+`results/smoke/r2-fast-k4-xordelta-1k-20260828-v1/verification.json`.
 
 The prior evidence Release
 `FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`

@@ -686,3 +686,61 @@ HZ01 encode/decode smoke passed with a 537-byte archive, 1,024 decoded bytes,
 and exact input/decoded SHA-256 equality. Evidence is
 `results/smoke/r2-final-hz01-1k-20260827/verification.json`; it uses the same
 Release hash as the R2 ledger.
+
+## Attachment-Driven R2 Execution (2026-08-28)
+
+### Goal
+
+Implement the attachment's additive donor-first R2 direction while preserving
+the HZ02 decoder contract, HZ01 decoding, and every existing HZ02 ID 0..42.
+Keep compression-ratio and throughput claims on separate evidence tracks.
+
+### Active Plan
+
+- [x] P0: Publish the evidence snapshot `31fc6e6` to `origin/main`.
+- [x] P0: Freeze Tier-A Silesia inputs and complete E3 PAQ8px and E6
+  current-Fast baselines.
+- [x] P0: Write `docs/research/R2_EXPERIMENT_PROTOCOL_20260828.md`.
+- [x] P0: Add `MODE_FAST_EXT_V1` as HZ02 ID 43 with a standard zstd-frame,
+  no-transform initial payload and strict decoder metadata validation.
+- [x] P0: Build and execute focused mode-43/HZ01 1 KiB byte-exact gates.
+  Independent `zstd.exe` decoding and malformed-version rejection passed; E5
+  was not started.
+- [ ] P1: Add independently measured shuffle, bitshuffle, delta/XOR, and BCJ
+  mode-43 choices, then form the Fast K=4 policy.
+- [ ] P1: Add the fixed-point 28-feature ranker and no-leakage labels. K=8
+  remains experimental until held-out regret evidence exists.
+- [ ] P1: Run E5 in a dedicated CPU window. Its known lower-bound cost is
+  about 13 hours for full Auto and it needs forced-oracle data for promotion.
+- [ ] P1: Add canonical-order block parallelism and repeat Fast timing.
+- [ ] P2: Start GPU `LZ_RANS_V1` only after Fast extension/block-executor
+  evidence exists.
+
+### Current Status
+
+**Fast K=4 implementation and its 1 KiB gate are complete.** The verified
+zstd v1.5.7 donor is staged in `E:/MIXER/KU`, while production presently uses
+vendored zstd 1.6.0. The current Mode-43 smoke reports the latter and is not a
+v1.5.7 acceptance result.
+
+## 2026-08-28 Fast K=4 checkpoint
+
+- [x] Implement the append-only `MODE_FAST_EXT_V1` path at HZ02 mode 43.
+- [x] Add stored, raw extension, transformed extension, and LZ4 candidates to
+  the Fast policy; cap extension zstd level at 3.
+- [x] Run one deterministic 1 KiB Fast K=4 smoke. It evaluated exactly four
+  candidates, selected mode 43 with bitshuffle width 2, produced a 159-byte
+  archive, and passed HybridZip byte-exact decode.
+- [x] Independently decode the extracted Mode-43 zstd payload with the local
+  zstd executable; 1,024 transformed bytes were recovered.
+
+### Next execution target
+
+- [ ] Commit and push this Mode-43/Fast K=4 milestone.
+- [ ] Rerun the guarded E6 matrix under a new non-overwriting ID after the
+  policy change; do not reuse the prior mode-2 baseline package.
+- [ ] Keep E5 full-Auto/K=2/K=4/K=8 regret work as a separate PAQ-heavy job;
+  no long run is started by this checkpoint.
+- [ ] Continue with the fixed 28-feature ranker, canonical block executor,
+  pinned zstd 1.5.7 production choice, and then GPU LZ-RANS only when their
+  acceptance gates are justified by measured results.

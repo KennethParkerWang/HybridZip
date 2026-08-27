@@ -8,13 +8,14 @@ mixer, a deterministic 24-bit CDF, and a 32-bit arithmetic coder. The decoder
 reconstructs the same model state from the archive profile, seed, and decoded
 byte prefix; no model file is stored in the archive.
 
-The current R2 build adds the block-oriented HZ02 portfolio: 43 decoder-visible
-candidate paths spanning representation transforms, LZ/entropy donors,
-specialist PAQ8px branches, neural profiles, and router-controlled Auto
-selection. The encoder also has an experimental `auto-k8` shortlist policy;
-it reuses the same 43 decoder-visible mode IDs and does not change HZ02
-decoding. The experimental `fast` policy reuses mode 2 with zstd level 3 for
-CPU throughput measurements. See [docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) for the
+The current R2 build adds the block-oriented HZ02 portfolio: existing
+decoder-visible candidate paths `0..42` plus the append-only experimental
+`MODE_FAST_EXT_V1` path at ID `43`. The portfolio spans representation
+transforms, LZ/entropy donors, specialist PAQ8px branches, neural profiles,
+and router-controlled Auto selection. The encoder also has experimental
+`auto-k8` and `fast` policies; Fast is now a K=4 policy over stored, Mode-43
+zstd extensions (raw or reversible transform), and LZ4. See
+[docs/PRODUCT_STATUS.md](docs/PRODUCT_STATUS.md) for the
 current evidence boundary and known limitations.
 
 R2 follows a donor-first integration rule. Donor revisions, accepted code

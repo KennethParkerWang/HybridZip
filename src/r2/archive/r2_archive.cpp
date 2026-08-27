@@ -89,7 +89,11 @@ void validate_archive_header(const ArchiveHeader& header) {
 void validate_block_header(const BlockHeader& header) {
     const bool valid_transform_metadata =
         (header.transform == TransformKind::Raw &&
-         header.metadata_size == kR2BlockChecksumSize) ||
+         ((header.mode != BlockMode::FastExtension &&
+           header.metadata_size == kR2BlockChecksumSize) ||
+          (header.mode == BlockMode::FastExtension &&
+           header.metadata_size >= kR2FastExtensionMetadataMinimumSize &&
+           header.metadata_size <= kR2FastExtensionMetadataMaximumSize))) ||
         ((header.transform == TransformKind::Bwt ||
           header.transform == TransformKind::BwtMtf) &&
          header.metadata_size == kR2BwtMetadataSize) ||
@@ -149,6 +153,9 @@ void validate_block_header(const BlockHeader& header) {
          raw_transform &&
          header.entropy == EntropyKind::SymbolArithmetic) ||
         (header.mode == BlockMode::Zstd &&
+         raw_transform &&
+         header.entropy == EntropyKind::ZstdFse) ||
+        (header.mode == BlockMode::FastExtension &&
          raw_transform &&
          header.entropy == EntropyKind::ZstdFse) ||
         (header.mode == BlockMode::Fse &&

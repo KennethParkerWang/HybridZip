@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <iosfwd>
 
@@ -42,6 +43,10 @@ constexpr std::uint32_t kR2FlacResidualMetadataMinimumSize =
     kR2BlockChecksumSize + 16;
 constexpr std::uint32_t kR2FlacResidualMetadataMaximumSize =
     kR2BlockChecksumSize + 152;
+constexpr std::uint32_t kR2FastExtensionMetadataMinimumSize =
+    kR2BlockChecksumSize + 4;
+constexpr std::uint32_t kR2FastExtensionMetadataMaximumSize =
+    kR2BlockChecksumSize + 68;
 constexpr std::uint32_t kR2ProfileId = 2;
 constexpr std::uint32_t kR2DefaultBlockSize = 64U * 1024U;
 constexpr std::uint32_t kR2MaximumBlockSize = 16U * 1024U * 1024U;
@@ -89,8 +94,12 @@ enum class BlockMode : std::uint8_t {
     Lz4 = 39,
     KanziAns = 40,
     LmicArithmetic = 41,
-    DeltaBinaryPackedZstd = 42
+    DeltaBinaryPackedZstd = 42,
+    FastExtension = 43
 };
+
+constexpr std::size_t kR2BlockModeCount =
+    static_cast<std::size_t>(BlockMode::FastExtension) + 1U;
 
 enum class TransformKind : std::uint8_t {
     Raw = 0,
