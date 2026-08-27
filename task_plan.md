@@ -899,14 +899,17 @@ are computed from blocks rather than from file-level wall-clock proxies.
 - [x] L3: build the focused targets and run one deterministic 1 KiB/four-block
   Fast smoke at one and two workers, checking byte-exact decode, identical
   archive bytes, and nonempty latency telemetry.
-- [ ] L4: commit and push the telemetry checkpoint. Post-change E6 remains a
+- [x] L4: commit and push the telemetry checkpoint as `f94dc29`.
+  Post-change E6 remains a
   separately authorized corpus runtime experiment.
 
 ### Status
 
-**L4 in progress.** Release targets and PowerShell AST parsing passed. The
+**Latency telemetry checkpoint complete.** Release targets and PowerShell AST parsing passed. The
 1 KiB four-block gate passed at one and two workers with byte-exact decode,
 identical 540-byte archives, and four paired latency samples per run. Evidence:
 `results/smoke/r2-fast-latency-telemetry-1k-20260828-v1/verification.json`.
 The existing E5 forced oracle remains a 1,056-codec-call job and will not be
-started by this telemetry checkpoint.
+started by this telemetry checkpoint. The next execution target is the
+separately authorized forced-mode ledger, followed by real ranker fitting and
+the post-change E6 matrix.
