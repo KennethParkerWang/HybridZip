@@ -378,6 +378,30 @@ function Get-CurrentEnvironmentDescription {
     return "Windows $([Environment]::OSVersion.Version); CPU=$cpu; sequential execution"
 }
 
+function Get-SourceRevision {
+    $repositoryRoot = if ([string]::IsNullOrWhiteSpace($PSScriptRoot)) {
+        [Environment]::CurrentDirectory
+    }
+    else {
+        [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+    }
+    try {
+        $revision = ([string]::Join('', @(& git -C $repositoryRoot rev-parse HEAD 2>$null))).Trim()
+        if ([string]::IsNullOrWhiteSpace($revision)) {
+            return 'unknown'
+        }
+        $dirty = -not [string]::IsNullOrWhiteSpace(
+            ([string]::Join('', @(& git -C $repositoryRoot status --porcelain 2>$null))).Trim())
+        if ($dirty) {
+            return "$revision-dirty"
+        }
+        return $revision
+    }
+    catch {
+        return 'unknown'
+    }
+}
+
 function Invoke-MeasuredCodec {
     param(
         [string]$Executable,
@@ -575,7 +599,7 @@ function Write-ExperimentJson([string]$State) {
         codec_version = $script:codecVersion
         codec_path = $script:CodecPath
         codec_sha256 = $script:codecSha256
-        source_revision = 'working-tree-uncommitted'
+        source_revision = $script:sourceRevision
         command_template = $script:commandTemplate
         configuration = $script:configuration
         environment = $script:environmentDescription
@@ -663,6 +687,10 @@ function Read-AndValidateResumeMetadata([string]$Path) {
     $metadataEnvironment = [string](Get-RequiredMetadataValue $metadata 'environment')
     if ($metadataEnvironment -cne $script:environmentDescription) {
         throw "Resume environment mismatch. Expected $($script:environmentDescription), found $metadataEnvironment"
+    }
+    $metadataSourceRevision = [string](Get-RequiredMetadataValue $metadata 'source_revision')
+    if ($metadataSourceRevision -cne $script:sourceRevision) {
+        throw "Resume source revision mismatch. Expected $($script:sourceRevision), found $metadataSourceRevision"
     }
 
     $metadataCreatedAt = [string](Get-RequiredMetadataValue $metadata 'created_at')
@@ -883,6 +911,7 @@ else {
     $metadataNotes = 'archive_bytes includes the complete HZ02 archive header, every block header, CRC32 metadata, backend envelope, and payload.'
 }
 $environmentDescription = Get-CurrentEnvironmentDescription
+$sourceRevision = Get-SourceRevision
 $cases = New-Object System.Collections.Generic.List[object]
 $caseByKey = @{}
 $caseOrder = 0

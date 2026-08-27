@@ -1004,3 +1004,19 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   queue-plus-service sample below its paired service-only value. PowerShell AST
   parsing passed; the retained 1 KiB log passed and a P50-tampered copy was
   rejected without launching the codec.
+
+## 2026-08-28: Benchmark environment identity
+
+- `tools/capture_r2_environment.ps1` records a structured environment snapshot
+  without enumerating user environment variables. It includes OS, CPU topology,
+  RAM, GPU/driver when WMI can discover it, active power plan, compiler version,
+  codec SHA-256, and Git revision/dirty state. The fingerprint excludes the
+  capture timestamp.
+- New E5/E6 matrix packages and forced-oracle ledgers write `environment.json`.
+  Resume recomputes the fingerprint and rejects a changed benchmark host or
+  source state. Child experiment metadata now records an actual source revision
+  instead of the former `working-tree-uncommitted` placeholder.
+- On the current host two captures produced the identical fingerprint
+  `D2361A6DBEA69EC701710515FB46651EE4A5CBE5F5EC2ACEE20F84E99E87607D`; the
+  capture included one CPU and one GPU entry plus power-plan and compiler data.
+  A second write to the same manifest path was rejected. No codec was launched.

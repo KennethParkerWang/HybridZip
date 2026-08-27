@@ -916,3 +916,23 @@ The existing E5 forced oracle remains a 1,056-codec-call job and will not be
 started by this telemetry checkpoint. The next execution target is the
 separately authorized forced-mode ledger, followed by real ranker fitting and
 the post-change E6 matrix.
+
+## 2026-08-28 Benchmark Environment Identity Gate
+
+- [x] H1: add one structured, non-overwriting environment capture tool for
+  CPU/RAM, GPU/driver when discoverable, power plan, compiler, codec hash, and
+  Git source identity.
+- [x] H2: require a matching environment fingerprint for E5/E6 matrix resume
+  and forced-oracle ledger resume; persist `environment.json` in every new
+  runtime package.
+- [x] H3: replace the child runner's placeholder source revision with the
+  actual Git commit plus a dirty-tree marker, and reject incompatible resume.
+
+### Status
+
+**Environment identity gate complete.** PowerShell AST validation passed for
+all four affected runners. Two captures produced fingerprint
+`D2361A6DBEA69EC701710515FB46651EE4A5CBE5F5EC2ACEE20F84E99E87607D` on the
+current host; the codec SHA-256, active power plan, compiler version, CPU, and
+GPU entries were present. An attempted overwrite was rejected. No codec process
+was launched by this gate.

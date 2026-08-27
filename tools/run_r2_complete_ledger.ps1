@@ -22,6 +22,7 @@ $ErrorActionPreference = 'Stop'
 
 $scriptRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $runnerPath = Join-Path $scriptRoot 'tools\run_silesia_experiment.ps1'
+$environmentCaptureScript = Join-Path $scriptRoot 'tools\capture_r2_environment.ps1'
 if ([string]::IsNullOrWhiteSpace($CodecPath)) {
     $CodecPath = Join-Path $scriptRoot 'build\Release\hybridzip.exe'
 }
@@ -78,6 +79,9 @@ if (-not $AuthorizeRuntimeExperiment) {
 if (-not (Test-Path -LiteralPath $runnerPath -PathType Leaf)) {
     throw "Silesia runner not found: $runnerPath"
 }
+if (-not (Test-Path -LiteralPath $environmentCaptureScript -PathType Leaf)) {
+    throw "Environment capture script not found: $environmentCaptureScript"
+}
 if (-not (Test-Path -LiteralPath $CodecPath -PathType Leaf)) {
     throw "Codec executable not found: $CodecPath"
 }
@@ -112,6 +116,23 @@ $ledgerPath = Join-Path $analysisRoot $LedgerId
 $manifestPath = Join-Path $ledgerPath 'manifest.tsv'
 if (-not (Test-Path -LiteralPath $ledgerPath -PathType Container)) {
     New-Item -ItemType Directory -Path $ledgerPath -Force | Out-Null
+}
+$environmentPath = Join-Path $ledgerPath 'environment.json'
+$environmentSnapshot = & $environmentCaptureScript -CodecPath $CodecPath -ListOnly |
+    ConvertFrom-Json
+if ([string]::IsNullOrWhiteSpace([string]$environmentSnapshot.fingerprint_sha256)) {
+    throw 'Environment capture did not produce a fingerprint'
+}
+if (Test-Path -LiteralPath $environmentPath -PathType Leaf) {
+    $recordedEnvironment = Get-Content -LiteralPath $environmentPath -Raw -Encoding UTF8 |
+        ConvertFrom-Json
+    if ([string]$recordedEnvironment.fingerprint_sha256 -cne
+        [string]$environmentSnapshot.fingerprint_sha256) {
+        throw "Benchmark environment differs from existing ledger: $ledgerPath"
+    }
+}
+else {
+    & $environmentCaptureScript -CodecPath $CodecPath -OutputPath $environmentPath | Out-Null
 }
 
 function Write-NoBom([string]$Path, [string]$Text) {

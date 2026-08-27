@@ -33,6 +33,10 @@ $childRunner = Join-Path $scriptRoot 'run_silesia_experiment.ps1'
 if (-not (Test-Path -LiteralPath $childRunner -PathType Leaf)) {
     throw "Required child runner is missing: $childRunner"
 }
+$environmentCaptureScript = Join-Path $scriptRoot 'capture_r2_environment.ps1'
+if (-not (Test-Path -LiteralPath $environmentCaptureScript -PathType Leaf)) {
+    throw "Required environment capture script is missing: $environmentCaptureScript"
+}
 if ([string]::IsNullOrWhiteSpace($CodecPath)) {
     $CodecPath = Join-Path $scriptRoot '..\build\Release\hybridzip.exe'
 }
@@ -229,7 +233,8 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
                            [string[]]$ExpectedFiles, [int[]]$ExpectedScopes,
                            [int[]]$ExpectedBlockSizes, [string[]]$ExpectedPolicies,
                            [int[]]$ExpectedRepeats, [int]$ExpectedFastThreadCount,
-                           [string]$ExpectedForcedOracleLedgerPath) {
+                           [string]$ExpectedForcedOracleLedgerPath,
+                           [string]$ExpectedEnvironmentFingerprint) {
     if ([string]$Existing.experiment_id -cne $ExpectedId -or
         [string]$Existing.stage -cne $ExpectedStage) {
         throw "Resume metadata does not match requested experiment: $ExpectedId"
@@ -249,6 +254,10 @@ function Assert-ResumePlan([object]$Existing, [string]$ExpectedId,
         -not [string]::Equals([string]$Existing.forced_oracle_ledger_path,
             $ExpectedForcedOracleLedgerPath, [StringComparison]::OrdinalIgnoreCase)) {
         throw 'Resume forced-oracle ledger identity differs from the existing package'
+    }
+    if ($null -eq $Existing.PSObject.Properties['environment_fingerprint_sha256'] -or
+        [string]$Existing.environment_fingerprint_sha256 -cne $ExpectedEnvironmentFingerprint) {
+        throw 'Resume benchmark environment fingerprint differs from the existing package'
     }
     $pairs = @(
         @(@($Existing.files), @($ExpectedFiles)),
@@ -438,6 +447,8 @@ $plan = [ordered]@{
     fast_thread_count = $threadCount
     forced_oracle_ledger_path = $forcedOracleLedgerPathNormalized
     forced_oracle_output_path = if ([string]::IsNullOrWhiteSpace($forcedOracleLedgerPathNormalized)) { '' } else { 'forced-oracle' }
+    environment_manifest_path = ''
+    environment_fingerprint_sha256 = ''
     child_packages = $jobs.Count
     cases_per_child = $files.Count * $scopes.Count
     codec_invocations = $jobs.Count * $files.Count * $scopes.Count * 2
@@ -469,6 +480,12 @@ foreach ($file in $files) {
     }
 }
 $codecHash = Get-Sha256 $CodecPath
+$environmentSnapshot = & $environmentCaptureScript -CodecPath $CodecPath -ListOnly |
+    ConvertFrom-Json
+if ([string]::IsNullOrWhiteSpace([string]$environmentSnapshot.fingerprint_sha256)) {
+    throw 'Environment capture did not produce a fingerprint'
+}
+$environmentFingerprint = [string]$environmentSnapshot.fingerprint_sha256
 $deriveScript = Join-Path $scriptRoot 'derive_r2_forced_oracle.ps1'
 if (-not [string]::IsNullOrWhiteSpace($forcedOracleLedgerPathNormalized)) {
     if (-not (Test-Path -LiteralPath $deriveScript -PathType Leaf)) {
@@ -501,7 +518,8 @@ if (Test-Path -LiteralPath $packagePath) {
         -ExpectedFiles $files -ExpectedScopes $scopes -ExpectedBlockSizes $blockSizes `
         -ExpectedPolicies $policies -ExpectedRepeats $timingRepeats `
         -ExpectedFastThreadCount $threadCount `
-        -ExpectedForcedOracleLedgerPath $forcedOracleLedgerPathNormalized
+        -ExpectedForcedOracleLedgerPath $forcedOracleLedgerPathNormalized `
+        -ExpectedEnvironmentFingerprint $environmentFingerprint
     if ([string]$plan.status -ceq 'COMPLETE') {
         Assert-CompletedMatrixPackage -PackagePath $packagePath `
             -ExpectedRows ($jobs.Count * $files.Count * $scopes.Count) `
@@ -526,6 +544,10 @@ else {
     $plan.codec_sha256 = $codecHash
     $plan.dataset_path = $DatasetPath
     $plan.runtime_started = $true
+    $environmentPath = Join-Path $packagePath 'environment.json'
+    & $environmentCaptureScript -CodecPath $CodecPath -OutputPath $environmentPath | Out-Null
+    $plan.environment_manifest_path = 'environment.json'
+    $plan.environment_fingerprint_sha256 = $environmentFingerprint
 }
 Write-Utf8Json (Join-Path $packagePath 'experiment.json') $plan
 

@@ -14,6 +14,10 @@ accepted before archive-byte evidence exists.
 - New decoder-visible functionality is append-only, beginning with ID `43`.
 - Each measured row retains input SHA-256, executable SHA-256, complete
   archive bytes/SHA-256, decoded SHA-256, command, and byte-exact outcome.
+- Every new E5/E6/forced-oracle package includes `environment.json`, recording
+  CPU, RAM, GPU/driver when discoverable, active power plan, compiler versions,
+  codec hash, source revision, and a stable fingerprint. Resume rejects a
+  matrix or forced ledger when the current fingerprint differs.
 - `bpb = 8 * complete_archive_bytes / input_bytes`.
 
 ## Current Evidence
