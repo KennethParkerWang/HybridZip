@@ -517,6 +517,11 @@ void test_fast_policy(const std::filesystem::path& directory) {
             "Fast policy candidate telemetry has the wrong cardinality");
     require(fast.selected_candidate_bytes == fast.archive_bytes,
             "Fast selected-byte telemetry does not equal archive bytes");
+    require(fast.fast_block_queue_plus_service_ns.size() == 1U &&
+                fast.fast_block_service_ns.size() == 1U &&
+                fast.fast_block_queue_plus_service_ns[0] >=
+                    fast.fast_block_service_ns[0],
+            "Fast block latency telemetry is incomplete or inconsistent");
 }
 
 void test_corrupt_archives(const std::filesystem::path& directory) {

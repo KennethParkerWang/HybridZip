@@ -103,12 +103,36 @@ function Get-R2Telemetry([string]$Path) {
     $rankerCrc32 = [regex]::Match($text, 'ranker_crc32=0x(?<value>[0-9A-F]{8})')
     $rankerSha256 = [regex]::Match($text, 'ranker_sha256=(?<value>[0-9A-F]{64})')
     $candidateModes = [regex]::Match($text, 'candidate_modes=(?<value>[^\s]+)')
+    $latencySamples = [regex]::Match($text, 'fast_latency_samples=(?<value>[0-9]+)')
+    $queueP50 = [regex]::Match($text, 'fast_queue_plus_service_p50_ns=(?<value>[0-9]+)')
+    $queueP95 = [regex]::Match($text, 'fast_queue_plus_service_p95_ns=(?<value>[0-9]+)')
+    $serviceP50 = [regex]::Match($text, 'fast_service_p50_ns=(?<value>[0-9]+)')
+    $serviceP95 = [regex]::Match($text, 'fast_service_p95_ns=(?<value>[0-9]+)')
+    $queueSamples = [regex]::Match($text, 'fast_queue_plus_service_ns=(?<value>none|[0-9]+(?:,[0-9]+)*)')
+    $serviceSamples = [regex]::Match($text, 'fast_service_ns=(?<value>none|[0-9]+(?:,[0-9]+)*)')
     if (-not $candidate.Success -or -not $workers.Success -or
         -not $fullOracle.Success -or
         -not $rankerVersion.Success -or -not $rankerCrc32.Success -or
         -not $rankerSha256.Success -or
-        -not $candidateModes.Success) {
+        -not $candidateModes.Success -or -not $latencySamples.Success -or
+        -not $queueP50.Success -or -not $queueP95.Success -or
+        -not $serviceP50.Success -or -not $serviceP95.Success -or
+        -not $queueSamples.Success -or -not $serviceSamples.Success) {
         throw "Malformed R2 telemetry: $Path"
+    }
+    $queueValues = @()
+    $serviceValues = @()
+    if ($queueSamples.Groups['value'].Value -ne 'none') {
+        $queueValues = @($queueSamples.Groups['value'].Value.Split(',') |
+            ForEach-Object { [uint64]$_ })
+    }
+    if ($serviceSamples.Groups['value'].Value -ne 'none') {
+        $serviceValues = @($serviceSamples.Groups['value'].Value.Split(',') |
+            ForEach-Object { [uint64]$_ })
+    }
+    if ($queueValues.Count -ne $serviceValues.Count -or
+        $queueValues.Count -ne [int]$latencySamples.Groups['value'].Value) {
+        throw "Malformed Fast block latency telemetry: $Path"
     }
     [pscustomobject]@{
         Candidates = [int]$candidate.Groups['value'].Value
@@ -118,6 +142,13 @@ function Get-R2Telemetry([string]$Path) {
         RankerCrc32 = $rankerCrc32.Groups['value'].Value
         RankerSha256 = $rankerSha256.Groups['value'].Value
         CandidateModes = $candidateModes.Groups['value'].Value
+        FastLatencySamples = $queueValues.Count
+        FastQueuePlusServiceP50Ns = [uint64]$queueP50.Groups['value'].Value
+        FastQueuePlusServiceP95Ns = [uint64]$queueP95.Groups['value'].Value
+        FastServiceP50Ns = [uint64]$serviceP50.Groups['value'].Value
+        FastServiceP95Ns = [uint64]$serviceP95.Groups['value'].Value
+        FastQueuePlusServiceNs = $queueValues
+        FastServiceNs = $serviceValues
     }
 }
 
@@ -525,6 +556,13 @@ try {
                 ranker_crc32 = $telemetry.RankerCrc32
                 ranker_sha256 = $telemetry.RankerSha256
                 candidate_modes = $telemetry.CandidateModes
+                fast_block_latency_samples = $telemetry.FastLatencySamples
+                fast_queue_plus_service_p50_ns = $telemetry.FastQueuePlusServiceP50Ns
+                fast_queue_plus_service_p95_ns = $telemetry.FastQueuePlusServiceP95Ns
+                fast_service_p50_ns = $telemetry.FastServiceP50Ns
+                fast_service_p95_ns = $telemetry.FastServiceP95Ns
+                fast_queue_plus_service_ns = ($telemetry.FastQueuePlusServiceNs -join ',')
+                fast_service_ns = ($telemetry.FastServiceNs -join ',')
             }
             foreach ($property in $row.PSObject.Properties) {
                 $record[$property.Name] = $property.Value
@@ -638,6 +676,29 @@ try {
         $retained = @($matrixRows | Where-Object { -not $_.warmup })
         foreach ($group in ($retained | Group-Object block_size_kib, scope_kib, fast_thread_count)) {
             $rows = @($group.Group)
+            $queuePlusServiceSamples = New-Object System.Collections.Generic.List[double]
+            $serviceSamples = New-Object System.Collections.Generic.List[double]
+            foreach ($row in $rows) {
+                $queueText = [string]$row.fast_queue_plus_service_ns
+                $serviceText = [string]$row.fast_service_ns
+                if ([int]$row.fast_block_latency_samples -le 0 -or
+                    [string]::IsNullOrWhiteSpace($queueText) -or
+                    [string]::IsNullOrWhiteSpace($serviceText)) {
+                    throw "Fast latency telemetry is missing for $($row.file) $($row.scope_kib) KiB"
+                }
+                $queueValues = @($queueText.Split(',') | ForEach-Object { [double]$_ })
+                $serviceValues = @($serviceText.Split(',') | ForEach-Object { [double]$_ })
+                if ($queueValues.Count -ne [int]$row.fast_block_latency_samples -or
+                    $serviceValues.Count -ne $queueValues.Count) {
+                    throw "Fast latency sample count mismatch for $($row.file) $($row.scope_kib) KiB"
+                }
+                foreach ($value in $queueValues) {
+                    $queuePlusServiceSamples.Add($value)
+                }
+                foreach ($value in $serviceValues) {
+                    $serviceSamples.Add($value)
+                }
+            }
             $inputBytes = @($rows | ForEach-Object { [int64]$_.input_bytes } | Measure-Object -Sum).Sum
             $encodeSeconds = @($rows | ForEach-Object { [double]$_.encode_seconds } | Measure-Object -Sum).Sum
             $decodeSeconds = @($rows | ForEach-Object { [double]$_.decode_seconds } | Measure-Object -Sum).Sum
@@ -657,6 +718,11 @@ try {
                 encode_p95_ms = 1000.0 * (Get-Quantile @($rows | ForEach-Object { [double]$_.encode_seconds }) 0.95)
                 decode_p50_ms = 1000.0 * (Get-Quantile @($rows | ForEach-Object { [double]$_.decode_seconds }) 0.50)
                 decode_p95_ms = 1000.0 * (Get-Quantile @($rows | ForEach-Object { [double]$_.decode_seconds }) 0.95)
+                block_latency_samples = $queuePlusServiceSamples.Count
+                block_queue_plus_service_p50_ms = (Get-Quantile $queuePlusServiceSamples.ToArray() 0.50) / 1000000.0
+                block_queue_plus_service_p95_ms = (Get-Quantile $queuePlusServiceSamples.ToArray() 0.95) / 1000000.0
+                block_service_p50_ms = (Get-Quantile $serviceSamples.ToArray() 0.50) / 1000000.0
+                block_service_p95_ms = (Get-Quantile $serviceSamples.ToArray() 0.95) / 1000000.0
                 peak_ram_mib = @($rows | ForEach-Object { [double]$_.peak_ram_mib } | Measure-Object -Maximum).Maximum
                 byte_exact = (@($rows | Where-Object { $_.roundtrip -eq 'PASS' }).Count -eq $rows.Count)
             })

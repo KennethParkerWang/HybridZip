@@ -882,3 +882,31 @@ committed and pushed as `996d59d`.
 - [ ] Run the completed forced ledger through the exporter, fit a frozen model
   without validation leakage, then measure held-out E5 recall/regret before
   changing K=8 from experimental.
+
+## 2026-08-28 Attachment Latency Telemetry Gate
+
+### Objective
+
+Close the only identified E6 evidence gap: retain exact Fast block
+queue-plus-service and service-only timing samples so P50/P95 latency claims
+are computed from blocks rather than from file-level wall-clock proxies.
+
+- [x] L1: inspect the Fast executor, CLI telemetry, child runner, and matrix
+  aggregation against the attachment's required fields.
+- [x] L2: add encoder-only timing samples and preserve them through E6 matrix
+  rows and exact quantile summaries; HZ02 bytes and all non-Fast paths stay
+  unchanged.
+- [x] L3: build the focused targets and run one deterministic 1 KiB/four-block
+  Fast smoke at one and two workers, checking byte-exact decode, identical
+  archive bytes, and nonempty latency telemetry.
+- [ ] L4: commit and push the telemetry checkpoint. Post-change E6 remains a
+  separately authorized corpus runtime experiment.
+
+### Status
+
+**L4 in progress.** Release targets and PowerShell AST parsing passed. The
+1 KiB four-block gate passed at one and two workers with byte-exact decode,
+identical 540-byte archives, and four paired latency samples per run. Evidence:
+`results/smoke/r2-fast-latency-telemetry-1k-20260828-v1/verification.json`.
+The existing E5 forced oracle remains a 1,056-codec-call job and will not be
+started by this telemetry checkpoint.

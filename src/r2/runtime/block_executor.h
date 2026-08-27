@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -12,6 +13,8 @@ struct FastBlockTask {
     std::uint32_t index = 0;
     std::uint32_t checksum = 0;
     std::vector<std::uint8_t> raw;
+    // Encoder-only timing begins when this task enters the bounded queue.
+    std::chrono::steady_clock::time_point queued_at{};
 };
 
 struct FastBlockResult {
@@ -19,6 +22,8 @@ struct FastBlockResult {
     std::uint32_t checksum = 0;
     std::uint32_t uncompressed_size = 0;
     BlockDecision decision;
+    std::uint64_t queue_plus_service_ns = 0;
+    std::uint64_t service_ns = 0;
 };
 
 // Fast planners have no cross-block state, so completed blocks can be

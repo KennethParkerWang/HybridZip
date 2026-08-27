@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <vector>
 
 #include "r2/block/block_planner.h"
 
@@ -28,6 +29,10 @@ struct CompressionStats {
     std::uint64_t oracle_candidate_bytes = 0;
     std::uint64_t oracle_gap_bytes = 0;
     bool full_oracle_evaluated = false;
+    // Encoder-only Fast policy timing. Samples exclude input reads and archive
+    // serialization; queue-plus-service includes bounded executor wait time.
+    std::vector<std::uint64_t> fast_block_queue_plus_service_ns;
+    std::vector<std::uint64_t> fast_block_service_ns;
     // IDs 0..42 are retained HZ02 modes; ID 43 is the additive fast extension.
     std::array<std::uint32_t, kR2BlockModeCount> blocks_by_mode{};
     // Encoder telemetry only; it is not part of the archive contract.

@@ -720,6 +720,8 @@ CompressionStats compress_file(const std::filesystem::path& input,
         std::uint64_t remaining = stats.input_bytes;
         if (options.policy == CandidatePolicy::Fast) {
             FastBlockExecutor executor(planner_options, options.thread_count);
+            stats.fast_block_queue_plus_service_ns.reserve(block_count);
+            stats.fast_block_service_ns.reserve(block_count);
             const std::uint64_t in_flight_limit =
                 static_cast<std::uint64_t>(options.thread_count) * 2U;
             std::uint32_t submitted = 0;
@@ -752,6 +754,9 @@ CompressionStats compress_file(const std::filesystem::path& input,
                     throw std::runtime_error(
                         "Fast executor returned an invalid block result");
                 }
+                stats.fast_block_queue_plus_service_ns.push_back(
+                    result.queue_plus_service_ns);
+                stats.fast_block_service_ns.push_back(result.service_ns);
                 write_and_account_block(archive, stats, std::move(result.decision),
                                         options.policy, result.uncompressed_size,
                                         result.checksum);

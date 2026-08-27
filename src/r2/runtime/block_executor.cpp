@@ -1,5 +1,6 @@
 #include "r2/runtime/block_executor.h"
 
+#include <chrono>
 #include <condition_variable>
 #include <deque>
 #include <exception>
@@ -56,7 +57,15 @@ void FastBlockExecutor::State::worker_loop(State* const state) {
             result.index = task.index;
             result.checksum = task.checksum;
             result.uncompressed_size = static_cast<std::uint32_t>(task.raw.size());
+            const auto service_started = std::chrono::steady_clock::now();
             result.decision = planner.plan(ByteView(task.raw));
+            const auto service_finished = std::chrono::steady_clock::now();
+            result.queue_plus_service_ns = static_cast<std::uint64_t>(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    service_finished - task.queued_at).count());
+            result.service_ns = static_cast<std::uint64_t>(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    service_finished - service_started).count());
 
             {
                 std::lock_guard<std::mutex> lock(state->mutex);
@@ -138,6 +147,7 @@ void FastBlockExecutor::submit(FastBlockTask task) {
     if (task.raw.empty()) {
         throw std::invalid_argument("Fast executor received an empty block");
     }
+    task.queued_at = std::chrono::steady_clock::now();
     {
         std::lock_guard<std::mutex> lock(state_->mutex);
         state_->rethrow_failure();

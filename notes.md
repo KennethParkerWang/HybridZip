@@ -975,3 +975,26 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   after this interface was added. It passed and exercises deterministic
   feature extraction, class routing, K=2/K=4/K=8 cardinality and membership,
   plus the pinned fixed-point ranker identity without archive construction.
+
+## 2026-08-28: Attachment latency telemetry design
+
+- The attachment requires P50/P95 block queue-plus-service and service-only
+  latency for the Fast policy. The existing executor had canonical-order
+  completion and worker-count telemetry but exposed only file-level timing.
+- The new evidence contract records a timestamp at bounded-queue enqueue and a
+  timestamp after `BlockPlanner::plan`. Queue-plus-service is their difference;
+  service-only starts immediately before `plan`. Neither metric is archive
+  metadata, and neither includes input reads or canonical archive writes.
+- The matrix runner stores every raw nanosecond block sample in `matrix_rows.csv`
+  and calculates P50/P95 from the concatenated samples in each E6 summary row.
+  This avoids treating a file-level elapsed time as a block-latency proxy.
+- The next permitted verification is one 1 KiB input split into four 256-byte
+  blocks at one and two workers. The E5 forced oracle and post-change E6 corpus
+  matrices remain unstarted.
+- The retained smoke used a 1,024-byte deterministic input and current codec
+  SHA-256 `8E64B93362D4A0C9EBC9C81052839A4966AE502A9CCB53F876E21BF4D5C4B4E7`.
+  One and two workers both produced a 540-byte archive with SHA-256
+  `88CD5B6460E21CBF8E86592BFDDD35D2CF212EB78160D6411A7BE1D0714DACE2`.
+  Both decoded hashes matched input SHA-256
+  `E051D1007607DE494C073DA3C29903D6C0ABFEE7A4C0609F560A340A1947B470`;
+  each run emitted four paired timing samples. No throughput claim is made.

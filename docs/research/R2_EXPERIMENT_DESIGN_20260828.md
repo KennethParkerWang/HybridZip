@@ -87,8 +87,9 @@ ratio policy. They reuse the HZ02 container and all decoder-visible IDs.
 | `auto-k4` | Stored, zstd, `paq8px-generic-sse`, `paq8px-detected-sse` |
 | `auto-k8` | The eight candidates specified above |
 
-The CLI emits `full_oracle=0|1`, `candidate_modes=<id>:<block-count>`, and
-the fixed-point `ranker_version`, `ranker_crc32`, and `ranker_sha256` as
+The CLI emits `full_oracle=0|1`, `candidate_modes=<id>:<block-count>`, raw
+Fast block queue-plus-service and service-only nanosecond samples, and the
+fixed-point `ranker_version`, `ranker_crc32`, and `ranker_sha256` as
 encoder telemetry. This telemetry is not archive metadata. It lets E5 prove
 exactly which candidates and which frozen model were materialized for a
 shortlist. The matrix runner writes the model identity to every row and
@@ -126,7 +127,11 @@ the full Auto/oracle, not a K=8 held-out measurement.
 2. E6: use the Fast policy at 32, 64, and 128 KiB with three retained timing
    repeats after a warmup. Report encode/decode MB/s, P50/P95 block latency,
    peak RAM, byte-exact reconstruction, and complete archive bpb. The CPU
-   gate is at least 0.16 MB/s encode and decode for each block size.
+   gate is at least 0.16 MB/s encode and decode for each block size. For every
+   block, queue-plus-service starts at bounded-executor enqueue and ends after
+   candidate planning; service-only covers candidate planning. Input reads and
+   canonical archive serialization are excluded from both, while CLI wall time
+   remains separately recorded.
 3. E3: retain the same-input PAQ8px v216 `-1` matrix as an independent serial
    baseline. It must cover all 36 frozen prefix cases before any aggregate
    HybridZip-versus-PAQ ratio statement.

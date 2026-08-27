@@ -1,5 +1,6 @@
 #include "app/cli.h"
 
+#include <algorithm>
 #include <array>
 #include <charconv>
 #include <cstdint>
@@ -202,6 +203,32 @@ void print_candidate_modes(
     }
 }
 
+std::uint64_t nearest_rank_percentile_ns(
+    std::vector<std::uint64_t> values,
+    const std::uint32_t percentile) {
+    if (values.empty()) {
+        return 0;
+    }
+    std::sort(values.begin(), values.end());
+    const std::uint64_t count = values.size();
+    const std::uint64_t rank = (count * percentile + 99U) / 100U;
+    return values[static_cast<std::size_t>(rank - 1U)];
+}
+
+void print_latency_samples(std::ostream& output,
+                           const std::vector<std::uint64_t>& samples) {
+    if (samples.empty()) {
+        output << "none";
+        return;
+    }
+    for (std::size_t index = 0; index < samples.size(); ++index) {
+        if (index != 0U) {
+            output << ',';
+        }
+        output << samples[index];
+    }
+}
+
 void print_r2_stats(const r2::CompressionStats& stats) {
     const r2::FixedPointRankerModelV1& ranker =
         r2::fixed_point_ranker_model_v1();
@@ -214,6 +241,22 @@ void print_r2_stats(const r2::CompressionStats& stats) {
               << " oracle=" << stats.oracle_candidate_bytes
               << " oracle_gap=" << stats.oracle_gap_bytes
               << " full_oracle=" << (stats.full_oracle_evaluated ? 1 : 0);
+    std::cout << " fast_latency_samples="
+              << stats.fast_block_queue_plus_service_ns.size()
+              << " fast_queue_plus_service_p50_ns="
+              << nearest_rank_percentile_ns(
+                  stats.fast_block_queue_plus_service_ns, 50U)
+              << " fast_queue_plus_service_p95_ns="
+              << nearest_rank_percentile_ns(
+                  stats.fast_block_queue_plus_service_ns, 95U)
+              << " fast_service_p50_ns=" << nearest_rank_percentile_ns(
+                  stats.fast_block_service_ns, 50U)
+              << " fast_service_p95_ns=" << nearest_rank_percentile_ns(
+                  stats.fast_block_service_ns, 95U)
+              << " fast_queue_plus_service_ns=";
+    print_latency_samples(std::cout, stats.fast_block_queue_plus_service_ns);
+    std::cout << " fast_service_ns=";
+    print_latency_samples(std::cout, stats.fast_block_service_ns);
     std::cout << " ranker_version=0x" << std::hex << std::uppercase
               << std::setfill('0') << std::setw(8) << ranker.version
               << " ranker_crc32=0x" << std::setw(8) << ranker.crc32
