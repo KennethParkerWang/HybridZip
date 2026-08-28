@@ -1111,3 +1111,15 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
 - The preflight did not create or overwrite a runtime package and did not start
   a codec process. The next runtime action is deliberately separated because
   E4 is PAQ-heavy.
+
+## 2026-08-28: Public Evidence Boundary Repair
+
+- README previously described the historical `CC6DA840...BF191` 528-row R2
+  ledger as belonging to the active Release, even though it predates Mode 43
+  and the current RecordModel short-block repair.
+- `README.md` and `docs/PRODUCT_STATUS.md` now name the current Release hash
+  `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`, retain
+  the historical ledger as provenance, and prohibit current PAQ-ratio, K=8
+  regret, or post-change Fast-throughput claims until their runtime gates pass.
+- README now specifies the correct container contract: routing is encoder-only;
+  selected mode and reversible metadata are decoder-visible.

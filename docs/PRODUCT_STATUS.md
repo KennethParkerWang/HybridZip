@@ -10,9 +10,15 @@ adds append-only `MODE_FAST_EXT_V1` at mode `43`; the current working tree
 therefore has 44 decoder-visible mode IDs. The Release executable and the R2
 codec test executable compile and link successfully. The current working-tree
 Release hash is
-`B7B9AB415D5E10A060F563C2E85B5A436D563B10FCAAFE3687BBD69D9D89DB53`.
+`74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`
+from commit `0670cc3`.
 The completed current-hash ledger below remains bound to its earlier
 `CC6DA840...` executable and is not silently mixed with this build.
+
+Commit `0670cc3` repairs the forced Mode-32 RecordModel path for short blocks
+by retaining at least two donor context-table buckets. The focused 1 B, 24 B,
+64 B, and 1 KiB byte-exact regressions passed; this is a correctness repair,
+not a new corpus-level ratio result.
 
 The encoder now also exposes the experimental `--r2-mode=auto-k2`,
 `auto-k4`, and `auto-k8` policies. They use deterministic integer byte

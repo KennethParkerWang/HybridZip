@@ -1014,3 +1014,19 @@ remain E5 acceptance measurements after the forced ledger is complete.
 The experiment program is set and E4 has started at its no-codec preflight
 checkpoint. No corpus runtime job, PAQ-heavy encode, or throughput measurement
 was launched by this checkpoint.
+
+## 2026-08-28 Public Status Boundary Repair
+
+- [x] Correct the public README and product-status hash after the Mode-32
+  short-block repair. They now identify `74FF260A...B862D9F` as the current
+  Release and label the `CC6DA840...BF191` 528-row ledger as historical.
+- [x] State that the router is encoder-only: an HZ02 block records only the
+  selected decoder-visible mode and reversible metadata.
+- [x] Preserve the important negative claim: E3 PAQ8px input parity is
+  complete, while current-build HybridZip ratio, K=8 regret, and post-change
+  Fast throughput remain unmeasured until their separate runtime gates.
+
+### Status
+
+The GitHub landing page now matches the attachment evidence boundary. No
+archive-format, codec, experiment package, or benchmark result was changed.

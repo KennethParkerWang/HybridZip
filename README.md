@@ -30,14 +30,21 @@ subsets, provenance, and license boundaries are recorded in
 
 The HZ01 baseline Release executable, five HZ01 baseline tests (within the 18
 CTest targets registered by the current build), nine-input product matrix, and
-36-case Silesia ledger are complete. The active R2 Release has a complete
-current-hash ledger for Auto plus all 43 forced modes: 44 packages, 528 rows,
-and 528/528 byte-exact round trips. On the declared 12-file, 32 KiB Silesia
-prefix matrix, Auto totals 99,720 archive bytes (2.028809 bpb) and matches the
-complete forced-mode oracle with a zero-byte gap in every case. Auto selected
-`paq8px-detected-sse` five times and `paq8px-generic-sse` seven times. This is
-an engineering result for one prefix size; it is not a global ranking or a
-reason to delete the remaining donor paths.
+36-case Silesia ledger are complete. The 528-row R2 ledger is historical
+evidence bound to executable `CC6DA840...BF191`, before the current Mode-43
+Fast-path and short-block RecordModel changes. It covers Auto plus the 43
+then-existing forced modes on the 12-file leading-32-KiB Silesia matrix:
+99,720 Auto archive bytes (2.028809 bpb), with a zero-byte gap to its forced
+oracle. It is not evidence for the current executable.
+
+The current Release executable is
+`74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`.
+Current-build 1 KiB byte-exact gates cover HZ01, K=2/K=4/K=8 routing, Fast
+K=4/executor, Mode 43, and the repaired RecordModel short-block path. The
+same-input PAQ8px v216 `-1` baseline is complete for 36 frozen 32/64/128 KiB
+prefixes (1.809440 bpb), but the matching current-build HybridZip forced-oracle
+ledger has not yet run. Therefore this README makes no current HybridZip versus
+PAQ ratio, K=8 regret, or post-change Fast-throughput claim.
 
 The R2-A through R2-D continuation plan and the ledger decision are tracked in
 [task_plan.md](task_plan.md). The exact ledger, strict analysis bundle, and
@@ -59,7 +66,8 @@ ByteHistory
 HZ02 R2 path
 input -> structure/representation candidates
       -> LZ, specialist, neural, and multi-coder candidates
-      -> decoder-visible Auto router or forced mode
+      -> encoder-only Auto router or forced mode
+      -> selected decoder-visible mode and reversible metadata
       -> checksummed HZ02 blocks
 ```
 
