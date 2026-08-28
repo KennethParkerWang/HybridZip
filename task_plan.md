@@ -1,5 +1,29 @@
 # HybridZip R2 Continuation Plan
 
+## Attachment Experiment Charter (2026-08-28)
+
+The attached R2 decision is now operationalized in
+`docs/research/R2_ATTACHMENT_EXPERIMENT_CHARTER_20260828.md`.
+
+- [x] P0: Commit and push the offline K=8 preview evidence as `7c49434`.
+- [x] P0: Freeze G1/G2/G4 metrics, pass gates, result locations, and runtime
+  costs without changing the codec or launching a corpus experiment. E4
+  preflight passed with 44 modes, 43 forced modes, 12 files, 32 KiB internal
+  blocks, and 1,056 planned encode/decode invocations.
+- [ ] P0: Execute E4 only with the current-build 12-file, 32 KiB, 43-forced
+  mode ledger. This is exactly 1,056 encode/decode invocations before retries;
+  it is the prerequisite for a measured K=8 claim.
+- [ ] P1: Export no-leakage labels, fit an uninstalled candidate ranker, and
+  evaluate held-out E5 recall/regret.
+- [ ] P1: Run the post-change E6 Fast K=4/executor matrix before making a
+  current Fast throughput claim.
+- [ ] P2: Run complete Silesia acceptance, then OASum/GPU only through their
+  stated owner and evidence gates.
+
+**Current status:** E4 no-codec preflight is complete. No corpus runtime
+experiment has started under this charter; the next action requires the exact
+runtime authorization switch for the frozen 12-file ledger.
+
 ## Goal
 
 Continue the donor-first R2-A through R2-D implementation until the current

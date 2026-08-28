@@ -1,5 +1,29 @@
 # HybridZip R2 Continuation Notes
 
+## Attachment-Driven Experiment Charter - 2026-08-28
+
+- Source: `C:/Users/Administrator/.codex/attachments/b96760cb-802c-4f54-b886-1fce9454f953/pasted-text.txt`.
+- Decision retained: one HZ02 wire contract; HZ01 decoding; IDs `0..42` fixed;
+  ID `43` remains the append-only Fast extension.
+- Measurement separation retained: `ENC_RATIO_V1` uses same-input complete
+  archive bytes against PAQ8px; `ENC_FAST_V1` uses CPU/GPU throughput. Neither
+  policy result proves the other.
+- Current first execution target is the 12-file, 32 KiB forced oracle: Auto
+  plus 43 forced modes, 44 child packages, and 1,056 encode/decode invocations
+  before retries. Its no-codec preflight is permitted; runtime must use the
+  explicit authorization switch and a new ledger ID.
+- Preflight result: current Release codec SHA-256 is
+  `8E64B93362D4A0C9EBC9C81052839A4966AE502A9CCB53F876E21BF4D5C4B4E7`;
+  the 36-row manifest retains SHA-256
+  `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`;
+  all 12 Silesia sources are present and at least 128 KiB. The list-only
+  oracle plan reported `runtime_started=false`. Synthetic tied-winner
+  derivation and AST parsing of the three runtime scripts passed.
+- K=8 remains experimental until a current-build forced ledger supplies
+  file-level no-leakage labels and held-out tie-aware recall/regret passes.
+- OASum remains blocked on a separate owner/legal decision: its complete
+  `test.jsonl` is 1,065,019,104 bytes and CC-BY-SA-3.0.
+
 ## GPT Pro Research Handoff - 2026-08-27
 
 - Prepared `docs/research/gpt-pro/` as the handoff location for the next
