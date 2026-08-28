@@ -65,6 +65,24 @@ HybridZip archive encode/decode: `codec_invocations` remains zero and
 No row from a validation file may be used during fitting, feature scaling,
 threshold selection, model quantization, or hyperparameter selection.
 
+## Candidate fitting and freezing
+
+`tools/fit_r2_fixed_point_ranker.py` is the offline candidate fitter. It uses
+only Python's standard library and accepts a completed exported package:
+
+```text
+python tools/fit_r2_fixed_point_ranker.py \
+  --training-data <ranker-training-data-directory> \
+  --output-dir <new-candidate-model-directory>
+```
+
+It verifies the file-level memberships in both `summary.json` and `split.json`,
+then freezes `model_image.bin` in the C++ V1 2,644-byte little-endian layout,
+with CRC32 and SHA-256 in `model.json` and `fit_manifest.json`. The fitter
+records training and validation top-1 tied-winner recall only. That metric is
+not K=8 shortlist recall and cannot justify a production-model installation.
+It never modifies `mode_ranker.cpp`, the archive format, or the active encoder.
+
 ## Model Promotion Boundary
 
 The current `0x00010000` fixed-point model remains bootstrap-only. A fitted

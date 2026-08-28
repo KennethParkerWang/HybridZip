@@ -1020,3 +1020,18 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   `D2361A6DBEA69EC701710515FB46651EE4A5CBE5F5EC2ACEE20F84E99E87607D`; the
   capture included one CPU and one GPU entry plus power-plan and compiler data.
   A second write to the same manifest path was rejected. No codec was launched.
+
+## 2026-08-28: Candidate ranker fitter
+
+- `tools/fit_r2_fixed_point_ranker.py` now consumes only a COMPLETE exported
+  file-level training package. It validates `summary.json`, `split.json`, CSV
+  schema, one row per source file, tied winner names, and the zero-codec
+  boundary before fitting.
+- The fitter uses deterministic multiclass perceptron updates over the exact
+  28-feature shift contract, then writes a 2,644-byte little-endian candidate
+  image with CRC32/SHA-256 and a complete fit manifest. The model is marked
+  `CANDIDATE_FROZEN_NOT_INSTALLED`; no C++ source or active ranker is changed.
+- `tools/test_fit_r2_fixed_point_ranker.py` passed: two independent fits of a
+  synthetic two-training/one-validation split produced identical model bytes,
+  and the validation row remained isolated. Python compilation passed. No
+  codec process was launched.

@@ -935,4 +935,18 @@ all four affected runners. Two captures produced fingerprint
 `D2361A6DBEA69EC701710515FB46651EE4A5CBE5F5EC2ACEE20F84E99E87607D` on the
 current host; the codec SHA-256, active power plan, compiler version, CPU, and
 GPU entries were present. An attempted overwrite was rejected. No codec process
-was launched by this gate.
+  was launched by this gate.
+
+## 2026-08-28 Candidate Ranker Freeze Interface
+
+- [x] R1: add a deterministic, standard-library offline fitter that accepts
+  only the existing file-level no-leakage export and freezes the C++ layout,
+  CRC32, and SHA-256 without installing the candidate model.
+- [ ] R2: run the fitter on real forced-oracle labels and inspect only the
+  held-out split before any C++ model import or E5 promotion claim.
+
+### Status
+
+**R1 in verification.** The fitter intentionally reports validation top-1
+tied-winner recall, not K=8 shortlist recall or archive-byte regret. Those
+remain E5 acceptance measurements after the forced ledger is complete.
