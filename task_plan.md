@@ -979,3 +979,38 @@ GPU entries were present. An attempted overwrite was rejected. No codec process
 **R1 in verification.** The fitter intentionally reports validation top-1
 tied-winner recall, not K=8 shortlist recall or archive-byte regret. Those
 remain E5 acceptance measurements after the forced ledger is complete.
+
+## 2026-08-28 Current-Commit Experiment Start
+
+### Confirmed execution point
+
+- [x] Verify the post-fix commit is published: `main`, `origin/main`, and
+  `HEAD` all resolve to `0670cc389f054d3966eb5acfa029729ca72ad6ae`.
+- [x] Refresh the attachment-defined E4 preflight against the current Release
+  executable `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`.
+  The 12-file frozen Silesia dataset, 32 KiB scope/internal blocks, Auto, and
+  43 forced ratio modes yield 44 child packages and 1,056 planned
+  encode/decode invocations. `runtime_started=false`.
+- [ ] G1 / E4: Run that exact non-overwriting current-build forced ledger only
+  in a dedicated PAQ-heavy window. Acceptance: all 43 forced paths and Auto
+  byte-exactly decode and the forced-oracle derivation accepts the ledger.
+- [ ] G2/G3 / E5: Export the 28 C++ features with a file-level holdout, fit an
+  uninstalled model, then measure K=2/K=4/K=8 against G1. Acceptance for K=8:
+  >=99.5% tie-aware recall, >=99.9% byte-weighted recall, <=0.02% aggregate
+  regret, and <=16-byte P95 regret.
+- [ ] G4 / E6: Re-measure post-change Fast K=4/executor at 32/64/128 KiB;
+  retain three post-warmup repeats per cell and require byte-exact decode plus
+  >=0.16 MB/s encode/decode. This is a speed result only, not a PAQ-ratio
+  result.
+- [ ] G5: Run same-input complete-file Silesia ratio acceptance only after
+  G1/G2; require HybridZip aggregate complete archive bytes to be strictly
+  lower than PAQ8px v216 `-1`.
+- [ ] G6/G7: Tencent/OASum and GPU remain deferred. G6 needs owner approval
+  for the 1,065,019,104-byte CC-BY-SA-3.0 input; G7 needs a CPU reference and
+  a separate >=8 MB/s end-to-end experiment.
+
+### Status
+
+The experiment program is set and E4 has started at its no-codec preflight
+checkpoint. No corpus runtime job, PAQ-heavy encode, or throughput measurement
+was launched by this checkpoint.

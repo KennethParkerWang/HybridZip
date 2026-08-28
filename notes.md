@@ -1084,3 +1084,30 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   synthetic two-training/one-validation split produced identical model bytes,
   and the validation row remained isolated. Python compilation passed. No
   codec process was launched.
+
+## 2026-08-28: Current-Commit E4 Preflight
+
+- User direction: after publishing the current version, apply the attached R2
+  decision to experiment design and begin target execution.
+- Publication check: local `main`, upstream `origin/main`, and `HEAD` equal
+  commit `0670cc389f054d3966eb5acfa029729ca72ad6ae` (`fix(r2): guard record
+  model short blocks`). The branch is publicly available at
+  `https://github.com/KennethParkerWang/HybridZip`.
+- Current Release executable identity:
+  `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`.
+- Read-only E4 invocation:
+
+  ```powershell
+  .\tools\run_r2_complete_ledger.ps1 `
+    -CodecPath .\build\Release\hybridzip.exe `
+    -DatasetPath F:\paq8px\silesia `
+    -OutputRoot .\results\experiments `
+    -LedgerId hybridzip-r2-forced-oracle-current-0670cc3 `
+    -ScopesKiB 32 -BlockSizeKiB 32 -ListOnly
+  ```
+
+- Observed plan: 12 frozen files; 44 modes (Auto plus 43 forced modes); 32 KiB
+  input/internal block; 1,056 planned codec invocations; `runtime_started=false`.
+- The preflight did not create or overwrite a runtime package and did not start
+  a codec process. The next runtime action is deliberately separated because
+  E4 is PAQ-heavy.
