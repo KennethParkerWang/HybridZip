@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "experiment": "r2-current-record-model-1k-20260828-fixed",
+  "purpose": "Current Release 1 KiB byte-exact PAQ8px RecordModel smoke after the short-block repair.",
+  "mode": 32,
+  "mode_name": "paq8px-record-model",
+  "input_path": "../r2-postbuild-1k-20260826/input.bin",
+  "input_bytes": 1024,
+  "input_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+  "archive": "archive.hz2",
+  "archive_bytes": 1084,
+  "archive_sha256": "29F32E0AC4636C91D7B844F327FB06A9B04D72C2019FF92C0F37A1D0F56DA1C9",
+  "decoded": "decoded.bin",
+  "decoded_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+  "byte_exact": true,
+  "codec_sha256": "74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F"
+}

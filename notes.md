@@ -24,6 +24,31 @@
 - OASum remains blocked on a separate owner/legal decision: its complete
   `test.jsonl` is 1,065,019,104 bytes and CC-BY-SA-3.0.
 
+## PAQ8px RecordModel Short-Block Repair - 2026-08-28
+
+- The focused current-build test initially crashed in forced Mode 32 on the
+  23-byte `"abracadabra abracadabra"` regression input. GDB located the
+  access violation in donor `ContextMap::set()` beneath `RecordModel::mix()`.
+- Cause: `Paq8pxRecordModelBackend::context_table_size()` allowed a 64-byte
+  table. `ContextMap` represents that as one 64-byte bucket; `hashBits` became
+  zero and the donor's `finalize64()` performed an undefined 64-bit shift,
+  allowing an out-of-range bucket index.
+- Repair: set the backend minimum to 128 bytes, giving the donor at least two
+  buckets. The HZ02 mode ID and wire format are unchanged. Archives that used
+  the defective one-bucket encoder were never reliable, so no valid legacy
+  stream contract is weakened.
+- Verification: current Release codec SHA-256
+  `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`
+  encoded and decoded the previously crashing 24-byte input byte-exactly
+  (84-byte archive); `hz_r2_codec_tests` and `hz_structure_routing_tests`
+  passed. The first now explicitly covers 1-byte and 64-byte forced Mode-32
+  round trips. The repaired decoder also byte-exactly decoded retained HZ01
+  and previous 1-KiB Mode-32 archives. Evidence:
+  `results/smoke/r2-current-record-model-24-20260828-fixed/verification.json`.
+- Consequence: the prior E4 preflight was for codec SHA-256 `8E64...B4E7`.
+  It must be run again after this repair, still in list-only mode, before an
+  authorized forced-oracle ledger can start.
+
 ## GPT Pro Research Handoff - 2026-08-27
 
 - Prepared `docs/research/gpt-pro/` as the handoff location for the next

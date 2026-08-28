@@ -226,6 +226,15 @@ void test_empty_and_forced_modes(const std::filesystem::path& directory) {
         directory, "paq8px-record-model", predictive_input, options);
     require(paq8px_record_model.blocks_by_mode[32] == 1,
             "Forced PAQ8px RecordModel mode selected another backend");
+    const auto paq8px_record_model_one_byte = round_trip(
+        directory, "paq8px-record-model-one-byte", {0xA5U}, options);
+    require(paq8px_record_model_one_byte.blocks_by_mode[32] == 1,
+            "Forced PAQ8px RecordModel rejected a one-byte block");
+    const auto paq8px_record_model_64_bytes = round_trip(
+        directory, "paq8px-record-model-64-bytes", pseudo_random_bytes(64),
+        options);
+    require(paq8px_record_model_64_bytes.blocks_by_mode[32] == 1,
+            "Forced PAQ8px RecordModel rejected a 64-byte block");
 
     options.policy = hz::r2::CandidatePolicy::Paq8pxLinearPredictionOnly;
     const auto paq8px_linear_prediction = round_trip(

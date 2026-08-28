@@ -20,7 +20,10 @@ constexpr std::uint32_t kProbabilityScale = 1U << 24U;
 constexpr std::uint32_t kDonorPrecision = 31U;
 
 std::uint32_t context_table_size(const std::size_t block_size) {
-    std::uint32_t size = 64U;
+    // ContextMap stores one 64-byte bucket per table entry. It must have at
+    // least two entries: a one-entry table yields hashBits == 0 and makes the
+    // donor's 64-bit range reduction undefined.
+    std::uint32_t size = 128U;
     while (size < block_size && size < (1U << 31U)) {
         size <<= 1U;
     }

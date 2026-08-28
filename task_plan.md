@@ -10,6 +10,10 @@ The attached R2 decision is now operationalized in
   costs without changing the codec or launching a corpus experiment. E4
   preflight passed with 44 modes, 43 forced modes, 12 files, 32 KiB internal
   blocks, and 1,056 planned encode/decode invocations.
+- [x] P0: Repair the forced Mode-32 PAQ8px RecordModel short-block crash. The
+  donor table now has at least two buckets; 1 B, 24 B, 64 B, and 1 KiB
+  round-trips are covered by the focused regression path, with old HZ01 and
+  Mode-32 archives decoded by the repaired binary.
 - [ ] P0: Execute E4 only with the current-build 12-file, 32 KiB, 43-forced
   mode ledger. This is exactly 1,056 encode/decode invocations before retries;
   it is the prerequisite for a measured K=8 claim.
@@ -20,8 +24,9 @@ The attached R2 decision is now operationalized in
 - [ ] P2: Run complete Silesia acceptance, then OASum/GPU only through their
   stated owner and evidence gates.
 
-**Current status:** E4 no-codec preflight is complete. No corpus runtime
-experiment has started under this charter; the next action requires the exact
+**Current status:** E4 no-codec preflight must be refreshed for the repaired
+Release executable before runtime authorization. No corpus runtime experiment
+has started under this charter; the eventual next action requires the exact
 runtime authorization switch for the frozen 12-file ledger.
 
 ## Goal

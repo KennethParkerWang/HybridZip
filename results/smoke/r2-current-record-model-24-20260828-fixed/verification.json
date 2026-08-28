@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "experiment": "r2-current-record-model-24-20260828-fixed",
+  "purpose": "Regression for the PAQ8px RecordModel one-bucket ContextMap crash.",
+  "mode": 32,
+  "mode_name": "paq8px-record-model",
+  "input_path": "../r2-current-record-model-24-20260828.input",
+  "input_bytes": 24,
+  "input_sha256": "C4DA05F1E4CD09F5ED612D5CF1E0D26C88C470E6E2E7390683F007973727179B",
+  "archive": "archive.hz2",
+  "archive_bytes": 84,
+  "decoded": "decoded.bin",
+  "decoded_sha256": "C4DA05F1E4CD09F5ED612D5CF1E0D26C88C470E6E2E7390683F007973727179B",
+  "byte_exact": true,
+  "codec_sha256": "74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F",
+  "compatibility": {
+    "hz01_archive": "../r2-final-hz01-1k-20260827/output.hz",
+    "hz01_input_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+    "hz01_decoded_sha256": "611A3BCCB479C7959926082201240C390191C43B9D408ED601283B3F5AB438B4",
+    "hz01_byte_exact": true,
+    "prior_mode32_archive": "../r2-postbuild-paq8px-record-model-1k-20260826/archive.hz2",
+    "prior_mode32_input_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+    "prior_mode32_decoded_sha256": "8E7143FEF66EAF1B0A3DE8046F290F24DA96C2796C96084603BEE4D6F5C61F03",
+    "prior_mode32_byte_exact": true
+  },
+  "tests": {
+    "hz_r2_codec_tests": "PASS",
+    "hz_structure_routing_tests": "PASS"
+  }
+}
