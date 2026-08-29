@@ -2772,3 +2772,17 @@ is an external-core kill test, not additional R2 routing work.
 - `x-ray / 32 KiB / Auto / 128 KiB` passed byte-exactly; the runner advanced
   to `x-ray / 64 KiB / Auto / 128 KiB`.
 - The experiment identity and parameters remain unchanged.
+
+# 2026-08-29: K0 external-core smoke evidence
+
+- Package: `results/experiments/hybridzip-external-killtest-k0-20260829-retry5/hybridzip-external-killtest-k0-20260829/`.
+- Input: `1024` bytes, SHA-256
+  `E051D1007607DE494C073DA3C29903D6C0ABFEE7A4C0609F560A340A1947B470`.
+- Candidates: Kanzi L7/L8/L9, libbsc-e2, PAQ8px L1/L2/L3/L4, XZ-9e,
+  HybridZip Auto, and HybridZip Fast.
+- Outcome: `11/11` rows `COMPLETE/PASS`; all decoded lengths and SHA-256
+  values match the input; no timeout or memory-limit row.
+- This is a smoke gate only. Archive bytes on 1 KiB are overhead-dominated,
+  so no codec ranking or architecture decision is inferred.
+- The runner correction is uncommitted until the dedicated checkpoint commit;
+  generated archives and retry diagnostics remain untracked and excluded.

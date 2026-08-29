@@ -204,8 +204,10 @@ function Invoke-Candidate([string]$Name, [hashtable]$Spec) {
     $decodeStage = ''
     if ($kind -eq 'kanzi') {
         $level = if ($Name -eq 'kanzi-l7') { '7' } elseif ($Name -eq 'kanzi-l8') { '8' } else { '9' }
-        $encodeArgs = @('-c', "-i=$inputPath", "-o=$archivePath", '-f', '-j=1', '-b=1k', "-l=$level")
-        $decodeArgs = @('-d', "-i=$archivePath", "-o=$decodedPath", '-f', '-j=1')
+        # Kanzi's short options consume the following argv value; only its
+        # long options support the --name=value form.
+        $encodeArgs = @('-c', '-i', $inputPath, '-o', $archivePath, '-f', '-j', '1', '-b', '1k', '-l', $level)
+        $decodeArgs = @('-d', '-i', $archivePath, '-o', $decodedPath, '-f', '-j', '1')
     }
     elseif ($kind -eq 'bsc') {
         $encodeArgs = @('e', $inputPath, $archivePath, '-b1', '-e2', '-T1')
@@ -213,7 +215,7 @@ function Invoke-Candidate([string]$Name, [hashtable]$Spec) {
     }
     elseif ($kind -eq 'paq') {
         $level = $Name.Substring($Name.Length - 2, 2).TrimStart('l')
-        $encodeArgs = @('-' + $level, $inputPath, $archivePath)
+        $encodeArgs = @(('-' + $level), $inputPath, $archivePath)
         $decodeArgs = @('-d', $archivePath, $decodedPath)
     }
     elseif ($kind -eq 'xz') {
@@ -249,7 +251,7 @@ function Invoke-Candidate([string]$Name, [hashtable]$Spec) {
         $row.encode_seconds = $encode.seconds; $row.encode_peak_ram_mib = $encode.peak_mib; $row.encode_exit_code = $encode.exit_code
         if ($kind -eq 'xz') {
             $xzArchive = $stageInput + '.xz'
-            if (Test-Path -LiteralPath $xzArchive) { Move-Item -LiteralPath $xzArchive -Destination $archivePath }
+            if (Test-Path -LiteralPath $xzArchive) { Copy-Item -LiteralPath $xzArchive -Destination $archivePath }
         }
         if ($encode.exit_code -ne 0 -or -not (Test-Path -LiteralPath $archivePath -PathType Leaf)) { throw "Encode failed ($($encode.exit_code), $($encode.termination))" }
         $decode = Invoke-Measured $Spec.executable $decodeArgs $candidateDir (Join-Path $candidateDir 'logs/decode')
@@ -296,9 +298,9 @@ $rows = New-Object System.Collections.Generic.List[object]
 foreach ($name in $selectedNames) {
     Write-Host ("[{0}/{1}] {2}" -f ($rows.Count + 1), $selectedNames.Count, $name)
     $rows.Add((Invoke-Candidate $name $candidates[$name]))
-    Write-Utf8NoBom $resultPath ((@($rows) | Select-Object $resultColumns | ConvertTo-Csv -NoTypeInformation) -join "`r`n")
+    Write-Utf8NoBom $resultPath (($rows.ToArray() | Select-Object -Property $resultColumns | ConvertTo-Csv -NoTypeInformation) -join "`r`n")
 }
-$failed = @($rows | Where-Object { $_.status -ne 'COMPLETE' -or $_.roundtrip -ne 'PASS' })
+$failed = @($rows.ToArray() | Where-Object { $_.status -ne 'COMPLETE' -or $_.roundtrip -ne 'PASS' })
 $metadata.state = if ($failed.Count -eq 0) { 'complete' } else { 'failed' }
 $metadata.completed_at = [DateTimeOffset]::Now.ToString('o'); $metadata.failed_candidates = @($failed | ForEach-Object candidate)
 Write-Utf8NoBom (Join-Path $packagePath 'experiment.json') ($metadata | ConvertTo-Json -Depth 6)

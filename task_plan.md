@@ -2875,3 +2875,22 @@ libbsc acquisition before any external codec runtime.
 - `auto-k2-b128-r1` completed `reymont / 128 KiB`; the active case is
   `samba / 128 KiB / auto-k2 / 128 KiB`.
 - The runner, executable, manifest, and experiment identity remain unchanged.
+
+### 2026-08-29 K0 authorization and completion checkpoint
+
+- K0 external-core 1 KiB smoke completed: `11/11` candidates are
+  `COMPLETE/PASS`; all encode/decode exit codes are `0` and all decoded
+  SHA-256 values match the input.
+- The corrected runner is `tools/run_external_core_killtest.ps1`; fixes cover
+  Kanzi short-argument parsing, PAQ argument construction, XZ archive copy,
+  and stable PowerShell CSV serialization.
+- Added the lightweight evidence summary
+  `docs/research/HZ03_EXTERNAL_CORE_K0_RESULTS_20260829.md`.
+- P0.2 and P0.3 are complete. P0.4 (32/64/128 KiB comparison) remains
+  pending explicit continuation; no K1/K2/K3 or source-format change was run.
+
+### Status
+
+**Currently paused at P0.4 authorization boundary** - K0 evidence is committed
+and ready for review; the next runtime action is the staged 32/64/128 KiB
+comparison only after explicit authorization.
