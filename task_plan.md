@@ -2786,6 +2786,56 @@ or duplicate package was produced.
   including HZ01 core/pipeline, all donor backend tests, R2 codec, and
   structure-routing tests.
 
+## 2026-08-29 P0 External-Core Kill Test Pivot
+
+### Goal
+
+Decide, using complete archive bytes and byte-exact reconstruction, whether a
+mature external compression core can provide a viable HZ03 foundation before
+any further R2 mode, ranker, or GPU work.
+
+### Decisions
+
+- Freeze new R2 encoder modes, current-ranker training/promotion, and GPU
+  `LZ_RANS_V1` implementation. Existing HZ01/HZ02 decoders, Fast path,
+  ledger tools, and donor ports remain intact.
+- Treat Kanzi/libbsc superiority as a hypothesis, not as external evidence.
+- Stage the kill test: identical 32/64/128 KiB inputs first; only candidates
+  that survive move to representative full-file 1/4/16 MiB superblock runs;
+  only the winner then enters the complete-corpus matrix.
+- Record all external materials under `E:\MIXER\KU` with upstream URL,
+  revision/release, license, download date, and SHA-256. Reuse the existing
+  complete Kanzi, PAQ8px, and XZ sources after identity checks; do not
+  download duplicates.
+
+### Phases
+
+- [x] P0.0: Commit and push the E5/E6 evidence checkpoint.
+  Commit `4d82972b1004509536aafcd588c5dafc529bc14e` is on `origin/main`.
+- [x] P0.1: Establish the external-core decision boundary and staged protocol.
+- [ ] P0.2: Verify reusable Kanzi/PAQ8px/XZ sources; acquire libbsc into a
+  new non-overwriting `E:\MIXER\KU` directory with provenance.
+- [ ] P0.3: Build or locate independent CLI executables and run deterministic
+  1 KiB compress/decompress smoke tests.
+- [ ] P0.4: Run the same-input 32/64/128 KiB external comparison. Do not
+  rerun completed E5/E6 packages.
+- [ ] P0.5: Run staged representative full-file superblock screening for only
+  the candidates justified by P0.4.
+- [ ] P0.6: Publish a keep/rebuild/renegotiate decision with all archive-byte,
+  timing, memory, and SHA-256 evidence.
+
+### Error Record
+
+- The first curated `git add` command named a non-existent E5-root
+  `forced_archive_rows.csv`. The file is in the derived-analysis directory;
+  no files were staged by that failed command. The corrected explicit staging
+  list passed `git diff --cached --check` before commit.
+
+### Status
+
+**Currently in P0.2** - validating local donor identities and the missing
+libbsc acquisition before any external codec runtime.
+
 ### 2026-08-29 11:27 runtime checkpoint
 
 - E5 reached `341/432` `COMPLETE/PASS` rows (`682/864` codec invocations),

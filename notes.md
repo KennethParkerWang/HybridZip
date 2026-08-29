@@ -2658,6 +2658,51 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
 - `summary.json` has not been emitted. No source, executable, experiment
   identity, or parameter was changed during this checkpoint.
 
+# 2026-08-29: External-Core Kill Test Decision Notes
+
+## Confirmed Current Boundary
+
+- Current E5 Auto/K4/K8 evidence is complete and establishes that router
+  shortlist behavior is not the dominant high-ratio bottleneck on the frozen
+  Silesia matrix. It does not establish generalization beyond those inputs.
+- Current Fast K=4 E6 evidence exceeds the CPU floor, but its measured bpb is
+  materially above PAQ8px v216 `-1` on the same frozen leading prefixes.
+- The historical 32 KiB forced-oracle ledger has only `paq8px-generic-sse`
+  and `paq8px-detected-sse` winners. This cannot be generalized to full files,
+  larger superblocks, or Tencent/OASum.
+
+## Decision
+
+Stop feature expansion temporarily. The next information-bearing experiment
+is an external-core kill test, not additional R2 routing work.
+
+## Candidate Set
+
+1. Full upstream Kanzi C++ at high compression levels.
+2. Full libbsc.
+3. Official PAQ8px v216 at `-1/-2/-3/-4`.
+4. XZ `-9e` control.
+5. Existing HybridZip Auto and Fast controls.
+
+## Execution Discipline
+
+- Every row must use identical input SHA-256 and include complete archive
+  bytes, encode/decode time, peak memory, command, tool identity, and decoded
+  SHA-256.
+- Begin with a 1 KiB byte-exact smoke, then the frozen 32/64/128 KiB inputs.
+- Do not launch the full 12-file superblock grid until a candidate passes the
+  small-block screen. PAQ `-2/-3/-4` must be staged because their runtime may
+  be large.
+- The initial small-block results decide only whether a candidate advances;
+  they do not decide the final architecture.
+
+## Source Inventory Finding
+
+- `E:\MIXER\KU\hybridzip-r2` already contains the recorded Kanzi source,
+  PAQ8px source, and XZ source. They must be identity-checked and reused.
+- No standalone libbsc root is currently present in `E:\MIXER\KU`; acquisition
+  needs a new non-overwriting provenance directory.
+
 # 2026-08-29 09:53: E5 runtime checkpoint
 
 - E5 now contains `314/432` durable `COMPLETE/PASS` rows (`628/864`
