@@ -31,10 +31,10 @@ CRC, extension metadata, transform side information, and payload.
 | ID | Objective | Exact gate | Status |
 | --- | --- | --- | --- |
 | G0 | Protect compatibility | HZ01 plus retained HZ02 golden decodes; malformed/truncated metadata rejection | Existing focused evidence; rerun after wire-format changes |
-| G1 | Build current ratio labels | Complete 12-file, 32 KiB forced oracle; 43 forced modes plus Auto | Ready; runtime not started |
-| G2 | Validate the K=8 ratio router | Held-out file-level labels; tie-aware recall >=99.5%, byte-weighted recall >=99.9%, aggregate regret <=0.02%, P95 regret <=16 bytes | Pending G1 |
-| G3 | Evaluate K=2/K=4 ablations | Complete-byte regret and category representation; promote K=4 only when it uses <=25% of the PAQ byte margin | Pending G1/G2 |
-| G4 | Re-measure Fast K=4/executor | All 32/64/128 KiB scope/block cells byte-exact, encode and decode >=0.16 MB/s | Ready; post-change runtime pending |
+| G1 | Build current ratio labels | Complete 12-file, 32 KiB forced oracle; 43 forced modes plus Auto | Complete; current executable and all 528 forced/Auto rows validate byte-exactly |
+| G2 | Validate the K=8 ratio router | Held-out file-level labels; tie-aware recall >=99.5%, byte-weighted recall >=99.9%, aggregate regret <=0.02%, P95 regret <=16 bytes | E5 complete for 432 matrix rows; matching forced-oracle labels cover 36 32 KiB rows and K=8 is 12/12 there; full held-out promotion remains pending |
+| G3 | Evaluate K=2/K=4 ablations | Complete-byte regret and category representation; promote K=4 only when it uses <=25% of the PAQ byte margin | Complete as an ablation: E5 reports full-byte regret and selected-mode coverage; no production promotion claimed |
+| G4 | Re-measure Fast K=4/executor | All 32/64/128 KiB scope/block cells byte-exact, encode and decode >=0.16 MB/s | Complete for single worker: 432/432 rows and all nine cells pass; second-worker scaling is optional |
 | G5 | Establish Silesia ratio acceptance | On complete files, `sum(HybridZip archive bytes) < sum(PAQ8px archive bytes)` for the same input hashes | Pending G2 and full-corpus policy run |
 | G6 | Establish Tencent text/records evidence | Complete OASum `test.jsonl` with a frozen manifest and separate result table | Blocked on owner/legal approval for 1,065,019,104-byte CC-BY-SA-3.0 input |
 | G7 | GPU Fast path | CPU reference decoder plus end-to-end encode/decode >=8 MB/s at all three sizes | Deferred until G4 fails or owner requires GPU |

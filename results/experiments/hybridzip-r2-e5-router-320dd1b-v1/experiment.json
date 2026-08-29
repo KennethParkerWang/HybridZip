@@ -1,0 +1,51 @@
+{
+  "experiment_id": "hybridzip-r2-e5-router-320dd1b-v1",
+  "stage": "e5-router",
+  "runtime_started": true,
+  "files": [
+    "dickens",
+    "mozilla",
+    "mr",
+    "nci",
+    "ooffice",
+    "osdb",
+    "reymont",
+    "samba",
+    "sao",
+    "webster",
+    "x-ray",
+    "xml"
+  ],
+  "scopes_kib": [
+    32,
+    64,
+    128
+  ],
+  "block_sizes_kib": [
+    32,
+    64,
+    128
+  ],
+  "policies": [
+    "auto",
+    "auto-k2",
+    "auto-k4",
+    "auto-k8"
+  ],
+  "timing_repeats": 1,
+  "fast_thread_count": 1,
+  "forced_oracle_ledger_path": "E:\\MIXER\\hybridzip\\results\\analysis\\r2-complete-ledger\\hybridzip-r2-forced-oracle-current-320dd1b",
+  "forced_oracle_output_path": "forced-oracle",
+  "environment_manifest_path": "environment.json",
+  "environment_fingerprint_sha256": "6DC773B755B24DBBD0273C4A9E798DF9911284DDE2CFC66E5C7BE4A161D79D5D",
+  "child_packages": 12,
+  "cases_per_child": 36,
+  "codec_invocations": 864,
+  "runtime_authorization_required": true,
+  "resume_requested": false,
+  "command": "& E:\\MIXER\\hybridzip\\tools\\run_r2_e5_e6_matrix.ps1 -Stage e5-router -FastThreadCount 1 -ForcedOracleLedgerPath <complete-forced-ledger> -ListOnly:$false -AuthorizeRuntimeExperiment ...",
+  "codec_path": "E:\\MIXER\\hybridzip\\build\\Release\\hybridzip.exe",
+  "codec_sha256": "74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F",
+  "dataset_path": "F:\\paq8px\\silesia",
+  "status": "COMPLETE"
+}

@@ -1,0 +1,21 @@
+{
+  "status": "COMPLETE",
+  "evidence_boundary": "Reference regret is against current full Auto. The attached 32 KiB one-block forced-mode ledger supplies tie-aware winner recall only for its matching E5 rows.",
+  "rows": 324,
+  "selected_mode_coverage": 0.8518518518518519,
+  "aggregate_regret_vs_full_auto_bytes": 6311.0,
+  "ranker_model": {
+    "version": "00010000",
+    "crc32": "1025B343",
+    "sha256": "4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B"
+  },
+  "forced_oracle": {
+    "ledger_path": "E:\\MIXER\\hybridzip\\results\\analysis\\r2-complete-ledger\\hybridzip-r2-forced-oracle-current-320dd1b",
+    "output_path": "E:\\MIXER\\hybridzip\\results\\experiments\\hybridzip-r2-e5-router-320dd1b-v1\\forced-oracle",
+    "block_size_kib": 32,
+    "input_cases": 12,
+    "e5_matching_rows": 36,
+    "tie_aware_recall_available": true,
+    "ranker_identity": "00010000|1025B343|4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B"
+  }
+}

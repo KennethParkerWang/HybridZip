@@ -569,10 +569,25 @@ function Assert-R2BlockTypes([string]$RequestedMode,
     if ($total -ne $expectedBlocks) {
         throw "HZ02 block count mismatch for ${Description}: recorded=$total expected=$expectedBlocks"
     }
-    $expectedMode = if ($RequestedMode -eq 'fast') { 'zstd' } else { $RequestedMode }
-    if ($RequestedMode -notin @('auto', 'auto-k2', 'auto-k4', 'auto-k8') -and
-        ($counts.Count -ne 1 -or -not $counts.ContainsKey($expectedMode) -or
-         $counts[$expectedMode] -ne $expectedBlocks)) {
+    $shortlistModes = @('auto', 'auto-k2', 'auto-k4', 'auto-k8')
+    if ($RequestedMode -eq 'fast') {
+        # Fast K=4 is a policy, not a single archive mode.  It may select the
+        # stored fallback, the append-only zstd extension, or LZ4 per block.
+        $fastModes = @('stored', 'fast-ext', 'lz4')
+        $invalid = @($counts.Keys | Where-Object { $_ -notin $fastModes })
+        $totalFastBlocks = [int64]0
+        foreach ($mode in $fastModes) {
+            if ($counts.ContainsKey($mode)) {
+                $totalFastBlocks += $counts[$mode]
+            }
+        }
+        if ($invalid.Count -ne 0 -or $totalFastBlocks -ne $expectedBlocks) {
+            throw "Fast HZ02 block policy mismatch for ${Description}: requested=$RequestedMode recorded=$BlockTypes"
+        }
+    }
+    elseif ($RequestedMode -notin $shortlistModes -and
+            ($counts.Count -ne 1 -or -not $counts.ContainsKey($RequestedMode) -or
+             $counts[$RequestedMode] -ne $expectedBlocks)) {
         throw "Forced HZ02 mode mismatch for ${Description}: requested=$RequestedMode recorded=$BlockTypes"
     }
 }

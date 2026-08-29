@@ -39,12 +39,18 @@ oracle. It is not evidence for the current executable.
 
 The current Release executable is
 `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`.
-Current-build 1 KiB byte-exact gates cover HZ01, K=2/K=4/K=8 routing, Fast
-K=4/executor, Mode 43, and the repaired RecordModel short-block path. The
-same-input PAQ8px v216 `-1` baseline is complete for 36 frozen 32/64/128 KiB
-prefixes (1.809440 bpb), but the matching current-build HybridZip forced-oracle
-ledger has not yet run. Therefore this README makes no current HybridZip versus
-PAQ ratio, K=8 regret, or post-change Fast-throughput claim.
+Current-build byte-exact gates cover HZ01, K=2/K=4/K=8 routing, Fast K=4 and
+its block executor, Mode 43, and the repaired RecordModel short-block path.
+The complete E5 router package is
+`results/experiments/hybridzip-r2-e5-router-320dd1b-v1/`: 432/432 rows pass
+across 12 files, three scopes, three block sizes, and four policies; its
+matching forced-oracle evidence covers the 32 KiB rows. The current Fast K=4
+E6 package is
+`results/experiments/hybridzip-r2-e6-fast-k4-full-20260829-w1/`: 432/432 rows
+are byte-exact and all nine retained timing cells exceed 0.16 MB/s in both
+directions (minimum 0.5635 MB/s encode and 0.6112 MB/s decode). These are
+separate ratio-router and throughput claims; held-out ranker promotion,
+Tencent/OASum coverage, and GPU throughput remain pending.
 
 The R2-A through R2-D continuation plan and the ledger decision are tracked in
 [task_plan.md](task_plan.md). The exact ledger, strict analysis bundle, and

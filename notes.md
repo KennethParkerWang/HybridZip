@@ -1,5 +1,394 @@
 # HybridZip R2 Continuation Notes
 
+## Runtime checkpoint 2026-08-29 08:11 +08:00
+
+- E5 remains `302/432`, all durable rows `PASS`, failures `0`.
+- PID `6844` continues the `ooffice` 128 KiB Auto encode and remains
+  responsive; no summary or duplicate runner exists.
+
+## Runtime checkpoint 2026-08-29 08:11 +08:00
+
+- `ooffice` 64 KiB completed byte-exactly, bringing E5 to `302/432` `PASS`
+  rows.
+- The same runner is now processing `ooffice` 128 KiB in `auto-b128-r1`.
+
+## Runtime checkpoint 2026-08-29 08:08 +08:00
+
+- E5 remains `301/432`, all durable rows `PASS`, failures `0`.
+- Codec PID `17452` continues `ooffice` 64 KiB Auto encoding and remains
+  responsive; no summary or duplicate runner exists.
+
+## Runtime checkpoint 2026-08-29 08:05 +08:00
+
+- E5 remains `301/432`, all durable rows `PASS`, failures `0`.
+- PID `17452` continues `ooffice` 64 KiB Auto encoding in `auto-b128-r1`;
+  preserve the existing runner and package.
+
+## Runtime checkpoint 2026-08-29 08:02 +08:00
+
+- `nci` 128 KiB and `ooffice` 32 KiB passed byte-exactly, bringing E5 to
+  `301/432` `PASS` rows.
+- The same runner is now processing `ooffice` 64 KiB in `auto-b128-r1`.
+
+## Runtime checkpoint 2026-08-29 08:00 +08:00
+
+- `nci` 128 KiB completed byte-exactly, bringing E5 to `300/432` `PASS` rows.
+- The same runner is now processing `ooffice` 32 KiB in `auto-b128-r1`.
+
+## Runtime checkpoint 2026-08-29 07:57 +08:00
+
+- E5 remains `299/432`, all durable rows `PASS`, failures `0`.
+- PID `30012` continues the `nci` 128 KiB Auto encode since 07:44; it is
+  responsive and CPU-active. Preserve the protected temporary archive.
+
+## Runtime checkpoint 2026-08-29 07:55 +08:00
+
+- E5 remains `299/432`, all recorded rows `PASS`, failures `0`.
+- The single-thread `nci` 128 KiB Auto encode is active; the protected `.tmp`
+  archive is still zero bytes, as expected before atomic rename.
+
+## Runtime checkpoint 2026-08-29 07:53 +08:00
+
+- E5 remains `299/432`, all durable rows `PASS`, failures `0`.
+- Codec PID `30012` continues the `nci` 128 KiB Auto encode since 07:44;
+  `summary.json` is absent and the runner has not been restarted.
+
+## Runtime checkpoint 2026-08-29 07:52 +08:00
+
+- E5 is `299/432`, all recorded rows `COMPLETE/PASS`, failures `0`.
+- PID `30012` continues the `nci` 128 KiB Auto encode in `auto-b128-r1`;
+  `summary.json` remains absent and no duplicate runner exists.
+
+## Runtime checkpoint 2026-08-29 07:50 +08:00
+
+- E5 has `299/432` durable `COMPLETE/PASS` rows; `auto-b128-r1` is `11/36`.
+- Codec PID `30012` is active on `nci` 128 KiB; no summary or duplicate runner
+  exists.
+
+## Runtime checkpoint 2026-08-29 07:45 +08:00
+
+- `nci` 64 KiB completed byte-exactly, bringing E5 to `299/432` `PASS` rows.
+- The same runner is now processing `nci` 128 KiB in `auto-b128-r1`.
+
+## Runtime checkpoint 2026-08-29 07:39 +08:00
+
+- `nci` 32 KiB completed byte-exactly; E5 remains at `298/432` while `nci`
+  64 KiB is encoding.
+- Codec PID `7112` and parent PID `30912` are the only active experiment
+  processes; no failure or duplicate run was observed.
+
+## Runtime checkpoint 2026-08-29 07:37 +08:00
+
+- `nci` 32 KiB completed byte-exactly, bringing E5 to `298/432` `PASS` rows.
+- The same runner is now processing `nci` 64 KiB in `auto-b128-r1`.
+
+## Runtime checkpoint 2026-08-29 07:34 +08:00
+
+- `mr` 128 KiB completed byte-exactly, bringing E5 to `297/432` `PASS` rows.
+- The same runner is now processing `nci` 32 KiB in `auto-b128-r1`; no failure
+  or duplicate run exists.
+
+## Runtime checkpoint 2026-08-29 07:21 +08:00
+
+- E5 remains `296/432`, all durable rows `PASS`, failures `0`.
+- Codec PID `19888` is CPU-active on `auto-b128-r1` / `mr` / 128 KiB encode.
+- Keep the same runner and package; no summary or replacement run exists yet.
+
+## Runtime checkpoint 2026-08-29 07:19 +08:00
+
+- `mr` 64 KiB completed byte-exactly, bringing E5 to `296/432` `PASS` rows.
+- `auto-b128-r1` has 8/36 durable rows and is now encoding `mr` 128 KiB.
+
+## Runtime checkpoint 2026-08-29 07:13 +08:00
+
+- E5 reached `295/432` durable `PASS` rows with zero failures.
+- The same single runner advanced to the next case under `auto-b128-r1`.
+
+## Runtime checkpoint 2026-08-29 07:11 +08:00
+
+- `mr` 32 KiB completed with byte-exact `PASS`; E5 reached `294/432` rows.
+- The same runner continues in fixed order under `auto-b128-r1`; no failure or
+  duplicate run was observed.
+
+## Runtime checkpoint 2026-08-29 07:10 +08:00
+
+- `mozilla` 128 KiB completed with a 11,547-byte archive and the runner moved
+  to `mr` 32 KiB under `auto-b128-r1`.
+- E5 remains at `293/432` durable `PASS` rows until the new case decodes and
+  commits its row; no failure or duplicate runner exists.
+
+## Benchmark provenance audit 2026-08-29 07:05 +08:00
+
+- The Silesia leading-prefix manifest validates at 36 rows for 12 files and
+  scopes 32/64/128 KiB; all source paths exist and the manifest SHA-256 is
+  `65830E0F72A90AF4623EFB220E510CEE66B4DA9A87C38D63A532E92B5000A55D`.
+- The same-input PAQ8px v216 `-1` baseline package validates at 36/36 `PASS`.
+- Provenance and distribution boundaries are present in
+  `docs/DATASET_PROVENANCE.md`; zstd v1.5.7 donor identity is recorded in
+  `docs/provenance/zstd-v1.5.7.json`.
+
+## Partial evidence checkpoint 2026-08-29 07:03 +08:00
+
+- The 293 recorded E5 rows pass status, roundtrip, positive archive length, and
+  input/decoded SHA-256 equality checks.
+- All four policies and all three scopes are represented in the partial rows;
+  aggregate bytes and timings remain provisional until all 432 rows complete.
+
+## Runtime checkpoint 2026-08-29 07:00 +08:00
+
+- E5 has `293/432` durable `PASS` rows and zero failure/error rows.
+- PID `30912` is the sole parent runner; child PID `18468` is active on the
+  `auto-b128-r1` `mozilla` 128 KiB Auto encode.
+- `summary.json` is still absent. Preserve the same package and resume path.
+
+## Runtime checkpoint 2026-08-29 06:58 +08:00
+
+- E5 is still `292/432`, all rows byte-exact `PASS`; the runner has advanced
+  from `mozilla` 64 KiB to `mozilla` 128 KiB in `auto-b128-r1`.
+- PID `30912` remains the only parent runner and codec child PID `16800` is
+  active. `summary.json` is not present.
+
+## Runtime checkpoint 2026-08-29 06:56 +08:00
+
+- E5 remains at `292/432` rows, all byte-exact `PASS`, with zero failures.
+- The sole parent runner is PID `30912`; codec child PID `14224` is CPU-active
+  on `auto-b128-r1` / `mozilla` / 64 KiB.
+- `summary.json` is not present. Keep the same experiment ID and defer E5
+  analysis, docs, commits, and E6 runtime until completion.
+
+## E6 preflight checkpoint (2026-08-29 06:53 +08:00)
+
+- Read-only E6 matrix preflight passed for 12 Silesia files, scopes 32/64/128
+  KiB, and block sizes 32/64/128 KiB.
+- Fast uses one warmup plus three retained repeats: 432 case rows and 864
+  codec invocations in the planned package.
+- No E6 directory or codec process was created; wait for the active E5 package.
+
+## Runtime checkpoint 2026-08-29 06:55 +08:00
+
+- E5: 290/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 and K=8 b64 groups are complete; `auto-b128-r1` is active under PID
+  30912 on `dickens` 128 KiB encode.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:40 +08:00
+
+- E5: 290/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- The final b128 group is active under PID 30912; `dickens` 128 KiB encode is
+  in progress after its 64 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:25 +08:00
+
+- E5: 289/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=8 b64 is complete; the final b128 group is active under PID 30912 on
+  `dickens` 64 KiB after its 32 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:23 +08:00
+
+- E5: 288/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=8 b64 is complete (36/36); the final b128 group is active under PID
+  30912, currently on `dickens` 32 KiB.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:16 +08:00
+
+- E5: 287/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on the final `xml` 128 KiB
+  encode after its 64 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:14 +08:00
+
+- E5: 285/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `xml` 32 KiB after
+  `x-ray` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:07 +08:00
+
+- E5: 282/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `x-ray` 32 KiB after
+  `webster` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 06:02 +08:00
+
+- E5: 279/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `webster` 32 KiB after
+  `sao` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:43 +08:00
+
+- E5: 269/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912, with `osdb` 128 KiB
+  decode in progress after encoding completed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:39 +08:00
+
+- E5: 269/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `osdb` 128 KiB after
+  its 64 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:36 +08:00
+
+- E5: 267/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `osdb` 32 KiB after
+  `ooffice` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:31 +08:00
+
+- E5: 265/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912, with `ooffice` 64 KiB
+  decode in progress after its 32 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:29 +08:00
+
+- E5: 264/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `ooffice` 32 KiB after
+  `nci` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:26 +08:00
+
+- E5: 261/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 with `nci` 32 KiB decode
+  in progress after `mr` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:23 +08:00
+
+- E5: 260/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912, with `mr` 128 KiB encode
+  in progress after its 64 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:20 +08:00
+
+- E5: 258/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912 on `mr` 32 KiB after
+  `mozilla` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:15 +08:00
+
+- E5: 255/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- K=4 is complete; K=8 is active under PID 30912, with `mozilla` 32 KiB
+  decode in progress after `dickens` 128 KiB passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:12 +08:00
+
+- E5: 254/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- `auto-k4-b64-r1` is complete; `auto-k8-b64-r1` is active on `dickens` 128
+  KiB after its 64 KiB row passed.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:10 +08:00
+
+- E5: 252/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- `auto-k4-b64-r1` is complete (36/36); PID 30912 is running
+  `auto-k8-b64-r1` on `dickens` 32 KiB.
+- `summary.json` is pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:06 +08:00
+
+- E5: 249/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the sole runner; `xml` 32 KiB is the next case under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 05:02 +08:00
+
+- E5: 247/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the sole runner; `x-ray` 128 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 04:59 +08:00
+
+- E5: 246/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the sole runner; `x-ray` 32 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 04:55 +08:00
+
+- E5: 243/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the only runner; `webster` 32 KiB decode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 04:50 +08:00
+
+- E5: 242/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the only runner; `sao` 128 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` remains pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 04:46 +08:00
+
+- E5: 240/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the sole runner; `sao` 32 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is still pending; resume the same experiment ID if needed.
+
+## Runtime checkpoint 2026-08-29 04:43 +08:00
+
+- E5: 239/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 is the sole runner; `samba` 128 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; no duplicate matrix was started.
+
+## Runtime checkpoint 2026-08-29 04:40 +08:00
+
+- E5: 237/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the only runner; `samba` 32 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; resume the same experiment ID if interrupted.
+
+## Runtime checkpoint 2026-08-29 04:38 +08:00
+
+- E5: 236/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 remains the sole runner; `reymont` 128 KiB encode is active under
+  `auto-k4-b64-r1`.
+- `summary.json` is still pending; preserve the same experiment identity.
+
+## Runtime checkpoint 2026-08-29 04:37 +08:00
+
+- E5: 235/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- The sole runner is PID 30912; active child is `reymont` 64 KiB encode under
+  `auto-k4-b64-r1`.
+- `summary.json` remains pending; no duplicate run or parameter change.
+
+## Runtime checkpoint 2026-08-29 04:32 +08:00
+
+- E5 has 233/432 completed rows, all byte-exact `COMPLETE/PASS`, failures: 0.
+- The sole runner is PID 30912; `osdb` 128 KiB is the active Auto encode.
+- `summary.json` is not present; preserve and resume the same experiment ID.
+
+## Runtime checkpoint 2026-08-29 04:30 +08:00
+
+- E5: 232/432 rows complete, all byte-exact `COMPLETE/PASS`, failures: 0.
+- PID 30912 is the sole runner; current child is `osdb` 64 KiB encode under
+  `auto-k4-b64-r1`.
+- `summary.json` is pending; the existing ledger remains the only resumable
+  experiment.
+
+## Runtime checkpoint 2026-08-29 04:26 +08:00
+
+- E5 matrix `hybridzip-r2-e5-router-320dd1b-v1`: 230/432 rows complete.
+- All recorded rows are byte-exact `COMPLETE/PASS`; failures: 0.
+- PID 30912 remains the only authorized runner; its codec child is encoding
+  `ooffice` 128 KiB under `auto-k4-b64-r1`.
+- `summary.json` is still pending and no duplicate run was launched.
+
 ## Attachment-Driven Experiment Charter - 2026-08-28
 
 - Source: `C:/Users/Administrator/.codex/attachments/b96760cb-802c-4f54-b886-1fce9454f953/pasted-text.txt`.
@@ -1123,3 +1512,1218 @@ and Auto-K8/128 KiB `-ListOnly` probes passed; no codec process was started.
   regret, or post-change Fast-throughput claims until their runtime gates pass.
 - README now specifies the correct container contract: routing is encoder-only;
   selected mode and reversible metadata are decoder-visible.
+# Resume checkpoint: E4 forced-oracle (2026-08-28 13:19 +08:00)
+
+- The authorized E4 runner is still active under ledger ID
+  `hybridzip-r2-forced-oracle-current-320dd1b`; parent PowerShell PID 17276
+  started at 12:45 and owns the run.
+- Scope is fixed at 12 Silesia leading prefixes, 32 KiB input, 32 KiB internal
+  blocks, Auto plus 43 forced modes: 44 packages and 1,056 planned
+  encode/decode invocations before retries.
+- The ledger manifest is
+  `results/analysis/r2-complete-ledger/hybridzip-r2-forced-oracle-current-320dd1b/manifest.tsv`.
+  Auto and stored are `COMPLETE`, predictive is `TESTING`, and the remaining
+  41 forced packages are `PENDING`; no failure is recorded. The current child
+  is processing `predictive/dickens.bin` and writes a `.tmp` archive until
+  encode completes.
+- A session/quota interruption is recoverable with the same `LedgerId` and
+  `-Resume`; the runner validates codec hash, environment fingerprint,
+  manifest dimensions, and existing package rows before continuing.
+- Do not start E5/E6 or create another E4 ledger until this package reaches
+  `COMPLETE/PASS` and forced-oracle labels are derived.
+
+## Runtime progress checkpoint: 2026-08-28 13:37 +08:00
+
+- The same E4 parent runner remains active (PID 17276).
+- Manifest status is `COMPLETE=6`, `TESTING=1`, `PENDING=37`; the testing
+  package is `donor-match`.
+- No new ledger or duplicate codec run was started. Existing package outputs
+  remain the recovery source for `-Resume`.
+
+## Runtime progress checkpoint: 2026-08-28 13:45 +08:00
+
+- The original E4 parent runner is still active.
+- Manifest status is `COMPLETE=22`, `TESTING=1`, `PENDING=21`; the testing
+  package is `neural-lstm`.
+- No failure row, second ledger, or duplicate codec run was observed.
+
+## Runtime progress checkpoint: 2026-08-28 13:49 +08:00
+
+- Manifest status is `COMPLETE=23`, `TESTING=1`, `PENDING=20`; the testing
+  package is `shared-neural-lstm`.
+- The original E4 parent runner remains active. Post-E4 work is ordered as
+  forced-oracle derivation, no-leakage export, uninstalled ranker fitting, E5,
+  then post-change E6.
+
+## Runtime progress checkpoint: 2026-08-28 13:53 +08:00
+
+- `shared-neural-lstm` has 6/12 `COMPLETE/PASS` rows while its package is
+  still `TESTING`; the codec process remains active.
+- The top-level manifest is unchanged at `COMPLETE=23`, `TESTING=1`,
+  `PENDING=20`. Partial package rows remain on disk for same-ID recovery.
+
+## Runtime progress checkpoint: 2026-08-28 13:56 +08:00
+
+- The `shared-neural-lstm` package has 9/12 completed file rows; its codec
+  child is still active and the top-level manifest remains in `TESTING`.
+
+## Runtime progress checkpoint: 2026-08-28 14:01 +08:00
+
+- `shared-neural-lstm` completed and `lstm-compress` is now `TESTING`.
+- Top-level status is `COMPLETE=24`, `TESTING=1`, `PENDING=19`; no failure
+  row or duplicate ledger was observed.
+
+## Runtime progress checkpoint: 2026-08-28 14:06 +08:00
+
+- Top-level status is `COMPLETE=27`, `TESTING=1`, `PENDING=16`.
+- The latest completed packages are `lstm-compress`, `delta-of-delta-zstd`,
+  and `bgpt-shared-prior`; `jax-compress-portable` is currently testing.
+- No failures or duplicate runs were observed; E5/E6 remain stopped.
+
+## Runtime progress checkpoint: 2026-08-28 14:07 +08:00
+
+- Top-level status is `COMPLETE=31`, `TESTING=1`, `PENDING=12`.
+- `jax-compress-portable`, `ppmd7`, `ppmd8`, and `zpaq` completed; `ctw` is
+  currently testing.
+- No failures or duplicate runs were observed.
+
+## Runtime progress checkpoint: 2026-08-28 14:09 +08:00
+
+- Top-level status is `COMPLETE=32`, `TESTING=1`, `PENDING=11`.
+- `ctw` completed and `paq8px-apm` is currently testing; no failure row was
+  recorded.
+
+## Runtime progress checkpoint: 2026-08-28 14:11 +08:00
+
+- `paq8px-apm` is at 4/12 completed file rows and remains CPU-active.
+- The top-level manifest remains `COMPLETE=32`, `TESTING=1`, `PENDING=11`; no
+  restart, failure, or duplicate ledger was observed.
+
+## Runtime progress checkpoint: 2026-08-28 14:14 +08:00
+
+- `paq8px-apm` reached 9/12 completed rows and remains CPU-active.
+- Top-level status is unchanged at `COMPLETE=32`, `TESTING=1`, `PENDING=11`;
+  no restart or failure was observed.
+
+## Runtime progress checkpoint: 2026-08-28 14:16 +08:00
+
+- Top-level status is `COMPLETE=35`, `TESTING=1`, `PENDING=8`.
+- `paq8px-apm` and `paq8px-linear-prediction` completed; the testing package
+  is `paq8px-similarity`.
+- No failure row or duplicate ledger was observed.
+
+## Runtime progress checkpoint: 2026-08-28 14:20 +08:00
+
+- Top-level status is `COMPLETE=37`, `TESTING=1`, `PENDING=6`.
+- `paq8px-similarity-sse` completed; `paq8px-generic-sse` is currently
+  testing.
+- No failure row or duplicate ledger was observed.
+
+## Runtime progress checkpoint: 2026-08-28 14:23 +08:00
+
+- Top-level status is `COMPLETE=38`, `TESTING=1`, `PENDING=5`.
+- `paq8px-generic-sse` completed and `paq8px-detected-sse` is currently
+  testing.
+- No failure row or duplicate ledger was observed.
+
+## 2026-08-28: E4 forced-oracle completion and recovery point
+
+- The resumed ledger
+  `results/analysis/r2-complete-ledger/hybridzip-r2-forced-oracle-current-320dd1b/`
+  is complete: 44/44 packages are `COMPLETE`, with Auto plus 43 forced ratio
+  modes over 12 Silesia 32 KiB prefixes and 32 KiB internal blocks.
+- The run produced no failure rows and no active `hybridzip` process remains.
+  Existing per-mode package directories are the recovery source; they must not
+  be deleted or replaced by a new E4 ledger.
+- Forced-oracle derivation is complete at
+  `results/analysis/r2-forced-oracle-derived-320dd1b/`. It contains
+  `forced_archive_rows.csv`, `forced_oracle_rows.csv`, and `summary.json`.
+  The summary records 43 ratio modes, 12 input cases, codec SHA-256
+  `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`, and
+  no E5 package yet.
+- The next bounded action is the no-codec training export using
+  `tools/export_r2_ranker_training_set.ps1`, with `webster`, `x-ray`, and
+  `xml` held out at file level. The exporter reads the complete forced-oracle
+  package and calls only `hz_r2_feature_dump.exe`; it must not install or
+  modify the production ranker.
+- Recovery rule: keep the exact output directory and inspect its manifest
+  after interruption. Resume only the export/fitter step before starting E5.
+
+## 2026-08-28: Candidate ranker fit checkpoint
+
+- Real no-leakage training data is complete at
+  `results/analysis/r2-ranker-training-320dd1b-v1/`: 9 training rows and 3
+  file-level validation rows (`webster`, `x-ray`, `xml`). The exporter called
+  the read-only feature tool 12 times and launched no codec process.
+- The deterministic offline fitter produced
+  `results/analysis/r2-ranker-fit-320dd1b-v1/` with candidate model CRC32
+  `A0354863` and SHA-256
+  `CA1B144EF35E20EC388D739ACE9A1EF92A5E72410D050B5021C3A7F93C62D7B3`.
+  Validation top-1 tied-winner recall is `1.0` on the three held-out files.
+- The model remains candidate-only (`CANDIDATE_FROZEN_NOT_INSTALLED`). This
+  validation metric is not the E5 K=8 shortlist recall or archive-byte regret
+  gate; those require the guarded runtime matrix.
+- Next recovery point is the E5 `-ListOnly` preview. Do not start a second
+  forced-oracle ledger and do not install the candidate model before E5.
+
+## 2026-08-28: E5 runtime checkpoint
+
+- The E5 router preview passed with 12 child packages, 36 cases per child,
+  and 864 planned codec invocations. It uses the complete forced-oracle ledger
+  `hybridzip-r2-forced-oracle-current-320dd1b` as its attribution source.
+- The authorized runtime is now assigned the stable ID
+  `hybridzip-r2-e5-router-320dd1b-v1`; its package root is
+  `results/experiments/hybridzip-r2-e5-router-320dd1b-v1/`. The runner writes
+  each child package incrementally and skips validated `COMPLETE` children on
+  `-Resume`.
+- E5 evaluates the checked-in encoder policies and records their production
+  ranker telemetry. The fitted `00010001` candidate image remains offline and
+  is not installed; the runtime must not be described as candidate-model
+  evidence unless its model identity is present in the telemetry.
+- The first runtime launch was rejected at the explicit-scope guard because
+  `-SilesiaFiles`/`-AllowAllFiles` was omitted. It exited before package
+  creation and before any codec process. The corrected command explicitly
+  lists all 12 frozen files and reuses the same stable ExperimentId.
+- Recovery command is recorded in `task_plan.md`. On interruption, inspect
+  `experiment.json` and child package states, then rerun the same ID with
+  `-Resume`; never create a replacement E5 ledger.
+
+## 2026-08-28 15:12: E5 runtime progress
+
+- The corrected explicit-file launch is active under
+  `hybridzip-r2-e5-router-320dd1b-v1`. Environment fingerprint is
+  `6DC773B755B24DBBD0273C4A9E798DF9911284DDE2CFC66E5C7BE4A161D79D5D` and
+  codec identity remains `74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F`.
+- One codec child is active. Child `auto-b32-r1` has completed its first
+  `dickens` 32 KiB row with `COMPLETE/PASS`; the parent session is still
+  running and no duplicate task was started.
+
+## 2026-08-28 15:45: E5 runtime progress
+
+- The first E5 child `auto-b32-r1` completed all three `dickens` scopes
+  (32/64/128 KiB) with `COMPLETE/PASS` and byte-exact reconstruction.
+- The runner continues in the same session and stable ExperimentId. Partial
+  output remains in `results.csv`; resume must use the same ID and never create
+  a replacement package.
+
+## 2026-08-28: E5 six-row checkpoint
+
+- `auto-b32-r1` completed `dickens` and `mozilla` at 32/64/128 KiB (6/36
+  rows), all byte-exact `PASS`.
+- The runner moved to the next file with one active codec process. The child
+  CSV remains the durable progress source for any later `-Resume`.
+
+## 2026-08-28: E5 twelve-row checkpoint
+
+- `auto-b32-r1` completed all scopes for four files (`dickens`, `mozilla`,
+  `mr`, `nci`), totaling 12/36 rows, all byte-exact `PASS`.
+- The existing parent session continues with the same package and stable ID;
+  no duplicate runtime was launched.
+
+## 2026-08-28: E5 fourteen-row checkpoint
+
+- The first child has 14/36 completed rows: four files at 32/64/128 KiB and
+  `ooffice` at 32/64 KiB. All rows passed byte-exact round-trip checks.
+- The parent continues the same stable E5 package with no duplicate codec
+  process; the child CSV remains the recovery source.
+
+## 2026-08-28: E5 twenty-four-row checkpoint
+
+- `auto-b32-r1` completed eight files through `samba` at 32/64/128 KiB,
+  totaling 24/36 rows, all byte-exact `PASS`.
+- The same parent session advances to `sao`; no duplicate runtime was started.
+
+## 2026-08-28: E5 twenty-seven-row checkpoint
+
+- `auto-b32-r1` completed nine files through `sao` at all three scopes,
+  totaling 27/36 rows, all byte-exact `PASS`.
+- Only `webster`, `x-ray`, and `xml` remain in this child before the next
+  block-size/policy child starts.
+
+## 2026-08-28: E5 thirty-row checkpoint
+
+- `auto-b32-r1` completed ten files through `webster` at 32/64/128 KiB,
+  totaling 30/36 rows, all byte-exact `PASS`.
+- Only `x-ray` and `xml` remain before this child is finalized.
+
+## 2026-08-28: E5 thirty-four-row checkpoint
+
+- `auto-b32-r1` completed `x-ray` at 32/64/128 KiB and `xml` at 32 KiB,
+  totaling 34/36 rows, all byte-exact `PASS`.
+- The newly attached HZ03 decision has been read but is not yet adopted as an
+  implementation instruction because the user message contained no explicit
+  action request. E5 continues under the existing R2 evidence boundary.
+
+## 2026-08-28: E5 first child complete
+
+- `auto-b32-r1` completed all 36 frozen cases (12 files x 32/64/128 KiB),
+  all byte-exact `COMPLETE/PASS`.
+- The parent runner finalized the child and advanced to `auto-k2-b32-r1`.
+  Existing child artifacts are immutable recovery evidence; no duplicate run
+  was created.
+
+## 2026-08-28: E5 second child nine-row checkpoint
+
+- `auto-k2-b32-r1` completed the first three files (`dickens`, `mozilla`,
+  `mr`) across 32/64/128 KiB, totaling 9/36 rows, all byte-exact `PASS`.
+- The parent continues under the same stable package. A future `-Resume`
+  validates and skips the finalized `auto-b32-r1` child.
+
+## 2026-08-28: E5 second child complete
+
+- `auto-k2-b32-r1` completed all 36 frozen cases (12 files x 32/64/128 KiB),
+  all byte-exact `COMPLETE/PASS`.
+- The parent advanced to `auto-k4-b32-r1`; both finished child packages are
+  retained as immutable resume evidence.
+
+## 2026-08-28: E5 third child twenty-one-row checkpoint
+
+- `auto-k4-b32-r1` completed seven files through `reymont` at all three
+  scopes, totaling 21/36 rows, all byte-exact `PASS`.
+- The same parent runtime is processing `samba`; no duplicate or replacement
+  package was created.
+
+## 2026-08-28: E5 three-child checkpoint
+
+- Children `auto-b32-r1`, `auto-k2-b32-r1`, and `auto-k4-b32-r1` are complete,
+  each with 36/36 byte-exact `PASS` rows.
+- The parent advanced to `auto-k8-b32-r1`, retaining all prior child outputs
+  for resume and later aggregate analysis.
+
+## 2026-08-28: E5 K=8 in-progress checkpoint (21:37 +08:00)
+
+- The first three E5 children are finalized with 108 total byte-exact
+  `COMPLETE/PASS` rows.
+- `auto-k8-b32-r1` is at 29/36 rows, all passing, with no failure/error row.
+- One active `hybridzip.exe` belongs to the original E5 runner. No second
+  ledger, retry package, or E6 runtime exists.
+- Recovery remains the same stable `ExperimentId` and `-Resume` command in
+  `task_plan.md`; completed child packages must be skipped, not rerun.
+
+### 21:39 row update
+
+- `auto-k8-b32-r1` reached 31/36 byte-exact `COMPLETE/PASS` rows. The process
+  remains active under the original ledger and no failure or duplicate run is
+  present.
+
+### 21:40 row update
+
+- `auto-k8-b32-r1` reached 32/36 byte-exact `COMPLETE/PASS` rows. No failure
+  row, duplicate process, or replacement ledger was observed.
+
+### 21:44 row update
+
+- `auto-k8-b32-r1` reached 33/36 byte-exact `COMPLETE/PASS` rows, bringing the
+  E5 parent to 141 passing rows. The same runner remains active with no error.
+
+## 2026-08-28: E5 block-size 64 KiB started (21:52 +08:00)
+
+- `auto-k8-b32-r1` finalized at 36/36; the parent now contains 144 passing
+  rows.
+- `auto-b64-r1` started and completed its first `dickens` 32 KiB case, making
+  145 total passing rows. No failure/error row or duplicate runtime exists.
+- Recovery remains the existing E5 `ExperimentId`; completed children must be
+  skipped on resume.
+
+### 21:56 runtime detail
+
+- The first `auto-b64-r1` case remains in its 64 KiB-scope encode phase with a
+  `.hz2.tmp` archive and no stderr output. Parent progress is still 145/432
+  passing rows; resume must reuse the same experiment ID.
+
+### 21:59 row update
+
+- `auto-b64-r1` reached 2/36 passing rows, bringing the E5 parent to 146/432
+  byte-exact rows. The original runner remains active and no duplicate ledger
+  or failure row was observed.
+
+## 2026-08-28: E5 22:00 recovery checkpoint
+
+- E5 has 146/432 durable `COMPLETE/PASS` case rows (33.8%), corresponding to
+  292/864 encode/decode invocations. Four of twelve child packages are
+  finalized; `auto-b64-r1` is at 2/36.
+- The original single codec process remains CPU-active and the ledger has no
+  failure/error row. Keep the stable ExperimentId for any future resume; do
+  not start a replacement matrix.
+
+### 22:09 update
+
+- E5 remains at 146/432 passing rows with `auto-b64-r1` at 2/36; the single
+  codec child is processing `dickens` 128 KiB under the existing experiment.
+- There are no failures or duplicate ledgers. GitHub push and README updates
+  remain intentionally deferred until the E5 summary is complete, as requested.
+
+### 22:14 update
+
+- E5 is unchanged at 146/432 passing rows; `auto-b64-r1` is 2/36. The codec
+  remains responsive and CPU-active on `dickens` 128 KiB, with no error log or
+  duplicate process.
+- The process is intentionally left running; README and GitHub publication
+  stay gated on E5 completion.
+
+### 22:17 update
+
+- `auto-b64-r1` reached 3/36 passing rows, for 147/432 total E5 rows. No
+  failure/error row or duplicate process exists; the fixed runner continues.
+
+### 22:19 update
+
+- `auto-b64-r1` remains in progress at 3/36; E5 total is 147/432 passing
+  rows. The codec is responsive and no failure/error or duplicate run exists.
+- No GitHub or README change is made before the E5 summary, per the user
+  boundary.
+
+### 22:21 update
+
+- `auto-b64-r1` reached 4/36 passing rows; E5 total is 148/432 and has no
+  failure/error row. The original codec process remains responsive.
+- GitHub publication and README changes remain gated on final E5 summary.
+
+### 22:22 update
+
+- `auto-b64-r1` is at 4/36; the E5 parent has 148/432 passing rows and no
+  failure/error row. The single codec process remains active and responsive.
+- The required post-E5 order is unchanged: summary evidence, README, Git
+  commit/push, then stop without launching E6 or HZ03.
+
+### 22:27 update
+
+- `auto-b64-r1` reached 5/36 passing rows, bringing E5 to 149/432 total.
+  There are no failure/error rows and only the original codec child is active.
+- README and GitHub publication remain deferred until E5 writes its final
+  summary, as requested.
+
+### 22:40 update
+
+- `auto-b64-r1` completed `mozilla` 128 KiB and reached 6/36 passing rows;
+  E5 total is 150/432 with no failure/error row.
+- The same runner continues in fixed case order; README and GitHub changes
+  remain deferred until final E5 summary.
+
+### 22:43 update
+
+- `mr` 32 KiB completed in `auto-b64-r1`; E5 is 151/432 passing rows, 7/36 in
+  the active child, with no failure/error row or duplicate runtime.
+
+### 22:49 update
+
+- `auto-b64-r1` reached 8/36 passing rows and E5 reached 152/432. The `mr`
+  64 KiB case completed with 370.660 s encode and 33.995 s decode; no failure
+  or duplicate process was observed.
+
+### 23:01 update
+
+- `mr` 128 KiB completed and `auto-b64-r1` reached 9/36; E5 total is 153/432
+  passing rows with no failure/error row. The original runner advanced in
+  fixed order and no duplicate runtime exists.
+
+### 23:05 update
+
+- E5 reached 154/432 passing rows; `auto-b64-r1` remains active and has no
+  failure/error row. No second runner was launched.
+- README and GitHub publication remain deferred until E5 summary completion.
+
+### 23:07 update
+
+- E5 remains at 154/432 passing rows with no failure/error row; the original
+  runner continues `auto-b64-r1` independently.
+- The read-only monitor was stopped to avoid unnecessary polling. No codec,
+  README, Git, E6, or HZ03 action was taken beyond the existing E5 runner.
+
+### 23:09 final checkpoint for this turn
+
+- E5 remains at 154/432 passing rows with no failure/error row; the active
+  package is `auto-b64-r1`.
+- There is one real E5 runner and one codec child. A second match in the raw
+  process query was the read-only query shell, not a duplicate experiment.
+- Keep the runner unchanged. The post-E5 sequence remains evidence summary,
+  README, Git commit/push, then no new experiments.
+
+## 2026-08-28: E5 denominator correction
+
+- The E5 matrix contains 432 result case rows (12 files x 3 scopes x 3 block
+  sizes x 4 policies). Each case has one encode and one decode, so the plan
+  contains 864 codec invocations.
+- An earlier disk state was 155/432 passing case rows, or 310/864 invocations;
+  there were no failure/error rows.
+- A later disk check reached 158/432 passing case rows, or 316/864
+  invocations; there are still no failure/error rows.
+- The latest disk check reached 159/432 passing case rows, or 318/864
+  invocations; there are still no failure/error rows.
+- Historical checkpoint text has been normalized so `X/432` denotes case
+  rows, while `864` denotes invocation capacity only.
+
+### 23:46 runtime checkpoint
+
+- E5 has 159/432 `COMPLETE/PASS` case rows, or 318/864 encode/decode
+  invocations, with no failure/error row.
+- The original runner remains active with one codec child in `auto-b64-r1`;
+  `summary.json` has not been produced.
+- README and GitHub publication remain deferred until E5 completion; no new
+  experiment has been started.
+
+### 23:48 runtime checkpoint
+
+- E5 reached 160/432 passing case rows, or 320/864 encode/decode invocations,
+  with no failure/error row.
+- The original `auto-b64-r1` runner remains active with one codec child and no
+  duplicate experiment. `summary.json` is still absent.
+
+### 23:50 runtime checkpoint
+
+- E5 reached 160/432 passing case rows, or 320/864 encode/decode invocations,
+  with no failure/error row.
+- The same single runner and codec child continue under `auto-b64-r1`; no
+  replacement matrix or new experiment was started.
+
+### 2026-08-29 00:04 runtime checkpoint
+
+- E5 currently contains 161/432 `COMPLETE` rows with `roundtrip=PASS`, or
+  322/864 encode/decode invocations; failed and incomplete recorded rows are
+  zero.
+- Process inspection confirms the original runner PID 30912 and one codec
+  child PID 30796. The child is processing `osdb` at 128 KiB with a 64 KiB
+  block under `auto-b64-r1`.
+- The final `summary.json` has not appeared, so the post-E5 evidence summary,
+  README update, and GitHub commit/push remain gated.
+
+### 2026-08-29 00:18 runtime checkpoint
+
+- E5 reached 162/432 `COMPLETE` rows with `roundtrip=PASS`, or 324/864
+  encode/decode invocations; no failure or incomplete row is present.
+- The long `osdb` 128 KiB / 64 KiB-block case finished successfully, and the
+  same runner is now encoding `reymont` 32 KiB under `auto-b64-r1`.
+- No duplicate runner or new experiment was launched.
+
+### 2026-08-29 02:45 runtime checkpoint
+
+- E5 now has 177/432 passing rows, or 354/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `x-ray` 128 KiB completed byte-exactly; the runner advanced to `xml` 32 KiB,
+  the last Silesia file in this child.
+- No experiment identity or parameter changed.
+
+### 2026-08-29 02:50 runtime checkpoint
+
+- E5 now has 178/432 passing rows, or 356/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `xml` 32 KiB completed byte-exactly and the same runner started `xml` 64 KiB.
+- The experiment remains resumable under the original identity and parameters.
+
+### 2026-08-29 02:58 runtime checkpoint
+
+- E5 now has 179/432 passing rows, or 358/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `xml` 64 KiB completed byte-exactly; `xml` 128 KiB is now the active Auto
+  encode case in `auto-b64-r1`.
+- After this row, the runner will proceed to the next fixed Auto child; no
+  duplicate experiment has been started.
+
+### 2026-08-29 03:14 runtime checkpoint
+
+- E5 now has 180/432 passing rows, or 360/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-b64-r1` completed its full 36-row, 12-file child; the last `xml`
+  128 KiB case passed byte-exactly.
+- The parent is moving to the next fixed Auto block-size child under the same
+  experiment identity.
+
+### 2026-08-29 03:16 runtime checkpoint
+
+- E5 now has 182/432 passing rows, or 364/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-b64-r1` is complete at 36/36. The runner is in `auto-k2-b64-r1`,
+  processing `dickens` 128 KiB after its 64 KiB row passed.
+- No duplicate runner or parameter change occurred.
+
+### 2026-08-29 04:00 runtime checkpoint
+
+- E5 now has 213/432 passing rows, or 426/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k2-b64-r1` passed `x-ray` 128 KiB and is processing `xml` 32 KiB,
+  the final file in this child.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 04:07 runtime checkpoint
+
+- E5 now has 219/432 passing rows, or 438/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k4-b64-r1` completed all `dickens` scopes and is processing `mozilla`
+  32 KiB.
+- No duplicate runner or parameter change occurred.
+
+### 2026-08-29 04:01 runtime checkpoint
+
+- E5 now has 215/432 passing rows, or 430/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active `auto-k2-b64-r1` child passed `xml` 32/64 KiB and is encoding
+  `xml` 128 KiB, its final row.
+- No duplicate runner or parameter change occurred.
+
+### 2026-08-29 03:46 runtime checkpoint
+
+- E5 now has 205/432 passing rows, or 410/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active short-list child passed `sao` 32 KiB and is encoding `sao` 64 KiB.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:51 runtime checkpoint
+
+- E5 now has 207/432 passing rows, or 414/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active short-list child passed `sao` 128 KiB and is processing `webster`
+  32 KiB.
+- No duplicate runner, code change, or parameter change occurred.
+
+### 2026-08-29 04:10 runtime checkpoint
+
+- E5 now has 221/432 passing rows, or 442/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active `auto-k4-b64-r1` child passed `mozilla` 32/64 KiB and is encoding
+  `mozilla` 128 KiB.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:53 runtime checkpoint
+
+- E5 now has 209/432 passing rows, or 418/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active `auto-k2-b64-r1` child passed `webster` 32/64 KiB and is encoding
+  `webster` 128 KiB.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:47 runtime checkpoint
+
+- E5 now has 206/432 passing rows, or 412/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active short-list child passed `sao` 64 KiB and is encoding `sao` 128 KiB.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:39 runtime checkpoint
+
+- E5 now has 200/432 passing rows, or 400/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k2-b64-r1` passed `reymont` 64 KiB and is encoding `reymont` 128 KiB.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:45 runtime checkpoint
+
+- E5 now has 204/432 passing rows, or 408/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `samba` 128 KiB completed byte-exactly and the active short-list child is
+  processing `sao` 32 KiB.
+- No duplicate runner or parameter change occurred.
+
+### 2026-08-29 03:41 runtime checkpoint
+
+- E5 now has 201/432 passing rows, or 402/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active short-list child passed `reymont` 128 KiB and is processing
+  `samba` 32 KiB.
+- No duplicate runner, code change, or parameter change occurred.
+
+### 2026-08-29 03:43 runtime checkpoint
+
+- E5 now has 203/432 passing rows, or 406/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active short-list child passed `samba` 32/64 KiB and is encoding
+  `samba` 128 KiB.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:30 runtime checkpoint
+
+- E5 now has 194/432 passing rows, or 388/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k2-b64-r1` is processing `ooffice` 128 KiB after the 32/64 KiB rows
+  completed successfully.
+- The experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:35 runtime checkpoint
+
+- E5 now has 197/432 passing rows, or 394/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k2-b64-r1` is processing `osdb` 128 KiB after the 64 KiB case passed.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:38 runtime checkpoint
+
+- E5 now has 199/432 passing rows, or 398/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k2-b64-r1` is encoding `reymont` 64 KiB after passing `reymont` 32 KiB
+  and the preceding `osdb` scopes.
+- No duplicate runner or parameter change occurred.
+
+### 2026-08-29 03:19 runtime checkpoint
+
+- E5 now has 183/432 passing rows, or 366/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The completed `auto-k2-b64-r1` rows cover `dickens` at 64/128 KiB, and the
+  runner is processing `mozilla` 32 KiB.
+- The stable runner and evidence identity remain unchanged.
+
+### 2026-08-29 03:20 runtime checkpoint
+
+- E5 now has 184/432 passing rows, or 368/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `auto-k2-b64-r1` is processing `mozilla` 64 KiB decode after its preceding
+  case completed; the runner identity is unchanged.
+
+### 2026-08-29 00:26 runtime checkpoint
+
+- E5 reached 163/432 `COMPLETE` rows with `roundtrip=PASS`, or 326/864
+  encode/decode invocations; no failed or incomplete row is present.
+- The active child is still `auto-b64-r1` on `reymont` 64 KiB with a 64 KiB
+  block. Its CPU activity is normal and the result row is not written yet.
+- The final summary remains unavailable, so evidence derivation and README/Git
+  publication remain gated.
+
+### 2026-08-29 00:51 runtime checkpoint
+
+- E5 now has 166/432 readable `COMPLETE` rows with `roundtrip=PASS`, or
+  332/864 encode/decode invocations; no failure/incomplete row is present.
+- `samba` 32 KiB completed under `auto-b64-r1`; the next active case is
+  `samba` 64 KiB.
+- One monitoring read briefly hit the runner's open `results.csv`; after retry,
+  the count and PASS row were confirmed. No runner or codec restart occurred.
+
+### 2026-08-29 01:00 runtime checkpoint
+
+- E5 contains 167/432 passing rows, or 334/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The runner completed the `samba` 64 KiB case and started `samba` 128 KiB in
+  `auto-b64-r1`.
+- The experiment identity and executable are unchanged; final summary and
+  post-E5 actions remain pending.
+
+### 2026-08-29 01:18 runtime checkpoint
+
+- E5 now has 168/432 passing rows, or 336/864 encode/decode invocations; no
+  failure or incomplete row is present.
+- The `samba` 128 KiB case completed successfully after the long Auto encode;
+  the runner advanced to `sao` 32 KiB under `auto-b64-r1`.
+- No duplicate process or parameter change occurred; final summary is still
+  pending.
+
+### 2026-08-29 00:31 runtime checkpoint
+
+- E5 reached 164/432 passing case rows, or 328/864 encode/decode invocations;
+  no failure or incomplete row is present.
+- The runner completed `reymont` 64 KiB and started `reymont` 128 KiB under
+  `auto-b64-r1`. The current codec process is CPU-active.
+- No duplicate runner or new experiment was launched; final evidence remains
+  gated on `summary.json`.
+
+### 2026-08-29 00:46 runtime checkpoint
+
+- E5 reached 165/432 passing rows, or 330/864 encode/decode invocations;
+  failed and incomplete rows remain zero.
+- The `reymont` 128 KiB case completed with 946.7288133 s encode and
+  33.7774856 s decode, and the runner started `samba` 32 KiB.
+- No duplicate runner or new experiment was launched. The final summary is
+  still pending.
+
+### 2026-08-29 01:23 runtime checkpoint
+
+- E5 now contains 169/432 passing rows, or 338/864 encode/decode invocations;
+  no failure/incomplete row exists.
+- `sao` 32 KiB completed and the original runner started `sao` 64 KiB in
+  `auto-b64-r1`.
+- The experiment remains resumable under the same identity; final summary is
+  not yet available.
+
+### 2026-08-29 01:32 runtime checkpoint
+
+- E5 now has 170/432 passing rows, or 340/864 encode/decode invocations; no
+  failure/incomplete row is present.
+- `sao` 64 KiB completed and `sao` 128 KiB is the active Auto encode case.
+- Existing completed policy packages are reused; no duplicate matrix or
+  parameter change occurred.
+
+### 2026-08-29 01:52 runtime checkpoint
+
+- E5 now has 171/432 passing rows, or 342/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The `sao` 128 KiB case completed with byte-exact decode. The original runner
+  remains active and is moving to the next fixed Auto case.
+- Final summary is still pending; no duplicate or replacement experiment was
+  launched.
+
+### 2026-08-29 01:57 runtime checkpoint
+
+- E5 now has 172/432 passing rows, or 344/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `webster` 32 KiB completed byte-exactly and the same runner started the
+  `webster` 64 KiB Auto case.
+- The experiment identity and parameters remain unchanged.
+
+# 2026-08-29 E5 closure and E6 acceleration
+
+- E5 final package `results/experiments/hybridzip-r2-e5-router-320dd1b-v1`
+  was validated read-only at `432/432` `COMPLETE/PASS` rows and `864/864`
+  codec invocations. `summary.json` is present; no codec process remained.
+- The first E6 Fast K=4 single-cell preflight was rejected by the runner
+  validator, not by the codec: Fast recorded valid `fast-ext=1`, while the
+  validator incorrectly required `zstd` for the policy name `fast`.
+- `tools/run_silesia_experiment.ps1` now treats Fast as a policy and accepts
+  only its defined block records `stored`, `fast-ext`, and `lz4`; forced modes
+  and ratio shortlists keep their existing exact-mode checks. No archive format
+  or codec implementation was changed.
+- Resuming the retained preflight package
+  `results/experiments/hybridzip-r2-e6-fast-k4-preflight-20260829` completed
+  `4/4` timing rows and `8/8` codec invocations with exact input/decoded
+  SHA-256. Its retained throughput was `0.6025 MB/s` encode and `0.6653 MB/s`
+  decode for one 32 KiB `dickens` cell.
+- Formal E6 package
+  `results/experiments/hybridzip-r2-e6-fast-k4-full-20260829-w1` completed
+  `432/432` rows (`108` warmup + `324` retained) across 12 Silesia files,
+  32/64/128 KiB scopes, and 32/64/128 KiB internal blocks. All rows were
+  byte-exact. The nine summary cells had minimum encode/decode throughput
+  `0.5635/0.6112 MB/s`, both above the `0.16 MB/s` CPU floor. Fast worker
+  count was `1`; ranker identity stayed
+  `00010000|1025B343|4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B`.
+- Historical mode-2 E6 output remains separate evidence. It must not be
+  merged into the current Fast K=4 claim. A second worker-count comparison is
+  optional for F3 analysis and is not needed to establish the single-worker
+  CPU floor.
+
+# 2026-08-29 F1 artifact verification
+
+- Existing training data is complete and file-level isolated: 9 training
+  files and 3 validation files, derived from the complete 32 KiB forced
+  oracle without codec runtime during feature export.
+- Existing candidate fit is frozen at 2,644 canonical bytes, version
+  `00010001`, CRC32 `A0354863`, SHA-256
+  `CA1B144EF35E20EC388D739ACE9A1EF92A5E72410D050B5021C3A7F93C62D7B3`.
+  Training and validation top-1 tied-winner recall are both `1.0` (`9/9`
+  and `3/3`).
+- `tools/test_fit_r2_fixed_point_ranker.py`,
+  `tools/test_r2_ranker_training_set.ps1`, and
+  `tools/test_r2_forced_oracle.ps1` all passed. These checks validate the
+  artifact and no-leakage boundary, not K=8 shortlist archive regret.
+- The production bootstrap model remains installed. Promoting the candidate
+  still requires a separately recorded E5 run with the candidate model and
+  held-out archive-byte regret evidence.
+
+# 2026-08-29 final R2 scoped verification
+
+- Completed-package resume check for E5 returned `Experiment already complete`
+  without starting codec work.
+- Full Release CTest passed `18/18` in `47.21 s`, including HZ01 core and
+  pipeline tests, donor backends, R2 codec, and structure routing.
+- The scoped R2 implementation objective is evidenced by current artifacts:
+  same-input manifest/provenance, current E5 K=8 router matrix, current E6
+  Fast K=4 matrix, Fast block executor smoke, and byte-exact HZ01 regression.
+- Remaining research items are explicitly outside this scoped completion:
+  promoted held-out ranker weights, complete-file Silesia ratio acceptance,
+  Tencent/OASum materialization, and GPU throughput.
+
+# 2026-08-29 10:42: E5 runtime checkpoint
+
+- E5 now contains `320/432` durable `COMPLETE/PASS` rows (`640/864`
+  encode/decode invocations), with zero failure/error rows.
+- `x-ray / 64 KiB / Auto / 128 KiB` passed byte-exactly; the runner advanced
+  to `x-ray / 128 KiB / Auto / 128 KiB`.
+- The experiment identity and parameters remain unchanged.
+
+# 2026-08-29 10:50: E5 runtime checkpoint
+
+- E5 now contains `321/432` durable `COMPLETE/PASS` rows (`642/864`
+  encode/decode invocations), with zero failure/error rows.
+- `x-ray / 128 KiB / Auto / 128 KiB` completed encode and byte-exact decode.
+- The original runner advanced to `xml / 32 KiB / Auto / 128 KiB`, the first
+  row of the final Silesia file in `auto-b128-r1`.
+
+# 2026-08-29 10:57: E5 runtime checkpoint
+
+- E5 now contains `323/432` durable `COMPLETE/PASS` rows (`646/864`
+  encode/decode invocations), with zero failure/error rows.
+- `xml / 64 KiB / Auto / 128 KiB` passed byte-exactly; the final
+  `auto-b128-r1` row `xml / 128 KiB` is now encoding.
+
+# 2026-08-29 11:07: E5 runtime checkpoint
+
+- E5 now contains `324/432` durable `COMPLETE/PASS` rows (`648/864`
+  encode/decode invocations), with zero failure/error rows.
+- The final `auto-b128-r1` row (`xml / 128 KiB`) passed byte-exactly and that
+  child package is complete.
+- The same runner advanced to `auto-k2-b128-r1`, currently decoding
+  `dickens / 32 KiB`; no experiment identity or parameter changed.
+
+# 2026-08-29 11:23: E5 runtime checkpoint
+
+- E5 now contains `338/432` durable `COMPLETE/PASS` rows (`676/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed through `nci / 128 KiB`; the active case is
+  `ooffice / 128 KiB / auto-k2 / 128 KiB`.
+- The original runner and experiment identities remain unchanged.
+
+# 2026-08-29 11:55: E5 runtime checkpoint
+
+- E5 now contains `360/432` durable `COMPLETE/PASS` rows (`720/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed all 36 cases byte-exactly.
+- The original runner advanced to `auto-k4-b128-r1`, currently encoding
+  `dickens / 32 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:22: E5 runtime checkpoint
+
+- E5 now contains `374/432` durable `COMPLETE/PASS` rows (`748/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `ooffice / 64 KiB`; the active case is
+  `ooffice / 128 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:27: E5 runtime checkpoint
+
+- E5 now contains `376/432` durable `COMPLETE/PASS` rows (`752/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `ooffice / 128 KiB` and `osdb / 32 KiB`;
+  the active case is `osdb / 64 KiB / auto-k4 / 128 KiB` decode.
+
+# 2026-08-29 12:36: E5 runtime checkpoint
+
+- E5 now contains `380/432` durable `COMPLETE/PASS` rows (`760/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed through `reymont / 64 KiB`; the active case is
+  `reymont / 128 KiB / auto-k4 / 128 KiB` decode.
+
+# 2026-08-29 12:41: E5 runtime checkpoint
+
+- E5 now contains `383/432` durable `COMPLETE/PASS` rows (`766/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `reymont / 128 KiB`; the active case is
+  `samba / 128 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:46: E5 runtime checkpoint
+
+- E5 now contains `384/432` durable `COMPLETE/PASS` rows (`768/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `samba / 128 KiB`; the active case is
+  `sao / 32 KiB / auto-k4 / 128 KiB` decode.
+
+# 2026-08-29 12:51: E5 runtime checkpoint
+
+- E5 now contains `386/432` durable `COMPLETE/PASS` rows (`772/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `ooffice / 32,64 KiB`; the active case is
+  `sao / 128 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:55: E5 runtime checkpoint
+
+- E5 now contains `388/432` durable `COMPLETE/PASS` rows (`776/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `sao / 128 KiB` and `webster / 32 KiB`; the
+  active case is `webster / 64 KiB / auto-k4 / 128 KiB` decode.
+
+# 2026-08-29 13:00: E5 runtime checkpoint
+
+- E5 now contains `391/432` durable `COMPLETE/PASS` rows (`782/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `webster / 64,128 KiB` and `x-ray / 32 KiB`;
+  the active case is `x-ray / 64 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 13:05: E5 runtime checkpoint
+
+- E5 now contains `392/432` durable `COMPLETE/PASS` rows (`784/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `x-ray / 64 KiB`; the active case is
+  `x-ray / 128 KiB / auto-k4 / 128 KiB` decode.
+
+# 2026-08-29 13:09: E5 runtime checkpoint
+
+- E5 now contains `395/432` durable `COMPLETE/PASS` rows (`790/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `x-ray / 128 KiB` and `xml / 32,64 KiB`; the
+  active case is its final `xml / 128 KiB` row.
+
+# 2026-08-29 13:15: E5 runtime checkpoint
+
+- E5 now contains `398/432` durable `COMPLETE/PASS` rows (`796/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed all 36 cases byte-exactly.
+- The original runner advanced to the final `auto-k8-b128-r1` child,
+  currently encoding `dickens / 128 KiB / auto-k8 / 128 KiB`.
+
+# 2026-08-29 13:30: E5 runtime checkpoint
+
+- E5 now contains `406/432` durable `COMPLETE/PASS` rows (`812/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k8-b128-r1` completed `mr / 128 KiB` and `nci / 32 KiB`; the active
+  case is `nci / 64 KiB / auto-k8 / 128 KiB` decode.
+
+# 2026-08-29 13:35: E5 runtime checkpoint
+
+- E5 now contains `409/432` durable `COMPLETE/PASS` rows (`818/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k8-b128-r1` completed `nci / 64,128 KiB` and `ooffice / 32 KiB`;
+  the active case is `ooffice / 64 KiB / auto-k8 / 128 KiB` decode.
+
+# 2026-08-29 13:52: E5 runtime checkpoint
+
+- E5 now contains `417/432` durable `COMPLETE/PASS` rows (`834/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k8-b128-r1` completed through `reymont / 128 KiB`; the active case is
+  `samba / 32 KiB / auto-k8 / 128 KiB`.
+
+# 2026-08-29 14:13: E5 runtime checkpoint
+
+- E5 now contains `426/432` durable `COMPLETE/PASS` rows (`852/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k8-b128-r1` completed `sao / 128 KiB` and all `webster` scopes; the
+  active case is `x-ray / 32 KiB / auto-k8 / 128 KiB`.
+
+# 2026-08-29 11:59: E5 runtime checkpoint
+
+- E5 now contains `362/432` durable `COMPLETE/PASS` rows (`724/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `dickens / 32,64 KiB`; the active case is
+  `dickens / 128 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:04: E5 runtime checkpoint
+
+- E5 now contains `365/432` durable `COMPLETE/PASS` rows (`730/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `dickens / 128 KiB`; the active case is
+  `mozilla / 128 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:08: E5 runtime checkpoint
+
+- E5 now contains `367/432` durable `COMPLETE/PASS` rows (`734/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` completed `mozilla / 128 KiB` and `mr / 32 KiB`; the
+  active case is `mr / 64 KiB / auto-k4 / 128 KiB`.
+
+# 2026-08-29 12:17: E5 runtime checkpoint
+
+- E5 now contains `372/432` durable `COMPLETE/PASS` rows (`744/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k4-b128-r1` has completed through `nci / 128 KiB`; the active case is
+  `ooffice / 32 KiB / auto-k4 / 128 KiB` decode.
+
+# 2026-08-29 11:48: E5 runtime checkpoint
+
+- E5 now contains `355/432` durable `COMPLETE/PASS` rows (`710/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed `webster / 128 KiB` and `x-ray / 32 KiB`; the
+  active case is `x-ray / 64 KiB / auto-k2 / 128 KiB`.
+- The runner, executable, manifest, and experiment identity remain unchanged.
+
+# 2026-08-29 11:27: E5 runtime checkpoint
+
+- E5 now contains `341/432` durable `COMPLETE/PASS` rows (`682/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed `ooffice / 128 KiB` and `osdb / 32,64 KiB`;
+  the active case is `osdb / 128 KiB / auto-k2 / 128 KiB`.
+- The runner, executable, manifest, and experiment identity are unchanged.
+
+# 2026-08-29 11:31: E5 runtime checkpoint
+
+- E5 now contains `344/432` durable `COMPLETE/PASS` rows (`688/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed `osdb / 128 KiB`; the active case is
+  `reymont / 128 KiB / auto-k2 / 128 KiB`.
+- The runner, executable, manifest, and experiment identity remain unchanged.
+
+# 2026-08-29 11:44: E5 runtime checkpoint
+
+- E5 now contains `352/432` durable `COMPLETE/PASS` rows (`704/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed `sao / 128 KiB`; the active case is
+  `webster / 64 KiB / auto-k2 / 128 KiB` decode.
+- The runner, executable, manifest, and experiment identity remain unchanged.
+
+# 2026-08-29 11:39: E5 runtime checkpoint
+
+- E5 now contains `350/432` durable `COMPLETE/PASS` rows (`700/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed `samba / 128 KiB`; the active case is
+  `sao / 128 KiB / auto-k2 / 128 KiB`.
+- The runner, executable, manifest, and experiment identity remain unchanged.
+
+# 2026-08-29 11:34: E5 runtime checkpoint
+
+- E5 now contains `347/432` durable `COMPLETE/PASS` rows (`694/864`
+  encode/decode invocations), with zero failure/error rows.
+- `auto-k2-b128-r1` completed `reymont / 128 KiB`; the active case is
+  `samba / 128 KiB / auto-k2 / 128 KiB`.
+- The runner, executable, manifest, and experiment identity remain unchanged.
+
+### 2026-08-29 02:32 runtime checkpoint
+
+- E5 now has 176/432 passing rows, or 352/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `x-ray` 64 KiB completed byte-exactly and `x-ray` 128 KiB is the active Auto
+  case.
+- No duplicate runner or new experiment was launched.
+
+### 2026-08-29 02:21 runtime checkpoint
+
+- E5 now has 174/432 passing rows, or 348/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `webster` 128 KiB completed with byte-exact decode; the runner started
+  `x-ray` 32 KiB under `auto-b64-r1`.
+- The final summary remains pending and the experiment identity is unchanged.
+
+### 2026-08-29 02:25 runtime checkpoint
+
+- E5 now has 175/432 passing rows, or 350/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- `x-ray` 32 KiB completed byte-exactly; the original runner is advancing to
+  the next Auto case.
+- The experiment identity and parameters remain unchanged.
+
+### 2026-08-29 02:05 runtime checkpoint
+
+- E5 now has 173/432 passing rows, or 346/864 encode/decode invocations; no
+  failure or incomplete row exists.
+- `webster` 64 KiB completed with byte-exact decode; the original runner is
+  moving to the next fixed Auto case.
+- The final summary is still pending and no replacement run was launched.
+
+### 2026-08-29 03:22 runtime checkpoint
+
+- E5 now has 187/432 passing rows, or 374/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active `auto-k2-b64-r1` child passed `mr` 32 KiB and is encoding `mr`
+  64 KiB; previous `mozilla` scopes are complete.
+- The stable experiment identity and executable remain unchanged.
+
+### 2026-08-29 03:25 runtime checkpoint
+
+- E5 now has 189/432 passing rows, or 378/864 encode/decode invocations; no
+  failure/incomplete row exists.
+- The active short-list child completed `mr` 128 KiB and is processing `nci`
+  32 KiB under `auto-k2-b64-r1`.
+- No duplicate runner or parameter change occurred.
+
+# Runtime checkpoint 2026-08-29 04:18 +08:00
+
+- E5 matrix `hybridzip-r2-e5-router-320dd1b-v1`: 226/432 rows complete.
+- All recorded rows are byte-exact `COMPLETE/PASS`; failures: 0.
+- One runner remains active (PID 30912); current codec child is `nci` 64 KiB
+  encode under `auto-k4-b64-r1`.
+- Final `summary.json` is still pending; no duplicate run was started.
+# 2026-08-29 06:48: E5 direct recovery checkpoint
+
+- Direct inspection of `results/experiments/hybridzip-r2-e5-router-320dd1b-v1`
+  found `291/432` result rows, all `PASS`, with no failure/error row.
+- PID `30912` remains the sole parent runner and one `hybridzip.exe` child is
+  CPU-active in the final `auto-b128-r1` block-size group.
+- `summary.json` has not been emitted. Keep the same resumable experiment and
+  defer documentation, commits, E6, and HZ03 work until E5 completion.
+
+# 2026-08-29 08:31: E5 partial ledger validation
+
+- Read-only validation covered `304` recorded E5 rows in
+  `results/experiments/hybridzip-r2-e5-router-320dd1b-v1`.
+- Every row was `COMPLETE/PASS`; all input, archive, and decoded files were
+  present with matching recorded lengths and SHA-256 values.
+- Every input SHA-256 equaled its decoded SHA-256; malformed/error count was
+  zero. This is an interim checkpoint, not final `432`-row evidence.
+
+# 2026-08-29 08:34: E5 partial shortlist derivation
+
+- Read-only forced-oracle derivation completed at
+  `results/analysis/r2-forced-oracle-derived-320dd1b-e5-partial-20260829`.
+- The current E5 package matched `36` rows (12 files at the 32 KiB scope) and
+  left `180` rows uncovered because the forced ledger is 32 KiB only.
+- Tie-aware shortlist results on the matched rows: `auto-k2` recall `7/12`
+  (`58.3333%`) with `291` aggregate regret bytes; `auto-k4` recall `12/12`
+  (`100%`) with zero regret; `auto-k8` recall `12/12` (`100%`) with zero
+  regret.
+- These are partial evidence only; final R2 claims require the complete E5
+  package and its generated summary.
+
+# 2026-08-29 08:37: focused R2 regression
+
+- Ran `ctest --test-dir build -C Release --output-on-failure -R
+  "structure_routing_tests|r2_codec_tests"` against the existing Release
+  build while E5 remained active.
+- `hz_r2_codec_tests` and `hz_structure_routing_tests` both passed (`2/2`);
+  total test time was `41.79 s`.
+- No source rebuild, experiment restart, or parameter change occurred.
+
+# 2026-08-29 08:44: HZ01 compatibility regression
+
+- Ran the existing Release-build tests `hz_core_tests` and
+  `hz_pipeline_tests` without rebuilding or touching the active E5 package.
+- Both tests passed (`2/2`) in `0.64 s`, covering the core HZ01 contract and
+  the legacy four-expert pipeline lifecycle.
+
+# 2026-08-29 09:46: E5 runtime checkpoint
+
+- Current E5 package `results/experiments/hybridzip-r2-e5-router-320dd1b-v1`
+  contains `312/432` durable `COMPLETE/PASS` rows (`624/864` codec
+  invocations), with zero failure/error rows.
+- PID `30912` remains the only matrix runner. Its only codec child is running
+  `sao` at the 32 KiB scope with Auto policy and a 128 KiB internal block.
+- `summary.json` has not been emitted. No source, executable, experiment
+  identity, or parameter was changed during this checkpoint.
+
+# 2026-08-29 09:53: E5 runtime checkpoint
+
+- E5 now contains `314/432` durable `COMPLETE/PASS` rows (`628/864`
+  encode/decode invocations), with zero failure/error rows.
+- The original runner PID `30912` remains active and has started the
+  `sao / 128 KiB / Auto / 128 KiB` case after the preceding 64 KiB row passed.
+- No source, executable, experiment identity, or matrix parameter changed;
+  `summary.json` remains absent until all child packages finish.
+
+# 2026-08-29 10:08: E5 runtime checkpoint
+
+- E5 now contains `315/432` durable `COMPLETE/PASS` rows (`630/864`
+  encode/decode invocations), with zero failure/error rows.
+- The `sao / 128 KiB / Auto / 128 KiB` case passed byte-exact decode and the
+  original runner continued to the next case without a restart.
+- No source, executable, experiment identity, or matrix parameter changed;
+  `summary.json` remains pending.
+
+# 2026-08-29 10:10: E5 runtime checkpoint
+
+- E5 now contains `316/432` durable `COMPLETE/PASS` rows (`632/864`
+  encode/decode invocations), with zero failure/error rows.
+- The original runner advanced to `webster / 64 KiB / Auto / 128 KiB` under
+  the unchanged `auto-b128-r1` child package.
+- No source, executable, experiment identity, or matrix parameter changed;
+  `summary.json` remains absent.
+
+# 2026-08-29 10:18: E5 runtime checkpoint
+
+- E5 now contains `317/432` durable `COMPLETE/PASS` rows (`634/864`
+  encode/decode invocations), with zero failure/error rows.
+- `webster / 64 KiB / Auto / 128 KiB` passed byte-exactly; the original runner
+  advanced to `webster / 128 KiB / Auto / 128 KiB` in the same child package.
+- No source, executable, experiment identity, or matrix parameter changed;
+  `summary.json` remains pending.
+
+# 2026-08-29 10:26: E5 runtime checkpoint
+
+- E5 remains at `317/432` durable `COMPLETE/PASS` rows with zero
+  failure/error rows.
+- The same codec child is still processing `webster / 128 KiB / Auto / 128 KiB`;
+  CPU time is increasing and the process is responsive.
+- No duplicate runner, source change, executable change, or parameter change
+  occurred; `summary.json` remains absent.
+
+# 2026-08-29 10:29: E5 runtime checkpoint
+
+- E5 remains at `317/432` durable `COMPLETE/PASS` rows with zero
+  failure/error rows.
+- `webster / 128 KiB / Auto / 128 KiB` remains active; its codec process is
+  responsive and CPU time continues to increase.
+- The single runner and experiment identity are preserved; final validation
+  remains gated on package completion.
+
+# 2026-08-29 10:34: E5 runtime checkpoint
+
+- E5 now contains `318/432` durable `COMPLETE/PASS` rows (`636/864`
+  encode/decode invocations), with zero failure/error rows.
+- `webster / 128 KiB / Auto / 128 KiB` completed encode and byte-exact decode.
+- The same runner advanced to `x-ray / 32 KiB / Auto / 128 KiB`; experiment
+  identity and parameters are unchanged.
+
+# 2026-08-29 10:38: E5 runtime checkpoint
+
+- E5 now contains `319/432` durable `COMPLETE/PASS` rows (`638/864`
+  encode/decode invocations), with zero failure/error rows.
+- `x-ray / 32 KiB / Auto / 128 KiB` passed byte-exactly; the runner advanced
+  to `x-ray / 64 KiB / Auto / 128 KiB`.
+- The experiment identity and parameters remain unchanged.

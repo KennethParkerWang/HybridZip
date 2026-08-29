@@ -1,0 +1,205 @@
+{
+  "canonical_model_bytes": 2644,
+  "epochs": 64,
+  "learning_rate": 1,
+  "model_crc32": "A0354863",
+  "model_installation": "prohibited until a separately recorded held-out E5 gate passes",
+  "model_sha256": "CA1B144EF35E20EC388D739ACE9A1EF92A5E72410D050B5021C3A7F93C62D7B3",
+  "model_version": "00010001",
+  "no_leakage_partition": "file-level",
+  "not_a_k8_promotion_metric": true,
+  "status": "CANDIDATE_FROZEN_NOT_INSTALLED",
+  "training_data_examples_sha256": "1E57030E480B037DC40C20B934D0B09C237FEF17E629835525B8F5939B8B48E8",
+  "training_data_path": "E:\\MIXER\\hybridzip\\results\\analysis\\r2-ranker-training-320dd1b-v1",
+  "training_data_split_sha256": "3122313723A88BEC9F364D5618EB57FA940F0A592A04F575AB6C50D54F2A732C",
+  "training_data_summary_sha256": "5F507606CF8BE28C0441496E4ADAD49C41839DB2C0279AECEB369192B2C252BA",
+  "training_input_ranker_identity": "00010000|1025B343|4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B",
+  "training_perceptron_errors_by_epoch": [
+    4,
+    2,
+    2,
+    3,
+    4,
+    6,
+    4,
+    4,
+    2,
+    4,
+    4,
+    4,
+    4,
+    2,
+    2,
+    2,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "training_top1_tie_recall": {
+    "per_file": [
+      {
+        "file": "dickens",
+        "input_sha256": "FC42DCB9849222C8704C9DCAE606D075B389B66244FB215035148D6409EC0B31",
+        "predicted_mode": "paq8px-detected-sse",
+        "tied_winner_modes": [
+          "paq8px-detected-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "mozilla",
+        "input_sha256": "9DDEEF36CA0CA55B72FE3376D005926DFF3400A2ADE6EAE18482D8017D8645DB",
+        "predicted_mode": "paq8px-detected-sse",
+        "tied_winner_modes": [
+          "paq8px-detected-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "mr",
+        "input_sha256": "3BB287B0AF65F777AB00C14E362B4D1962087260556001BBEE0689AA10D9F76A",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "nci",
+        "input_sha256": "0D3034FE8B0E573DE1439ED98CE409B83B13E5895085C9BFB0BF980F4962FB79",
+        "predicted_mode": "paq8px-detected-sse",
+        "tied_winner_modes": [
+          "paq8px-detected-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "ooffice",
+        "input_sha256": "2ACF9B4CAAEAC5814CDFEF0FA48A5ECE857C847DBDB7B44EEAB95CA3C098921C",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "osdb",
+        "input_sha256": "03B2C20B777682CD960BCD893D7A4463161D9C0200FD1708B2EFAE32A259D0B7",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "reymont",
+        "input_sha256": "9D5E4B9340C2260DAE7DDB01B3EDA58236FF2DE5E1FF4D56767AA840B6FB1A87",
+        "predicted_mode": "paq8px-detected-sse",
+        "tied_winner_modes": [
+          "paq8px-detected-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "samba",
+        "input_sha256": "9C4F5BEE544E4531E4946E62F796987418B4526911C34877EF282F14DD57AD12",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "sao",
+        "input_sha256": "95677430CAD4F000506BC5EE22815C3F4E13D64B477ED506B78D5D9ACFB50CCD",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      }
+    ],
+    "rows": 9,
+    "top1_tie_hits": 9,
+    "top1_tie_recall": 1.0
+  },
+  "validation_top1_tie_recall": {
+    "per_file": [
+      {
+        "file": "webster",
+        "input_sha256": "774D224695AF4057353F72602BB96CD2AFEEA059AC7737535645F11596FCA85E",
+        "predicted_mode": "paq8px-detected-sse",
+        "tied_winner_modes": [
+          "paq8px-detected-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "x-ray",
+        "input_sha256": "10511AA63DFBD9C0DDBFEFE36068740103D4BA1116E214154A0772057D7E9314",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      },
+      {
+        "file": "xml",
+        "input_sha256": "C2F7F129956F8D6FC3D0E3595D93F98D5270B6F5BC4AB5E70F45867822EFDD71",
+        "predicted_mode": "paq8px-generic-sse",
+        "tied_winner_modes": [
+          "paq8px-generic-sse"
+        ],
+        "top1_tie_hit": true
+      }
+    ],
+    "rows": 3,
+    "top1_tie_hits": 3,
+    "top1_tie_recall": 1.0
+  }
+}

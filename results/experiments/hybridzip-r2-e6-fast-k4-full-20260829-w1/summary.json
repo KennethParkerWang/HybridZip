@@ -1,0 +1,12 @@
+{
+  "status": "COMPLETE",
+  "evidence_boundary": "Fast-policy warmup repeat 0 is retained in matrix_rows.csv and excluded from timing summaries. Each row records the requested and telemetry-reported Fast worker count.",
+  "rows": 9,
+  "cpu_floor_mb_per_s": 0.16,
+  "all_rows_byte_exact": true,
+  "ranker_model": {
+    "version": "00010000",
+    "crc32": "1025B343",
+    "sha256": "4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B"
+  }
+}

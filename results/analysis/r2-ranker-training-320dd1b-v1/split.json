@@ -1,0 +1,21 @@
+{
+  "no_leakage_partition": "file-level",
+  "training_files": [
+    "dickens",
+    "mozilla",
+    "mr",
+    "nci",
+    "ooffice",
+    "osdb",
+    "reymont",
+    "samba",
+    "sao"
+  ],
+  "validation_files": [
+    "webster",
+    "x-ray",
+    "xml"
+  ],
+  "source_forced_oracle_path": "E:\\MIXER\\hybridzip\\results\\analysis\\r2-forced-oracle-derived-320dd1b",
+  "source_forced_oracle_summary_sha256": "053AAF8F3BA007D841A55B90245A50C2609C897D5C4860764D460595FFFDE64D"
+}

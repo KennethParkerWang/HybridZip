@@ -4,8 +4,9 @@
 
 This is the encoder-only bootstrap ranker used by `auto-k8`. It is a
 deterministic implementation checkpoint, not a trained or promoted router.
-Its values must not be used to claim held-out recall, regret, PAQ8px ratio, or
-CPU throughput until E5 produces the forced-mode label matrix.
+The current E5 package and matching 32 KiB forced-mode labels now exist, but
+the bootstrap model remains installed and its values must not be used to claim
+held-out recall, regret, or PAQ8px ratio for a promoted model.
 
 ## Feature Contract
 
@@ -89,7 +90,8 @@ only permitted promotion path is:
 4. Freeze the model bytes, SHA-256, CRC32, feature code revision, hard gates,
    K thresholds, and exact train/validation membership before held-out E5.
 5. Require the protocol's K=8 recall/regret gates before changing the policy
-   status from experimental.
+   status from experimental. The current candidate fit is retained under
+   `results/analysis/r2-ranker-fit-320dd1b-v1/` and is not installed.
 
 `tools/r2_feature_dump.cpp` builds `hz_r2_feature_dump.exe`, a read-only
 exporter linked to the exact C++ extractor and ranker. After a forced oracle is

@@ -25,8 +25,8 @@ accepted before archive-byte evidence exists.
 | Item | Frozen scope | Confirmed result | Boundary |
 | --- | --- | --- | --- |
 | E3 PAQ8px v216 `-1` | 12 Silesia leading prefixes at 32/64/128 KiB | 36/36 byte-exact; 1.809440 bpb aggregate | Current HybridZip 64/128 KiB comparison is absent |
-| E5 router | K=2/K=4/K=8 against full Auto | Guarded runner and 1 KiB checks exist | Full matrix is not run; no K=8 promotion |
-| E6 Fast baseline | Same 36 inputs, three block sizes, 1 warmup + 3 retained repeats | 432/432 byte-exact; min encode/decode 0.6977/0.6476 MB/s | Existing mode-2 zstd only; K=4 rerun pending |
+| E5 router | K=2/K=4/K=8 against full Auto | Current package has 432/432 byte-exact rows; K=4/K=8 selected-mode and regret summaries are complete; matching 32 KiB forced-oracle labels cover 36 rows | Full held-out K=8 promotion remains pending because the forced labels are 32 KiB only |
+| E6 Fast K=4 | Same 36 inputs, three block sizes, 1 warmup + 3 retained repeats | Current package has 432/432 byte-exact rows; min retained encode/decode is 0.5635/0.6112 MB/s | Second-worker scaling and GPU throughput remain optional/deferred |
 | Fast K=4 smoke | Deterministic 1 KiB counter input | 4 candidates; Mode 43 selected; bitshuffle width 2; 159-byte archive; byte-exact | Smoke only, no corpus throughput claim |
 
 ## Ratio Track: ENC_RATIO_V1
@@ -49,9 +49,10 @@ accepted before archive-byte evidence exists.
    checksum, content-size, and dictionary-ID flags and uses one worker.
 3. Add shuffle, bitshuffle, delta/XOR, and BCJ one at a time. Keep a transform
    only if its complete HZ02 block is smaller than raw extension zstd.
-4. Fast K=4 is now formed after raw extension, transform comparison, and the
-   independent 1 KiB decode/malformed-metadata gates. Keep it experimental
-   until the post-change 32/64/128 KiB matrix is rerun.
+4. Fast K=4 is formed after raw extension, transform comparison, and the
+   independent 1 KiB decode/malformed-metadata gates. The post-change
+   32/64/128 KiB matrix is complete for one worker; keep the policy separate
+   from the ratio-router claim.
 5. Repeat the 32/64/128 KiB matrix after policy changes. CPU acceptance needs
    byte-exact reconstruction and >=0.16 MB/s encode/decode in every cell.
 

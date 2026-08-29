@@ -15,9 +15,9 @@ passing 1 KiB smoke proves only the named path can round-trip that input.
 | K=8 ratio router | 28-feature fixed-point bootstrap and exact feature export implemented | `src/r2/routing/block_features.*`, `mode_ranker.*`, `block_planner.cpp`; CLI `auto-k8`; `hz_r2_feature_dump`; file-level dataset exporter | E5 forced-mode labels, no-leakage fitted model, router-budget timing, and held-out archive/regret measurements. |
 | K=2/K=4 ablations | Implemented, ablation only | CLI `auto-k2`/`auto-k4`; current 1 KiB telemetry shows 2/4/8 materialized modes | No policy promotion from this smoke. |
 | Candidate accounting | Implemented and guarded | `candidate_modes=<id>:<count>` telemetry; explicit backend-order to BlockMode mapping in `block_planner.cpp` | E5 runtime rows and a matching forced-mode oracle are needed for tie-aware recall. |
-| CPU Fast policy | Mode-2 baseline measured; Fast K=4 and Fast-only block executor implemented | `results/experiments/hybridzip-r2-e6-fast-full-20260828-retry1/`: 432/432 byte-exact rows, 324 retained rows, all nine cells above 0.16 MB/s; Mode-43/Fast K=4 smoke; F3 one/two-worker evidence: `results/smoke/r2-f3-fast-executor-1k-20260828-v2/` | Rerun E6 for Fast K=4 with the executor; no post-change throughput claim yet. |
+| CPU Fast policy | Fast K=4 and Fast-only block executor implemented and measured | `results/experiments/hybridzip-r2-e6-fast-k4-full-20260829-w1/`: 432/432 byte-exact rows, 324 retained rows, all nine cells above 0.16 MB/s; F3 one/two-worker correctness evidence: `results/smoke/r2-f3-fast-executor-1k-20260828-v2/` | A second worker-count scaling package is optional; GPU throughput remains unproven. |
 | HZ01 compatibility | Current-build 1 KiB byte-exact gate | `results/smoke/r2-e5-e6-compat-1k-20260828-v1/verification-recovery.json`: 537-byte archive, exact decoded SHA-256 | Larger compatibility regression remains outside the current minimal-test boundary. |
-| E5/E6 runtime protocol | E6 complete; E5 pending | `tools/run_r2_e5_e6_matrix.ps1`; E6 package and summary; E5 can bind a completed forced ledger and retain derived tie-aware evidence | E5 full Auto versus K=2/K=4/K=8 measurement and forced-oracle recall evidence. |
+| E5/E6 runtime protocol | E5 and current Fast K=4 E6 complete | `results/experiments/hybridzip-r2-e5-router-320dd1b-v1/summary.json` and `results/experiments/hybridzip-r2-e6-fast-k4-full-20260829-w1/summary.json`; both packages validate byte-exact rows and stable ranker identity | Held-out promotion of fitted router weights and a broader forced-label matrix remain. |
 
 ## Current Small-Input Gates
 
@@ -76,17 +76,17 @@ warmup repeat 0 from its throughput and percentile summary.
   historical 32 KiB Auto ledger is 2,165 bytes larger than E3 PAQ, but it is
   not a current-build 64/128 KiB comparison.
 - K=8 has not passed its held-out 99.5% recall and 0.02% regret gates.
-- The historical mode-2 Fast baseline meets the CPU 0.16 MB/s floor at all
-  measured 32/64/128 KiB input/block-size cells. Fast K=4 plus its Fast-only
-  executor has only a deterministic 1 KiB correctness gate; its corpus-level
-  throughput measurement and GPU targets are unproven.
+- The current Fast K=4 package meets the CPU 0.16 MB/s floor at all nine
+  measured 32/64/128 KiB input/block-size cells, with minimum encode/decode
+  throughput of 0.5635/0.6112 MB/s. GPU targets remain unproven.
 - Tencent/OASum coverage, GPU throughput, and final dual-corpus claims remain
   unproven.
 
 ## Next Work
 
-E5 is the remaining current-router runtime gate. It must run in a dedicated
-window because full Auto materializes PAQ candidates. The matrix runner now
+E5 and the current Fast K=4 E6 runtime gates are complete. The matrix runner
 resumes compatible incomplete packages and validates completed packages
 without re-running codecs. E3 remains an independent PAQ baseline and must
-not be folded into router or Fast results.
+not be folded into router or Fast results. Remaining work is held-out ranker
+evaluation, optional worker-scaling measurement, Tencent/OASum approval, and
+the GPU path.

@@ -1,6 +1,6 @@
 # HybridZip Product Status
 
-Status date: 2026-08-28
+Status date: 2026-08-29
 
 ## R2 Current Status
 
@@ -27,16 +27,19 @@ unchanged. A shared random 1 KiB smoke materialized exactly 2/4/8 candidates,
 respectively; every policy selected the 463-byte mode-36
 `paq8px-generic-sse` archive and decoded byte-exactly. This is an
 implementation gate, not a held-out recall/regret or corpus-level ratio
-result; those remain pending E5.
+result; the complete E5 package is now available separately below.
 
 An experimental `--r2-mode=fast` policy is also available for E6 throughput
-work. It now evaluates four top-level candidates: stored, raw/transform
-Mode-43 zstd extension, and LZ4. The Mode-43 candidate compares byte shuffle,
-bitshuffle, XOR-delta, and x86 BCJ transforms including their metadata. This
-is not a ratio-oracle claim and has only a 1 KiB smoke result so far.
-`tools/run_r2_e5_e6_matrix.ps1` supplies guarded non-overwriting E5/E6 matrix
-execution; the prior 432-row runtime package remains a mode-2 baseline and
-has not been rerun for Fast K=4.
+work. It evaluates four top-level candidates: stored, raw/transform Mode-43
+zstd extension, and LZ4. The Mode-43 candidate compares byte shuffle,
+bitshuffle, XOR-delta, and x86 BCJ transforms including their metadata.
+The current Fast K=4 package
+`results/experiments/hybridzip-r2-e6-fast-k4-full-20260829-w1/` contains
+`432/432` byte-exact rows across 12 Silesia files, 32/64/128 KiB scopes, and
+32/64/128 KiB blocks. Its nine retained timing cells have minimum
+`0.5635 MB/s` encode and `0.6112 MB/s` decode, above the `0.16 MB/s` CPU
+floor. The prior mode-2 package remains historical evidence and is not mixed
+with this Fast K=4 result.
 
 On the current working-tree executable, a separate shared random 1 KiB smoke
 also preserved both contracts: Fast serialized existing mode 2 (`zstd`) into
@@ -55,9 +58,10 @@ F3 adds a bounded, Fast-only independent-block executor. It keeps HZ02 output
 in canonical input order and leaves Auto, ratio shortlists, and forced modes
 serial. A 1 KiB four-block gate produced the same 690-byte archive hash with
 one and two workers, and both decodes matched the input hash. Evidence is
-`results/smoke/r2-f3-fast-executor-1k-20260828-v2/verification.json`. This is
-not a throughput measurement; a new post-change Fast K=4 E6 package remains
-required before asserting the CPU target.
+`results/smoke/r2-f3-fast-executor-1k-20260828-v2/verification.json`. The
+post-change Fast K=4 E6 package above now supplies the corpus-level
+single-worker throughput measurement; a second worker-count comparison is
+optional for F3 scaling analysis.
 
 The prior evidence Release
 `FDE6F9ABC0F831CC9E35BF6B53C24654E06FBB2EE232856924E211A17B04A75B`

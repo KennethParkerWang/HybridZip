@@ -1,0 +1,34 @@
+{
+  "status": "COMPLETE",
+  "runtime_started": false,
+  "codec_invocations": 0,
+  "feature_dump_invocations": 12,
+  "feature_dump_started": true,
+  "forced_oracle_path": "E:\\MIXER\\hybridzip\\results\\analysis\\r2-forced-oracle-derived-320dd1b",
+  "forced_oracle_summary_sha256": "053AAF8F3BA007D841A55B90245A50C2609C897D5C4860764D460595FFFDE64D",
+  "dataset_path": "F:\\paq8px\\silesia",
+  "scope_kib": 32,
+  "input_cases": 12,
+  "training_files": [
+    "dickens",
+    "mozilla",
+    "mr",
+    "nci",
+    "ooffice",
+    "osdb",
+    "reymont",
+    "samba",
+    "sao"
+  ],
+  "validation_files": [
+    "webster",
+    "x-ray",
+    "xml"
+  ],
+  "no_leakage_partition": "file-level",
+  "feature_dump_path": "E:\\MIXER\\hybridzip\\build\\Release\\hz_r2_feature_dump.exe",
+  "feature_dump_sha256": "84C979FBE9242F14510D5F76EAAA8B4CD7748843FA4EC88ECF98B7F941A0338F",
+  "ranker_identity": "00010000|1025B343|4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B",
+  "training_rows": 9,
+  "validation_rows": 3
+}

@@ -1,0 +1,4 @@
+"policy","evaluated_blocks","tied_winner_hits","tie_aware_winner_recall","aggregate_regret_vs_forced_oracle_bytes"
+"auto-k2","12","7","0.5833333333333334","291"
+"auto-k4","12","12","1","0"
+"auto-k8","12","12","1","0"

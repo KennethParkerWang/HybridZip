@@ -1,0 +1,15 @@
+{
+  "status": "COMPLETE",
+  "evidence_boundary": "Each forced input is exactly one internal HZ02 block. Oracle bytes include the complete archive. Tied winners are all ratio modes with the minimum complete archive bytes.",
+  "forced_ledger_path": "E:\\MIXER\\hybridzip\\results\\analysis\\r2-complete-ledger\\hybridzip-r2-forced-oracle-current-320dd1b",
+  "forced_ledger_id": "hybridzip-r2-forced-oracle-current-320dd1b",
+  "ratio_mode_count": 43,
+  "block_size_kib": 32,
+  "input_cases": 12,
+  "codec_sha256": "74FF260A939B01673667723D8351AAEDB679339610009ECB23C70E373B862D9F",
+  "e5_package_path": "E:\\MIXER\\hybridzip\\results\\experiments\\hybridzip-r2-e5-router-320dd1b-v1",
+  "e5_matching_rows": 36,
+  "e5_uncovered_rows": 288,
+  "ranker_identity": "00010000|1025B343|4B1AC26C40AD4DA50312FD3B694D7E636FB768C2336FE773BC82D36424C27A4B",
+  "tie_aware_recall_available": true
+}
